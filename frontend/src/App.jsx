@@ -1,21 +1,58 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import GestionUsuarios from "./pages/GestionUsuarios";
+
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import MisNotas from "./pages/MisNotas";
+import Asistencia from "./pages/Asistencia";
+import Comunicados from "./pages/Comunicados";
+import Perfil from "./pages/Perfil";
+import Mensajes from "./pages/Mensajes";
 
 function App() {
-    const [mensaje, setMensaje] = useState("");
+  return (
+    <BrowserRouter>
 
-    useEffect(() => {
-        fetch("http://localhost:3000")
-            .then((respuesta) => respuesta.json())
-            .then((datos) => setMensaje(datos.mensaje))
-            .catch((error) => console.error(error));
-    }, []);
+      <Routes>
 
-    return (
-        <div>
-            <h1>EduConnect BR</h1>
-            <p>{mensaje}</p>
-        </div>
-    );
+        <Route
+          path="/"
+          element={<Navigate to="/login" />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+  path="/mis-notas"
+  element={<MisNotas />}
+/>
+<Route
+  path="/asistencia"
+  element={<Asistencia />}
+/>
+
+<Route
+  path="/comunicados"
+  element={<Comunicados />}
+/><Route
+  path="/perfil"
+  element={<Perfil />}
+/><Route path="/mensajes" element={<Mensajes />} />
+
+<Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+
+      </Routes>
+
+    </BrowserRouter>
+  );
 }
 
 export default App;
