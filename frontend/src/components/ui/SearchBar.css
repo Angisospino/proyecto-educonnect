@@ -1,0 +1,147 @@
+/* ==========================================
+   CONTENEDOR
+   ========================================== */
+
+.search-bar {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+	min-width: 0;
+}
+
+/* ==========================================
+   ICONO DE BÚSQUEDA
+   ========================================== */
+
+.search-bar__icon {
+	position: absolute;
+	left: var(--spacing-3);
+
+	color: var(--text-muted);
+
+	pointer-events: none;
+}
+
+/* ==========================================
+   INPUT
+   ========================================== */
+
+.search-bar__input {
+	width: 100%;
+	min-height: var(--input-height);
+
+	padding: 0 42px 0 42px;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-md);
+
+	background-color: var(--background-primary);
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+
+	outline: none;
+
+	transition:
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		background-color var(--transition-fast);
+}
+
+.search-bar__input::placeholder {
+	color: var(--text-muted);
+}
+
+.search-bar__input:hover:not(:disabled) {
+	border-color: var(--color-primary);
+}
+
+.search-bar__input:focus {
+	border-color: var(--color-primary);
+
+	box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* ==========================================
+   BOTÓN LIMPIAR
+   ========================================== */
+
+.search-bar__clear {
+	position: absolute;
+	right: var(--spacing-2);
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 32px;
+	height: 32px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-sm);
+
+	background-color: transparent;
+
+	color: var(--text-secondary);
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.search-bar__clear:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.search-bar__clear:focus-visible {
+	outline: 2px solid var(--color-primary);
+
+	outline-offset: 1px;
+}
+
+/* ==========================================
+   DISABLED
+   ========================================== */
+
+.search-bar__input:disabled {
+	background-color: var(--background-secondary);
+
+	opacity: 0.7;
+
+	cursor: not-allowed;
+}
+
+.search-bar--disabled .search-bar__icon {
+	opacity: 0.5;
+}
+
+/* ==========================================
+   OCULTAR BOTÓN NATIVO DEL TYPE SEARCH
+   ========================================== */
+
+.search-bar__input::-webkit-search-cancel-button {
+	display: none;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 576px) {
+	.search-bar__input {
+		font-size: 16px;
+	}
+}

@@ -1,0 +1,149 @@
+.login {
+	width: 100%;
+	max-width: 480px;
+
+	padding: var(--spacing-5);
+
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-md);
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+.login__header {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--spacing-3);
+
+	margin-bottom: var(--spacing-6);
+}
+
+.login__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 48px;
+	height: 48px;
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(13, 110, 253, 0.1);
+
+	color: var(--color-primary);
+}
+
+.login__title {
+	margin: 0 0 var(--spacing-1);
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-xl);
+	font-weight: var(--font-weight-bold);
+}
+
+.login__subtitle {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+	line-height: 1.5;
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+
+.login__form {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-4);
+}
+
+/* ==========================================
+   ERROR DEL SERVIDOR
+   ========================================== */
+
+.login__alert {
+	margin-bottom: var(--spacing-4);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid rgba(220, 53, 69, 0.25);
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+
+	font-size: var(--font-size-sm);
+	line-height: 1.5;
+}
+
+/* ==========================================
+   AYUDA
+   ========================================== */
+
+.login__help {
+	margin-top: var(--spacing-5);
+	padding-top: var(--spacing-4);
+
+	border-top: 1px solid var(--border-color);
+
+	text-align: center;
+}
+
+.login__help p {
+	margin: 0;
+
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+	line-height: 1.5;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 576px) {
+	.login {
+		max-width: 100%;
+
+		padding: var(--spacing-5);
+
+		border-radius: var(--radius-md);
+
+		box-shadow: var(--shadow-sm);
+	}
+
+	.login__header {
+		margin-bottom: var(--spacing-5);
+	}
+}
+
+@media (min-width: 1440px) {
+	.login {
+		max-width: 500px;
+		padding: var(--spacing-5);
+	}
+}
+
+@media (min-width: 1920px) {
+	.login {
+		max-width: 520px;
+		padding: var(--spacing-5);
+	}
+}

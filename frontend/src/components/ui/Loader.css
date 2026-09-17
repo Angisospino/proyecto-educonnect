@@ -1,0 +1,149 @@
+/* ==========================================
+   CONTENEDOR
+   ========================================== */
+
+.loader {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-3);
+}
+
+/* ==========================================
+   VARIANTE INLINE
+   ========================================== */
+
+.loader--inline {
+	display: inline-flex;
+	padding: var(--spacing-2);
+}
+
+/* ==========================================
+   VARIANTE PAGE
+   ========================================== */
+
+.loader--page {
+	flex-direction: column;
+
+	width: 100%;
+	min-height: 250px;
+
+	padding: var(--spacing-6);
+}
+
+/* ==========================================
+   VARIANTE FULLSCREEN
+   ========================================== */
+
+.loader--fullscreen {
+	position: fixed;
+	inset: 0;
+
+	z-index: var(--z-modal);
+
+	flex-direction: column;
+
+	width: 100%;
+	min-height: 100vh;
+
+	padding: var(--spacing-6);
+
+	background-color: var(--background-primary);
+}
+
+/* ==========================================
+   SPINNER
+   ========================================== */
+
+.loader__spinner {
+	display: inline-block;
+
+	border-style: solid;
+	border-color: var(--color-primary) rgba(13, 110, 253, 0.2);
+
+	border-radius: 50%;
+
+	animation: loader-spin 0.75s linear infinite;
+}
+
+/* ==========================================
+   TAMAÑOS
+   ========================================== */
+
+.loader__spinner--sm {
+	width: 20px;
+	height: 20px;
+
+	border-width: 2px;
+}
+
+.loader__spinner--md {
+	width: 36px;
+	height: 36px;
+
+	border-width: 3px;
+}
+
+.loader__spinner--lg {
+	width: 52px;
+	height: 52px;
+
+	border-width: 4px;
+}
+
+/* ==========================================
+   MENSAJE
+   ========================================== */
+
+.loader__message {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-medium);
+
+	text-align: center;
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+.sr-only {
+	position: absolute;
+
+	width: 1px;
+	height: 1px;
+
+	padding: 0;
+	margin: -1px;
+
+	overflow: hidden;
+
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+
+	border: 0;
+}
+
+/* ==========================================
+   ANIMACIÓN
+   ========================================== */
+
+@keyframes loader-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ==========================================
+   REDUCIR MOVIMIENTO
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.loader__spinner {
+		animation-duration: 1.5s;
+	}
+}

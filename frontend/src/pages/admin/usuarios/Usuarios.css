@@ -1,0 +1,679 @@
+/* ==========================================
+   PÁGINA
+   ========================================== */
+
+.usuarios-page {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.usuarios-page__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	gap: var(--spacing-4);
+}
+
+.usuarios-page__header > div:first-child {
+	min-width: 0;
+}
+
+.usuarios-page__title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-2xl);
+	font-weight: var(--font-weight-semibold);
+}
+
+.usuarios-page__description {
+	max-width: 720px;
+
+	margin: var(--spacing-2) 0 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+	line-height: 1.6;
+}
+
+/* ==========================================
+   ALERTA DE ERROR
+   ========================================== */
+
+.usuarios-page__alert {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid rgba(220, 53, 69, 0.2);
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+
+	font-size: var(--font-size-sm);
+}
+
+.usuarios-page__alert span {
+	flex: 1;
+}
+
+.usuarios-page__alert button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 30px;
+	height: 30px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-sm);
+
+	background-color: transparent;
+
+	color: currentColor;
+
+	font-size: 22px;
+	line-height: 1;
+
+	cursor: pointer;
+
+	transition: background-color var(--transition-fast);
+}
+
+.usuarios-page__alert button:hover {
+	background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+
+.usuarios-page__filters {
+	display: grid;
+
+	grid-template-columns:
+		minmax(260px, 1fr)
+		minmax(170px, 210px)
+		minmax(160px, 190px)
+		auto;
+
+	align-items: end;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-4);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+.usuarios-page__search,
+.usuarios-page__filter {
+	min-width: 0;
+}
+
+/* ==========================================
+   CARD PRINCIPAL
+   ========================================== */
+
+.usuarios-page__card {
+	position: relative;
+
+	width: 100%;
+	min-width: 0;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   LOADING
+   ========================================== */
+
+.usuarios-page__loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 300px;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-6);
+}
+
+.usuarios-page__loading p {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   TABLA - WRAPPER
+   ========================================== */
+
+.usuarios-page__table-wrapper {
+	width: 100%;
+
+	overflow-x: auto;
+
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.usuarios-page__table {
+	width: 100%;
+	min-width: 900px;
+
+	border-collapse: collapse;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   CABECERA DE TABLA
+   ========================================== */
+
+.usuarios-page__table thead {
+	background-color: var(--background-secondary);
+}
+
+.usuarios-page__table th {
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+	font-weight: var(--font-weight-semibold);
+
+	text-align: left;
+
+	text-transform: uppercase;
+
+	letter-spacing: 0.03em;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   CELDAS
+   ========================================== */
+
+.usuarios-page__table td {
+	padding: var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	vertical-align: middle;
+}
+
+.usuarios-page__table tbody tr {
+	transition: background-color var(--transition-fast);
+}
+
+.usuarios-page__table tbody tr:hover {
+	background-color: var(--background-secondary);
+}
+
+.usuarios-page__table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+/* ==========================================
+   USUARIO
+   ========================================== */
+
+.usuarios-page__user {
+	display: flex;
+	align-items: center;
+
+	min-width: 210px;
+
+	gap: var(--spacing-3);
+}
+
+/* ==========================================
+   AVATAR
+   ========================================== */
+
+.usuarios-page__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 42px;
+	height: 42px;
+
+	border-radius: 50%;
+
+	background-color: rgba(13, 110, 253, 0.1);
+
+	color: var(--color-primary);
+
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-semibold);
+
+	text-transform: uppercase;
+}
+
+/* ==========================================
+   INFORMACIÓN DEL USUARIO
+   ========================================== */
+
+.usuarios-page__user-info {
+	display: flex;
+	flex-direction: column;
+
+	min-width: 0;
+
+	gap: 3px;
+}
+
+.usuarios-page__user-info strong {
+	max-width: 220px;
+
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-semibold);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+.usuarios-page__user-info span {
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+}
+
+/* ==========================================
+   EMAIL
+   ========================================== */
+
+.usuarios-page__email {
+	display: inline-block;
+
+	max-width: 260px;
+
+	overflow: hidden;
+
+	color: var(--text-secondary);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   ACCIONES
+   ========================================== */
+
+.usuarios-page__actions-header {
+	width: 80px;
+
+	text-align: center !important;
+}
+
+.usuarios-page__actions {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ==========================================
+   BOTÓN ACCIONES
+   ========================================== */
+
+.usuarios-page__action-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 36px;
+	height: 36px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-md);
+
+	background-color: transparent;
+
+	color: var(--text-secondary);
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.usuarios-page__action-button:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.usuarios-page__action-button:focus-visible {
+	outline: 2px solid var(--color-primary);
+
+	outline-offset: 2px;
+}
+
+/* ==========================================
+   MENÚ DE ACCIONES
+   ========================================== */
+
+.usuarios-page__actions-menu {
+	position: absolute;
+
+	top: calc(100% + 5px);
+	right: 0;
+
+	z-index: var(--z-dropdown);
+
+	display: flex;
+	flex-direction: column;
+
+	width: 180px;
+
+	overflow: hidden;
+
+	padding: var(--spacing-1) 0;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-md);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================
+   ITEMS DEL MENÚ
+   ========================================== */
+
+.usuarios-page__actions-menu button {
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 0;
+
+	background-color: transparent;
+
+	color: var(--text-secondary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+
+	text-align: left;
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.usuarios-page__actions-menu button:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.usuarios-page__actions-menu button svg {
+	flex-shrink: 0;
+}
+
+/* ==========================================
+   DIVISOR DEL MENÚ
+   ========================================== */
+
+.usuarios-page__menu-divider {
+	height: 1px;
+
+	margin: var(--spacing-1) 0;
+
+	background-color: var(--border-color);
+}
+
+/* ==========================================
+   ACCIÓN PELIGROSA
+   ========================================== */
+
+.usuarios-page__actions-menu .usuarios-page__menu-danger {
+	color: var(--color-danger);
+}
+
+.usuarios-page__actions-menu .usuarios-page__menu-danger:hover {
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+}
+
+/* ==========================================
+   FOOTER DE LA TABLA
+   ========================================== */
+
+.usuarios-page__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: var(--spacing-4);
+
+	padding: var(--spacing-4);
+
+	border-top: 1px solid var(--border-color);
+}
+
+/* ==========================================
+   INFORMACIÓN PAGINACIÓN
+   ========================================== */
+
+.usuarios-page__pagination-info {
+	flex-shrink: 0;
+
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+}
+
+.usuarios-page__pagination-info strong {
+	color: var(--text-primary);
+
+	font-weight: var(--font-weight-semibold);
+}
+
+/* ==========================================
+   EMPTY STATE DENTRO DE CARD
+   ========================================== */
+
+.usuarios-page__card .empty-state {
+	min-height: 330px;
+
+	border: 0;
+
+	border-radius: var(--radius-lg);
+
+	box-shadow: none;
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET
+   ========================================== */
+
+@media (max-width: 1100px) {
+	.usuarios-page__filters {
+		grid-template-columns:
+			minmax(240px, 1fr)
+			1fr
+			1fr;
+	}
+
+	.usuarios-page__filters > button {
+		grid-column: 1 / -1;
+
+		justify-self: flex-end;
+	}
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET PEQUEÑA
+   ========================================== */
+
+@media (max-width: 768px) {
+	.usuarios-page {
+		gap: var(--spacing-4);
+	}
+
+	/* HEADER */
+
+	.usuarios-page__header {
+		flex-direction: column;
+	}
+
+	.usuarios-page__header > button {
+		width: 100%;
+	}
+
+	.usuarios-page__title {
+		font-size: var(--font-size-xl);
+	}
+
+	/* FILTROS */
+
+	.usuarios-page__filters {
+		grid-template-columns:
+			1fr
+			1fr;
+	}
+
+	.usuarios-page__search {
+		grid-column: 1 / -1;
+	}
+
+	.usuarios-page__filters > button {
+		grid-column: 1 / -1;
+
+		width: 100%;
+	}
+
+	/* FOOTER */
+
+	.usuarios-page__footer {
+		flex-direction: column;
+
+		align-items: stretch;
+	}
+
+	.usuarios-page__pagination-info {
+		text-align: center;
+	}
+}
+
+/* ==========================================
+   RESPONSIVE - MÓVIL
+   ========================================== */
+
+@media (max-width: 576px) {
+	.usuarios-page__filters {
+		grid-template-columns: 1fr;
+
+		padding: var(--spacing-3);
+	}
+
+	.usuarios-page__search,
+	.usuarios-page__filter,
+	.usuarios-page__filters > button {
+		grid-column: auto;
+
+		width: 100%;
+	}
+
+	/* CARD */
+
+	.usuarios-page__card {
+		border-radius: var(--radius-md);
+	}
+
+	/* TABLA */
+
+	.usuarios-page__table-wrapper {
+		border-radius: var(--radius-md) var(--radius-md) 0 0;
+	}
+
+	/* FOOTER */
+
+	.usuarios-page__footer {
+		padding: var(--spacing-3);
+	}
+
+	/* ALERTA */
+
+	.usuarios-page__alert {
+		align-items: flex-start;
+	}
+}

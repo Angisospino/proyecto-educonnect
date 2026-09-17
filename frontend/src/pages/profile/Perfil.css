@@ -1,0 +1,859 @@
+/* ==========================================
+   PÁGINA DE PERFIL
+   ========================================== */
+
+.perfil-page {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.perfil-page__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	gap: var(--spacing-4);
+}
+
+.perfil-page__title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-2xl);
+	font-weight: var(--font-weight-semibold);
+
+	line-height: 1.3;
+}
+
+.perfil-page__description {
+	max-width: 720px;
+
+	margin: var(--spacing-2) 0 0;
+
+	color: var(--text-secondary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+
+	line-height: 1.6;
+}
+
+/* ==========================================
+   LAYOUT PRINCIPAL
+   ========================================== */
+
+.perfil-page__layout {
+	display: grid;
+
+	grid-template-columns:
+		minmax(240px, 280px)
+		minmax(0, 1fr);
+
+	align-items: start;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   RESUMEN DEL PERFIL
+   ========================================== */
+
+.perfil-page__summary {
+	position: sticky;
+
+	top: calc(var(--header-height) + var(--spacing-5));
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	width: 100%;
+
+	padding: var(--spacing-6) var(--spacing-5);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+
+	text-align: center;
+}
+
+/* ==========================================
+   AVATAR
+   ========================================== */
+
+.perfil-page__avatar-wrapper {
+	position: relative;
+
+	display: inline-flex;
+
+	margin-bottom: var(--spacing-4);
+}
+
+.perfil-page__avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 96px;
+	height: 96px;
+
+	border: 4px solid var(--background-primary);
+
+	border-radius: 50%;
+
+	background-color: rgba(13, 110, 253, 0.1);
+
+	box-shadow: 0 0 0 1px var(--border-color);
+
+	color: var(--color-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: 30px;
+	font-weight: var(--font-weight-semibold);
+
+	text-transform: uppercase;
+}
+
+/* ==========================================
+   BOTÓN FOTO
+   ========================================== */
+
+.perfil-page__avatar-button {
+	position: absolute;
+
+	right: -2px;
+	bottom: 2px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 32px;
+	height: 32px;
+
+	padding: 0;
+
+	border: 3px solid var(--background-primary);
+
+	border-radius: 50%;
+
+	background-color: var(--color-primary);
+
+	color: #ffffff;
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+.perfil-page__avatar-button:hover:not(:disabled) {
+	transform: translateY(-1px);
+}
+
+.perfil-page__avatar-button:disabled {
+	opacity: 0.55;
+
+	cursor: not-allowed;
+}
+
+/* ==========================================
+   NOMBRE Y CORREO
+   ========================================== */
+
+.perfil-page__summary > h3 {
+	max-width: 100%;
+
+	margin: 0 0 var(--spacing-1);
+
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: var(--font-size-lg);
+
+	font-weight: var(--font-weight-semibold);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+.perfil-page__email {
+	max-width: 100%;
+
+	margin: 0 0 var(--spacing-3);
+
+	overflow: hidden;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   DIVISOR
+   ========================================== */
+
+.perfil-page__summary-divider {
+	width: 100%;
+	height: 1px;
+
+	margin: var(--spacing-5) 0;
+
+	background-color: var(--border-color);
+}
+
+/* ==========================================
+   DATOS DEL RESUMEN
+   ========================================== */
+
+.perfil-page__summary-item {
+	display: flex;
+	align-items: flex-start;
+
+	width: 100%;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) 0;
+
+	text-align: left;
+}
+
+.perfil-page__summary-item > svg {
+	flex-shrink: 0;
+
+	margin-top: 2px;
+
+	color: var(--color-primary);
+}
+
+.perfil-page__summary-item > div {
+	display: flex;
+	flex-direction: column;
+
+	min-width: 0;
+
+	gap: 3px;
+}
+
+.perfil-page__summary-item span {
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+}
+
+.perfil-page__summary-item strong {
+	max-width: 190px;
+
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-size: var(--font-size-sm);
+
+	font-weight: var(--font-weight-medium);
+
+	line-height: 1.4;
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   CONTENIDO DERECHO
+   ========================================== */
+
+.perfil-page__content {
+	display: flex;
+	flex-direction: column;
+
+	min-width: 0;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   CARDS
+   ========================================== */
+
+.perfil-page__card {
+	width: 100%;
+
+	overflow: hidden;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   HEADER DE CARD
+   ========================================== */
+
+.perfil-page__card-header {
+	display: flex;
+	align-items: flex-start;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-5);
+
+	border-bottom: 1px solid var(--border-color);
+
+	background-color: var(--background-secondary);
+}
+
+.perfil-page__card-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 40px;
+	height: 40px;
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(13, 110, 253, 0.1);
+
+	color: var(--color-primary);
+}
+
+.perfil-page__card-header > div:last-child {
+	min-width: 0;
+}
+
+.perfil-page__card-header h3 {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: var(--font-size-lg);
+
+	font-weight: var(--font-weight-semibold);
+
+	line-height: 1.4;
+}
+
+.perfil-page__card-header p {
+	margin: var(--spacing-1) 0 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+
+	line-height: 1.5;
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+
+.perfil-page__form {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-4);
+
+	padding: var(--spacing-5);
+}
+
+/* ==========================================
+   GRID DE CAMPOS
+   ========================================== */
+
+.perfil-page__grid {
+	display: grid;
+
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+
+	align-items: start;
+
+	gap: var(--spacing-4);
+}
+
+/* ==========================================
+   ALERTAS
+   ========================================== */
+
+.perfil-page__alert {
+	width: 100%;
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid transparent;
+
+	border-radius: var(--radius-md);
+
+	font-size: var(--font-size-sm);
+
+	line-height: 1.5;
+}
+
+.perfil-page__alert--error {
+	border-color: rgba(220, 53, 69, 0.2);
+
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+}
+
+.perfil-page__alert--success {
+	border-color: rgba(67, 160, 71, 0.22);
+
+	background-color: rgba(67, 160, 71, 0.08);
+
+	color: var(--color-success);
+}
+
+/* ==========================================
+   CAMPO ROL SOLO LECTURA
+   ========================================== */
+
+.perfil-page__readonly {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	min-height: 58px;
+
+	gap: var(--spacing-4);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-md);
+
+	background-color: var(--background-secondary);
+}
+
+.perfil-page__readonly > div {
+	display: flex;
+	flex-direction: column;
+
+	min-width: 0;
+
+	gap: 3px;
+}
+
+.perfil-page__readonly span {
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+}
+
+.perfil-page__readonly strong {
+	color: var(--text-primary);
+
+	font-size: var(--font-size-sm);
+
+	font-weight: var(--font-weight-semibold);
+}
+
+.perfil-page__readonly > svg {
+	flex-shrink: 0;
+
+	color: var(--color-primary);
+}
+
+/* ==========================================
+   AYUDA CAMPO SOLO LECTURA
+   ========================================== */
+
+.perfil-page__readonly-help {
+	margin: calc(var(--spacing-2) * -1) 0 0;
+
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+
+	line-height: 1.5;
+}
+
+/* ==========================================
+   ACCIONES DEL FORMULARIO
+   ========================================== */
+
+.perfil-page__form-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+
+	gap: var(--spacing-3);
+
+	padding-top: var(--spacing-2);
+}
+
+/* ==========================================
+   BOTÓN MOSTRAR CONTRASEÑA
+   ========================================== */
+
+.perfil-page__password-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 34px;
+	height: 34px;
+
+	padding: 0;
+
+	border: 0;
+
+	border-radius: var(--radius-sm);
+
+	background-color: transparent;
+
+	color: var(--text-muted);
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.perfil-page__password-button:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.perfil-page__password-button:focus-visible {
+	outline: 2px solid var(--color-primary);
+
+	outline-offset: 1px;
+}
+
+/* ==========================================
+   LOADING
+   ========================================== */
+
+.perfil-page__loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 420px;
+
+	gap: var(--spacing-3);
+}
+
+.perfil-page__loading p {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   ERROR DE CARGA
+   ========================================== */
+
+.perfil-page__load-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 420px;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-6);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+
+	text-align: center;
+}
+
+.perfil-page__load-error > svg {
+	color: var(--color-primary);
+}
+
+.perfil-page__load-error h2 {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: var(--font-size-xl);
+
+	font-weight: var(--font-weight-semibold);
+}
+
+.perfil-page__load-error p {
+	max-width: 500px;
+
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+
+	line-height: 1.6;
+}
+
+/* ==========================================
+   ANIMACIÓN
+   ========================================== */
+
+.perfil-page__card {
+	animation: perfil-card-in 0.2s ease-out;
+}
+
+@keyframes perfil-card-in {
+	from {
+		opacity: 0;
+
+		transform: translateY(5px);
+	}
+
+	to {
+		opacity: 1;
+
+		transform: translateY(0);
+	}
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET
+   ========================================== */
+
+@media (max-width: 992px) {
+	.perfil-page__layout {
+		grid-template-columns: 1fr;
+	}
+
+	/* Resumen deja de ser sticky */
+
+	.perfil-page__summary {
+		position: static;
+
+		display: grid;
+
+		grid-template-columns:
+			auto
+			minmax(0, 1fr);
+
+		align-items: center;
+
+		column-gap: var(--spacing-4);
+
+		text-align: left;
+	}
+
+	.perfil-page__avatar-wrapper {
+		grid-row: 1 / 5;
+
+		margin: 0;
+	}
+
+	.perfil-page__summary > h3 {
+		margin: 0;
+	}
+
+	.perfil-page__email {
+		margin: var(--spacing-1) 0 var(--spacing-2);
+	}
+
+	.perfil-page__summary-divider {
+		grid-column: 1 / -1;
+
+		margin: var(--spacing-4) 0;
+	}
+
+	.perfil-page__summary-item {
+		grid-column: 1 / -1;
+	}
+
+	.perfil-page__summary-item strong {
+		max-width: none;
+	}
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET PEQUEÑA
+   ========================================== */
+
+@media (max-width: 768px) {
+	.perfil-page {
+		gap: var(--spacing-4);
+	}
+
+	.perfil-page__title {
+		font-size: var(--font-size-xl);
+	}
+
+	.perfil-page__card-header {
+		padding: var(--spacing-4);
+	}
+
+	.perfil-page__form {
+		padding: var(--spacing-4);
+	}
+
+	.perfil-page__grid {
+		gap: var(--spacing-3);
+	}
+}
+
+/* ==========================================
+   RESPONSIVE - MÓVIL
+   ========================================== */
+
+@media (max-width: 576px) {
+	/* ========================================
+     RESUMEN
+     ======================================== */
+
+	.perfil-page__summary {
+		display: flex;
+		flex-direction: column;
+
+		padding: var(--spacing-5) var(--spacing-4);
+
+		text-align: center;
+	}
+
+	.perfil-page__avatar-wrapper {
+		margin-bottom: var(--spacing-3);
+	}
+
+	.perfil-page__avatar {
+		width: 82px;
+		height: 82px;
+
+		font-size: 26px;
+	}
+
+	.perfil-page__email {
+		margin-bottom: var(--spacing-3);
+	}
+
+	.perfil-page__summary-divider {
+		margin: var(--spacing-4) 0;
+	}
+
+	.perfil-page__summary-item {
+		text-align: left;
+	}
+
+	/* ========================================
+     CARDS
+     ======================================== */
+
+	.perfil-page__card {
+		border-radius: var(--radius-md);
+	}
+
+	.perfil-page__card-header {
+		padding: var(--spacing-4);
+	}
+
+	.perfil-page__card-icon {
+		width: 36px;
+		height: 36px;
+	}
+
+	.perfil-page__card-header h3 {
+		font-size: var(--font-size-base);
+	}
+
+	.perfil-page__card-header p {
+		font-size: var(--font-size-xs);
+	}
+
+	/* ========================================
+     FORMULARIO
+     ======================================== */
+
+	.perfil-page__form {
+		padding: var(--spacing-4);
+
+		gap: var(--spacing-4);
+	}
+
+	.perfil-page__grid {
+		grid-template-columns: 1fr;
+
+		gap: var(--spacing-4);
+	}
+
+	/* ========================================
+     BOTONES
+     ======================================== */
+
+	.perfil-page__form-actions {
+		flex-direction: column;
+
+		align-items: stretch;
+	}
+
+	.perfil-page__form-actions > * {
+		width: 100%;
+	}
+
+	/* ========================================
+     SOLO LECTURA
+     ======================================== */
+
+	.perfil-page__readonly {
+		padding: var(--spacing-3);
+	}
+
+	/* ========================================
+     ALERTAS
+     ======================================== */
+
+	.perfil-page__alert {
+		padding: var(--spacing-3);
+
+		font-size: var(--font-size-xs);
+	}
+}

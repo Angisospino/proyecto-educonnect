@@ -1,0 +1,180 @@
+/* ==========================================
+   DASHBOARD LAYOUT
+   ========================================== */
+
+.dashboard-layout {
+	display: flex;
+
+	width: 100%;
+	min-width: 0;
+	min-height: 100vh;
+
+	background-color: var(--background-secondary);
+}
+
+/* ==========================================
+   ÁREA PRINCIPAL
+   ========================================== */
+
+.dashboard-layout__main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+
+	min-width: 0;
+	min-height: 100vh;
+
+	margin-left: var(--sidebar-width);
+
+	transition: margin-left var(--transition-normal);
+}
+
+/* ==========================================
+   CONTENIDO
+   ========================================== */
+
+.dashboard-layout__content {
+	flex: 1;
+
+	width: 100%;
+	min-width: 0;
+
+	padding: var(--spacing-5);
+
+	background-color: var(--background-secondary);
+	overflow-x: hidden;
+}
+
+/* ==========================================
+   CONTENEDOR INTERNO
+   ========================================== */
+
+.dashboard-layout__container {
+	width: 100%;
+	max-width: 1600px;
+
+	margin: 0 auto;
+}
+
+/* ==========================================
+   FOCUS DEL CONTENIDO
+   ========================================== */
+
+.dashboard-layout__content:focus {
+	outline: none;
+}
+
+/* ==========================================
+   PANTALLAS GRANDES
+   ========================================== */
+
+@media (min-width: 1600px) {
+	.dashboard-layout__content {
+		padding: var(--spacing-6) var(--spacing-7);
+	}
+}
+
+/* ==========================================
+   TABLET / SIDEBAR MÓVIL
+   ========================================== */
+
+@media (max-width: 1024px) {
+	/*
+   * En este tamaño el Sidebar deja de
+   * ocupar espacio permanente y pasa
+   * a mostrarse sobre el contenido.
+   */
+
+	.dashboard-layout__main {
+		margin-left: 0;
+	}
+
+	.dashboard-layout__content {
+		padding: var(--spacing-4);
+	}
+}
+
+/* ==========================================
+   TABLET PEQUEÑA
+   ========================================== */
+
+@media (max-width: 768px) {
+	.dashboard-layout__content {
+		padding: var(--spacing-4);
+	}
+
+	.dashboard-layout__container {
+		max-width: 100%;
+	}
+}
+
+/* ==========================================
+   MÓVIL
+   ========================================== */
+
+@media (max-width: 576px) {
+	.dashboard-layout__content {
+		padding: var(--spacing-3);
+	}
+}
+
+/* ==========================================
+   PANTALLAS MUY PEQUEÑAS
+   ========================================== */
+
+@media (max-width: 360px) {
+	.dashboard-layout__content {
+		padding: var(--spacing-3) var(--spacing-2);
+	}
+}
+
+/* ==========================================
+   IMPRESIÓN
+   ========================================== */
+
+@media print {
+	/*
+   * Será útil posteriormente para los
+   * reportes académicos.
+   */
+
+	.dashboard-layout {
+		display: block;
+
+		min-height: auto;
+
+		background-color: #ffffff;
+	}
+
+	.dashboard-layout__main {
+		display: block;
+
+		min-height: auto;
+
+		margin-left: 0;
+	}
+
+	.dashboard-layout__content {
+		padding: 0;
+
+		overflow: visible;
+
+		background-color: #ffffff;
+	}
+
+	.dashboard-layout__container {
+		max-width: none;
+
+		margin: 0;
+	}
+}
+
+/* ==========================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.dashboard-layout__main {
+		transition: none;
+	}
+}

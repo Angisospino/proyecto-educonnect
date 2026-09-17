@@ -1,0 +1,376 @@
+/* ==========================================
+   HEADER
+   ========================================== */
+
+.header {
+	position: sticky;
+	top: 0;
+
+	z-index: var(--z-header);
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	width: 100%;
+	min-height: var(--header-height);
+
+	padding: 0 var(--spacing-5);
+
+	border-bottom: 1px solid var(--border-color);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   IZQUIERDA
+   ========================================== */
+
+.header__left {
+	display: flex;
+	align-items: center;
+
+	min-width: 0;
+
+	gap: var(--spacing-3);
+}
+
+.header__menu-button {
+	display: none;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 40px;
+	height: 40px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-md);
+
+	background-color: transparent;
+
+	color: var(--text-secondary);
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.header__menu-button:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.header__menu-button:focus-visible {
+	outline: 2px solid var(--color-primary);
+
+	outline-offset: 2px;
+}
+
+/* ==========================================
+   TÍTULO
+   ========================================== */
+
+.header__title-container {
+	min-width: 0;
+}
+
+.header__title {
+	margin: 0;
+
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: var(--font-size-xl);
+
+	font-weight: var(--font-weight-semibold);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   DERECHA
+   ========================================== */
+
+.header__right {
+	display: flex;
+	align-items: center;
+
+	gap: var(--spacing-3);
+}
+
+/* ==========================================
+   USUARIO
+   ========================================== */
+
+.header__user {
+	position: relative;
+}
+
+.header__user-button {
+	display: flex;
+	align-items: center;
+
+	gap: var(--spacing-3);
+
+	padding: 6px 10px;
+
+	border: 0;
+	border-radius: var(--radius-md);
+
+	background-color: transparent;
+
+	cursor: pointer;
+
+	transition: background-color var(--transition-fast);
+}
+
+.header__user-button:hover {
+	background-color: var(--background-secondary);
+}
+
+/* ==========================================
+   AVATAR
+   ========================================== */
+
+.header__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 40px;
+	height: 40px;
+
+	border-radius: 50%;
+
+	background-color: var(--color-primary);
+
+	color: #ffffff;
+
+	font-size: var(--font-size-sm);
+
+	font-weight: var(--font-weight-semibold);
+
+	text-transform: uppercase;
+}
+
+/* ==========================================
+   INFO USUARIO
+   ========================================== */
+
+.header__user-info {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+
+	min-width: 0;
+}
+
+.header__user-name {
+	max-width: 180px;
+
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-size: var(--font-size-sm);
+
+	font-weight: var(--font-weight-medium);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+.header__user-role {
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+}
+
+/* ==========================================
+   MENÚ DESPLEGABLE
+   ========================================== */
+
+.header__user-menu {
+	position: absolute;
+
+	top: calc(100% + 8px);
+
+	right: 0;
+
+	z-index: var(--z-dropdown);
+
+	width: 240px;
+
+	overflow: hidden;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--bg-surface);
+
+	box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================
+   INFO DEL MENÚ
+   ========================================== */
+
+.header__user-menu-info {
+	display: flex;
+	flex-direction: column;
+
+	padding: var(--spacing-4);
+
+	gap: 4px;
+}
+
+.header__user-menu-info strong {
+	overflow: hidden;
+
+	color: var(--text-primary);
+
+	font-size: var(--font-size-sm);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+.header__user-menu-info span {
+	overflow: hidden;
+
+	color: var(--text-muted);
+
+	font-size: var(--font-size-xs);
+
+	text-overflow: ellipsis;
+
+	white-space: nowrap;
+}
+
+/* ==========================================
+   DIVISOR
+   ========================================== */
+
+.header__user-menu-divider {
+	height: 1px;
+
+	background-color: var(--border-color);
+}
+
+/* ==========================================
+   ITEMS DEL MENÚ
+   ========================================== */
+
+.header__user-menu-item {
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 0;
+
+	background-color: transparent;
+
+	color: var(--text-secondary);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+
+	text-align: left;
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.header__user-menu-item:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.header__user-menu-item--danger {
+	color: var(--color-danger);
+}
+
+.header__user-menu-item--danger:hover {
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 1024px) {
+	.header {
+		padding: 0 var(--spacing-4);
+	}
+
+	.header__menu-button {
+		display: inline-flex;
+	}
+}
+
+@media (max-width: 768px) {
+	.header__title {
+		font-size: var(--font-size-lg);
+	}
+
+	.header__user-info {
+		display: none;
+	}
+
+	.header__user-button {
+		padding: 4px;
+	}
+}
+
+@media (max-width: 576px) {
+	.header {
+		padding: 0 var(--spacing-3);
+	}
+
+	.header__title {
+		max-width: 180px;
+	}
+
+	.header__user-menu {
+		position: fixed;
+
+		top: calc(var(--header-height) + 8px);
+
+		right: var(--spacing-3);
+
+		left: var(--spacing-3);
+
+		width: auto;
+	}
+}
