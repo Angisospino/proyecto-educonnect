@@ -1,0 +1,15 @@
+-- CreateTable
+CREATE TABLE `usuarios` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nombre` VARCHAR(100) NOT NULL,
+    `apellido` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(150) NOT NULL,
+    `passwordHash` VARCHAR(255) NOT NULL,
+    `rol` ENUM('ADMINISTRADOR', 'DOCENTE', 'ESTUDIANTE', 'PADRE_FAMILIA', 'DIRECTIVO') NOT NULL,
+    `estado` ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `usuarios_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
