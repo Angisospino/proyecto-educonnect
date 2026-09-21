@@ -1,0 +1,264 @@
+/* =========================================================
+   EduConnect BR
+   Archivo: variables.css
+   Descripción:
+   Variables globales de diseño para toda la aplicación.
+   ========================================================= */
+
+:root {
+	/* =========================
+     PALETA DE COLORES
+     ========================= */
+
+	/* Colores principales */
+	--color-primary: #0d6efd;
+	--color-primary-hover: #0b5ed7;
+	--color-primary-light: #eaf2ff;
+	--color-primary-dark: #084298;
+
+	--color-secondary: #43a047;
+	--color-secondary-hover: #388e3c;
+	--color-secondary-light: #e8f5e9;
+	--color-secondary-dark: #2e7d32;
+
+	/* Azul institucional oscuro */
+	--color-dark-blue: #004a7c;
+	--color-dark-blue-hover: #00385f;
+	--color-dark-blue-light: #e6f0f6;
+
+	/* Colores neutros */
+	--color-white: #ffffff;
+	--color-black: #000000;
+
+	--color-gray-50: #f8f9fa;
+	--color-gray-100: #f1f3f5;
+	--color-gray-200: #e9ecef;
+	--color-gray-300: #dee2e6;
+	--color-gray-400: #ced4da;
+	--color-gray-500: #adb5bd;
+	--color-gray-600: #6c757d;
+	--color-gray-700: #495057;
+	--color-gray-800: #343a40;
+	--color-gray-900: #212529;
+
+	/* =========================
+     COLORES SEMÁNTICOS
+     ========================= */
+
+	--color-success: #2e7d32;
+	--color-success-light: #e8f5e9;
+
+	--color-danger: #d32f2f;
+	--color-danger-light: #fdecea;
+
+	--color-warning: #f9a825;
+	--color-warning-light: #fff8e1;
+
+	--color-info: #0288d1;
+	--color-info-light: #e1f5fe;
+
+	/* =========================
+     FONDOS
+     ========================= */
+
+	--bg-body: #f5f7fb;
+	--bg-surface: #ffffff;
+	--bg-sidebar: #004a7c;
+	--bg-sidebar-active: #0d6efd;
+	--bg-header: #ffffff;
+	--bg-card: #ffffff;
+	--bg-input: #ffffff;
+	--bg-disabled: #f1f3f5;
+
+	/* Alias: varios componentes usan este naming en vez de --bg-*. */
+	--background-primary: var(--bg-surface);
+	--background-secondary: var(--bg-body);
+
+	/* =========================
+     TEXTO
+     ========================= */
+
+	--text-primary: #1f2937;
+	--text-secondary: #6b7280;
+	--text-muted: #9ca3af;
+	--text-light: #ffffff;
+	--text-link: #0d6efd;
+	--text-link-hover: #084298;
+
+	/* =========================
+     BORDES
+     ========================= */
+
+	--border-color: #e5e7eb;
+	--border-color-dark: #d1d5db;
+	--border-color-focus: #0d6efd;
+
+	--border-width: 1px;
+
+	/* =========================
+     TIPOGRAFÍA
+     ========================= */
+
+	--font-family-title: "Poppins", sans-serif;
+	--font-family-body: "Inter", sans-serif;
+
+	--font-size-xs: 0.75rem;
+	--font-size-sm: 0.875rem;
+	--font-size-md: 1rem;
+	--font-size-lg: 1.125rem;
+	--font-size-xl: 1.25rem;
+	--font-size-2xl: 1.5rem;
+	--font-size-3xl: 1.875rem;
+	--font-size-4xl: 2.25rem;
+
+	/* Alias: usado por varios componentes en vez de --font-size-md. */
+	--font-size-base: var(--font-size-md);
+
+	--font-weight-light: 300;
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	--line-height-sm: 1.25;
+	--line-height-md: 1.5;
+	--line-height-lg: 1.75;
+
+	/* =========================
+     ESPACIADOS
+     ========================= */
+
+	--spacing-1: 0.25rem;
+	--spacing-2: 0.5rem;
+	--spacing-3: 0.75rem;
+	--spacing-4: 1rem;
+	--spacing-5: 1.25rem;
+	--spacing-6: 1.5rem;
+	/* Alias: la escala salta del 6 al 8; usado por DashboardLayout.css. */
+	--spacing-7: var(--spacing-8);
+	--spacing-8: 2rem;
+	--spacing-10: 2.5rem;
+	--spacing-12: 3rem;
+	--spacing-16: 4rem;
+
+	/* =========================
+     RADIOS
+     ========================= */
+
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-xl: 1rem;
+	--radius-2xl: 1.5rem;
+	--radius-full: 9999px;
+
+	/* =========================
+     SOMBRAS
+     ========================= */
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+
+	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+	--shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.12);
+
+	/* =========================
+     INPUTS Y FORMULARIOS
+     ========================= */
+
+	--input-height: 44px;
+	--input-padding-x: 0.875rem;
+	--input-padding-y: 0.625rem;
+
+	--input-border-color: #d1d5db;
+	--input-border-focus: #0d6efd;
+	--input-border-error: #d32f2f;
+
+	/* =========================
+     BOTONES
+     ========================= */
+
+	--button-height-sm: 36px;
+	--button-height-md: 42px;
+	--button-height-lg: 48px;
+
+	--button-padding-x: 1rem;
+	--button-padding-y: 0.625rem;
+
+	/* =========================
+     SIDEBAR
+     ========================= */
+
+	--sidebar-width: 250px;
+	--sidebar-collapsed-width: 72px;
+
+	--sidebar-bg: #004a7c;
+	--sidebar-text: #ffffff;
+	--sidebar-text-muted: #cfe2f3;
+	--sidebar-item-hover: rgba(255, 255, 255, 0.1);
+	--sidebar-item-active: #0d6efd;
+
+	/* =========================
+     HEADER
+     ========================= */
+
+	--header-height: 64px;
+	--header-bg: #ffffff;
+
+	/* =========================
+     CARDS
+     ========================= */
+
+	--card-bg: #ffffff;
+	--card-padding: 1.25rem;
+	--card-radius: 0.75rem;
+	--card-border: #e5e7eb;
+	--card-shadow: var(--shadow-sm);
+
+	/* =========================
+     TABLAS
+     ========================= */
+
+	--table-header-bg: #f8fafc;
+	--table-row-hover: #f8fafc;
+	--table-border: #e5e7eb;
+
+	/* =========================
+     TRANSICIONES
+     ========================= */
+
+	--transition-fast: 150ms ease-in-out;
+	--transition-normal: 250ms ease-in-out;
+	--transition-slow: 350ms ease-in-out;
+
+	/* =========================
+     Z-INDEX
+     ========================= */
+
+	--z-dropdown: 1000;
+	--z-sticky: 1020;
+	--z-fixed: 1030;
+	--z-modal-backdrop: 1040;
+	--z-modal: 1050;
+	--z-tooltip: 1060;
+
+	--z-header: var(--z-sticky);
+	--z-sidebar: var(--z-fixed);
+
+	/* =========================
+     BREAKPOINTS DE REFERENCIA
+     Nota:
+     Las variables CSS no pueden
+     usarse directamente en media queries
+     de forma estándar, pero se dejan
+     documentadas como referencia.
+     ========================= */
+
+	--breakpoint-sm: 576px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 992px;
+	--breakpoint-xl: 1200px;
+	--breakpoint-2xl: 1400px;
+}

@@ -1,0 +1,246 @@
+/* ==========================================
+   FORMULARIO DE USUARIO
+   ========================================== */
+
+.usuario-form {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	gap: var(--spacing-6);
+}
+
+/* ==========================================
+   SECCIONES
+   ========================================== */
+
+.usuario-form__section {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-4);
+}
+
+/* ==========================================
+   CABECERA DE SECCIÓN
+   ========================================== */
+
+.usuario-form__section-header {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-1);
+
+	padding-bottom: var(--spacing-3);
+
+	border-bottom: 1px solid var(--border-color);
+}
+
+.usuario-form__section-header h3 {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-base);
+	font-weight: var(--font-weight-semibold);
+
+	line-height: 1.4;
+}
+
+.usuario-form__section-header p {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+
+	line-height: 1.5;
+}
+
+/* ==========================================
+   GRID DEL FORMULARIO
+   ========================================== */
+
+.usuario-form__grid {
+	display: grid;
+
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+
+	align-items: start;
+
+	gap: var(--spacing-4);
+}
+
+/* ==========================================
+   ALERTA DE ERROR API
+   ========================================== */
+
+.usuario-form__alert {
+	display: flex;
+	align-items: flex-start;
+
+	width: 100%;
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid rgba(220, 53, 69, 0.2);
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+
+	line-height: 1.5;
+}
+
+/* ==========================================
+   BOTÓN MOSTRAR / OCULTAR CONTRASEÑA
+   ========================================== */
+
+.usuario-form__password-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 34px;
+	height: 34px;
+
+	flex-shrink: 0;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-sm);
+
+	background-color: transparent;
+
+	color: var(--text-muted);
+
+	cursor: pointer;
+
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.usuario-form__password-button:hover {
+	background-color: var(--background-secondary);
+
+	color: var(--color-primary);
+}
+
+.usuario-form__password-button:focus-visible {
+	outline: 2px solid var(--color-primary);
+
+	outline-offset: 1px;
+}
+
+/* ==========================================
+   ESTADO DISABLED
+   ========================================== */
+
+.usuario-form__password-button:disabled {
+	opacity: 0.5;
+
+	cursor: not-allowed;
+
+	pointer-events: none;
+}
+
+/* ==========================================
+   SEPARACIÓN ENTRE BLOQUES
+   ========================================== */
+
+.usuario-form__section + .usuario-form__section {
+	padding-top: var(--spacing-1);
+}
+
+/* ==========================================
+   ANIMACIÓN DE ENTRADA
+   ========================================== */
+
+.usuario-form__section {
+	animation: usuario-form-fade-in 0.2s ease-out;
+}
+
+@keyframes usuario-form-fade-in {
+	from {
+		opacity: 0;
+
+		transform: translateY(4px);
+	}
+
+	to {
+		opacity: 1;
+
+		transform: translateY(0);
+	}
+}
+
+/* ==========================================
+   TABLET
+   ========================================== */
+
+@media (max-width: 768px) {
+	.usuario-form {
+		gap: var(--spacing-5);
+	}
+
+	.usuario-form__grid {
+		gap: var(--spacing-3);
+	}
+}
+
+/* ==========================================
+   MÓVIL
+   ========================================== */
+
+@media (max-width: 576px) {
+	.usuario-form {
+		gap: var(--spacing-5);
+	}
+
+	/* UNA COLUMNA */
+
+	.usuario-form__grid {
+		grid-template-columns: 1fr;
+
+		gap: var(--spacing-4);
+	}
+
+	/* SECCIONES */
+
+	.usuario-form__section {
+		gap: var(--spacing-3);
+	}
+
+	/* TÍTULOS */
+
+	.usuario-form__section-header {
+		padding-bottom: var(--spacing-2);
+	}
+
+	.usuario-form__section-header h3 {
+		font-size: var(--font-size-base);
+	}
+
+	.usuario-form__section-header p {
+		font-size: var(--font-size-xs);
+	}
+
+	/* ALERTA */
+
+	.usuario-form__alert {
+		padding: var(--spacing-3);
+
+		font-size: var(--font-size-xs);
+	}
+}

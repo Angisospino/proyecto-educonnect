@@ -1,0 +1,186 @@
+.input-field {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	gap: var(--spacing-2);
+}
+
+.input-field__label {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-medium);
+}
+
+.input-field__required {
+	color: var(--color-danger);
+}
+
+.input-field__control {
+	position: relative;
+
+	display: flex;
+	align-items: center;
+
+	width: 100%;
+}
+
+/* ==========================================
+   INPUT
+   ========================================== */
+
+.input {
+	width: 100%;
+	min-height: var(--input-height);
+
+	padding: 0 var(--spacing-3);
+
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+
+	background-color: var(--background-primary);
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+
+	outline: none;
+
+	transition:
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		background-color var(--transition-fast);
+}
+
+.input::placeholder {
+	color: var(--text-muted);
+}
+
+.input:hover:not(:disabled):not(:read-only) {
+	border-color: var(--color-primary);
+}
+
+.input:focus {
+	border-color: var(--color-primary);
+
+	box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* ==========================================
+   ICONOS
+   ========================================== */
+
+.input--with-left-icon {
+	padding-left: 42px;
+}
+
+.input--with-right-icon {
+	padding-right: 42px;
+}
+
+.input-field__left-icon {
+	position: absolute;
+	left: var(--spacing-3);
+	z-index: 1;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	color: var(--text-secondary);
+
+	pointer-events: none;
+}
+
+.input-field__password-button {
+	position: absolute;
+	right: var(--spacing-2);
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 32px;
+	height: 32px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-sm);
+
+	background: transparent;
+	color: var(--text-secondary);
+
+	cursor: pointer;
+}
+
+.input-field__password-button:hover:not(:disabled) {
+	background-color: var(--background-secondary);
+	color: var(--color-primary);
+}
+
+.input-field__password-button:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 1px;
+}
+
+/* ==========================================
+   ERROR
+   ========================================== */
+
+.input--error {
+	border-color: var(--color-danger);
+}
+
+.input--error:focus {
+	border-color: var(--color-danger);
+
+	box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+/* ==========================================
+   MENSAJES
+   ========================================== */
+
+.input-field__message {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+	line-height: 1.4;
+}
+
+.input-field__message--error {
+	color: var(--color-danger);
+}
+
+/* ==========================================
+   DISABLED / READONLY
+   ========================================== */
+
+.input:disabled {
+	background-color: var(--background-secondary);
+	opacity: 0.7;
+
+	cursor: not-allowed;
+}
+
+.input:read-only {
+	background-color: var(--background-secondary);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 576px) {
+	.input {
+		font-size: 16px;
+	}
+}

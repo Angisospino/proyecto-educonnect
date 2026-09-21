@@ -1,0 +1,398 @@
+/* =========================================================
+   EduConnect BR
+   Archivo: responsive.css
+
+   Descripción:
+   Reglas responsivas globales para adaptar la aplicación
+   a tablets, celulares y pantallas pequeñas.
+
+   Breakpoints de referencia:
+   - 1200px
+   - 992px
+   - 768px
+   - 576px
+   - 400px
+   ========================================================= */
+
+/* =========================================================
+   PANTALLAS GRANDES
+   Menores a 1200px
+   ========================================================= */
+
+@media (max-width: 1200px) {
+	.container {
+		max-width: 100%;
+		padding-inline: var(--spacing-5);
+	}
+
+	.page-content {
+		padding: var(--spacing-5);
+	}
+}
+
+/* =========================================================
+   TABLETS HORIZONTALES / LAPTOP PEQUEÑO
+   Menores a 992px
+   ========================================================= */
+
+@media (max-width: 992px) {
+	/* =========================
+     ESTRUCTURA GENERAL
+     ========================= */
+
+	.container {
+		padding-inline: var(--spacing-4);
+	}
+
+	.page-content {
+		padding: var(--spacing-4);
+	}
+
+	/* =========================
+     ENCABEZADO DE PÁGINA
+     ========================= */
+
+	.page-header {
+		align-items: flex-start;
+		gap: var(--spacing-3);
+	}
+
+	.page-title {
+		font-size: var(--font-size-xl);
+	}
+
+	/* =========================
+     TABLAS
+     ========================= */
+
+	.table-responsive {
+		overflow-x: auto;
+	}
+
+	table {
+		min-width: 700px;
+	}
+}
+
+/* =========================================================
+   TABLETS VERTICALES / MÓVILES GRANDES
+   Menores a 768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+	/* =========================
+     TIPOGRAFÍA
+     ========================= */
+
+	h1 {
+		font-size: var(--font-size-3xl);
+	}
+
+	h2 {
+		font-size: var(--font-size-2xl);
+	}
+
+	h3 {
+		font-size: var(--font-size-xl);
+	}
+
+	/* =========================
+     CONTENEDORES
+     ========================= */
+
+	.container {
+		padding-inline: var(--spacing-4);
+	}
+
+	.page-content {
+		padding: var(--spacing-4);
+	}
+
+	/* =========================
+     ENCABEZADO
+     ========================= */
+
+	.page-header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.page-header__actions {
+		width: 100%;
+	}
+
+	.page-header__actions button {
+		width: 100%;
+	}
+
+	/* =========================
+     CARDS
+     ========================= */
+
+	.card {
+		padding: var(--spacing-4);
+	}
+
+	/* =========================
+     TABLAS
+     ========================= */
+
+	.table-responsive {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	table {
+		min-width: 650px;
+	}
+
+	/* =========================
+     BÚSQUEDA
+     ========================= */
+
+	.search-bar {
+		width: 100%;
+	}
+
+	/* =========================
+     PAGINACIÓN
+     ========================= */
+
+	.pagination {
+		flex-wrap: wrap;
+		justify-content: center;
+
+		gap: var(--spacing-2);
+	}
+}
+
+/* =========================================================
+   MÓVILES
+   Menores a 576px
+   ========================================================= */
+
+@media (max-width: 576px) {
+	/* =========================
+     CONTENEDORES
+     ========================= */
+
+	.container {
+		padding-inline: var(--spacing-3);
+	}
+
+	.page-content {
+		padding: var(--spacing-3);
+	}
+
+	/* =========================
+     TIPOGRAFÍA
+     ========================= */
+
+	h1 {
+		font-size: var(--font-size-2xl);
+	}
+
+	h2 {
+		font-size: var(--font-size-xl);
+	}
+
+	h3 {
+		font-size: var(--font-size-lg);
+	}
+
+	p {
+		font-size: var(--font-size-sm);
+	}
+
+	.page-title {
+		font-size: var(--font-size-xl);
+	}
+
+	.page-description {
+		font-size: var(--font-size-xs);
+	}
+
+	/* =========================
+     HEADER
+     ========================= */
+
+	.header {
+		min-height: 56px;
+		padding-inline: var(--spacing-3);
+	}
+
+	.header__user-name {
+		display: none;
+	}
+
+	/* =========================
+     CARDS
+     ========================= */
+
+	.card {
+		padding: var(--spacing-3);
+	}
+
+	/* =========================
+     INPUTS
+     ========================= */
+
+	input,
+	select,
+	textarea {
+		font-size: 16px;
+	}
+
+	/* =========================
+     FORMULARIOS
+     ========================= */
+
+	.form-actions {
+		flex-direction: column;
+	}
+
+	.form-actions button {
+		width: 100%;
+	}
+
+	/* =========================
+     TABLAS
+     ========================= */
+
+	table {
+		min-width: 600px;
+	}
+
+	th,
+	td {
+		padding: var(--spacing-2) var(--spacing-3);
+		font-size: var(--font-size-xs);
+	}
+
+	/* =========================
+     ESTADOS VACÍOS
+     ========================= */
+
+	.empty-message,
+	.loading-container {
+		min-height: 150px;
+	}
+}
+
+/* =========================================================
+   MÓVILES PEQUEÑOS
+   Menores a 400px
+   ========================================================= */
+
+@media (max-width: 400px) {
+	/* =========================
+     CONTENEDOR
+     ========================= */
+
+	.container {
+		padding-inline: var(--spacing-2);
+	}
+
+	.page-content {
+		padding: var(--spacing-2);
+	}
+
+	/* =========================
+     TIPOGRAFÍA
+     ========================= */
+
+	h1 {
+		font-size: var(--font-size-xl);
+	}
+
+	h2 {
+		font-size: var(--font-size-lg);
+	}
+
+	.page-title {
+		font-size: var(--font-size-lg);
+	}
+
+	/* =========================
+     HEADER
+     ========================= */
+
+	.header {
+		padding-inline: var(--spacing-2);
+	}
+
+	/* =========================
+     CARDS
+     ========================= */
+
+	.card {
+		padding: var(--spacing-3);
+	}
+
+	/* =========================
+     BOTONES
+     ========================= */
+
+	button {
+		font-size: var(--font-size-sm);
+	}
+
+	/* =========================
+     TABLAS
+     ========================= */
+
+	table {
+		min-width: 560px;
+	}
+}
+
+/* =========================================================
+   ORIENTACIÓN HORIZONTAL EN MÓVILES
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+	.sidebar {
+		overflow-y: auto;
+	}
+
+	.modal {
+		max-height: 90vh;
+		overflow-y: auto;
+	}
+
+	.page-content {
+		padding-block: var(--spacing-3);
+	}
+}
+
+/* =========================================================
+   PANTALLAS TÁCTILES
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+	button,
+	a,
+	input,
+	select {
+		min-height: 44px;
+	}
+
+	.pagination button {
+		min-width: 44px;
+		min-height: 44px;
+	}
+}
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+	.sidebar,
+	.sidebar-overlay,
+	.card,
+	button,
+	a {
+		transition: none;
+	}
+}

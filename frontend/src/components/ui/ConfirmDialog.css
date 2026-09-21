@@ -1,0 +1,130 @@
+/* ==========================================
+   CONTENEDOR
+   ========================================== */
+
+.confirm-dialog {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	gap: var(--spacing-4);
+
+	text-align: center;
+}
+
+/* ==========================================
+   ICONO
+   ========================================== */
+
+.confirm-dialog__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 64px;
+	height: 64px;
+
+	border-radius: 50%;
+}
+
+/* WARNING */
+
+.confirm-dialog__icon--warning {
+	background-color: rgba(255, 193, 7, 0.12);
+
+	color: var(--color-warning);
+}
+
+/* DANGER */
+
+.confirm-dialog__icon--danger {
+	background-color: rgba(220, 53, 69, 0.12);
+
+	color: var(--color-danger);
+}
+
+/* SUCCESS */
+
+.confirm-dialog__icon--success {
+	background-color: rgba(25, 135, 84, 0.12);
+
+	color: var(--color-success);
+}
+
+/* INFO */
+
+.confirm-dialog__icon--info {
+	background-color: rgba(13, 110, 253, 0.12);
+
+	color: var(--color-primary);
+}
+
+/* QUESTION */
+
+.confirm-dialog__icon--question {
+	background-color: rgba(13, 110, 253, 0.12);
+
+	color: var(--color-primary);
+}
+
+/* ==========================================
+   CONTENIDO
+   ========================================== */
+
+.confirm-dialog__content {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-2);
+}
+
+.confirm-dialog__title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+
+	font-size: var(--font-size-lg);
+
+	font-weight: var(--font-weight-semibold);
+}
+
+.confirm-dialog__message {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+
+	line-height: 1.6;
+}
+
+/* ==========================================
+   ACCIONES
+   ========================================== */
+
+.confirm-dialog__actions {
+	display: flex;
+	justify-content: center;
+
+	width: 100%;
+
+	gap: var(--spacing-3);
+
+	margin-top: var(--spacing-2);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 576px) {
+	.confirm-dialog__actions {
+		flex-direction: column-reverse;
+	}
+
+	.confirm-dialog__actions > * {
+		width: 100%;
+	}
+}
