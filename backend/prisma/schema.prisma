@@ -40,6 +40,8 @@ model Usuario {
   estudiantePerfil EstudiantePerfil?
   notas             Nota[]
   asistencias       Asistencia[]
+
+  @@map("usuarios")
 }
 
 model Curso {
@@ -96,4 +98,6 @@ model Asistencia {
   estudiante EstudiantePerfil @relation(fields: [estudianteId], references: [id])
   curso      Curso             @relation(fields: [cursoId], references: [id])
   docente    Usuario           @relation(fields: [docenteId], references: [id])
+
+  @@index([cursoId, fecha])
 }
