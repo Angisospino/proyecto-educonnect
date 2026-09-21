@@ -19,6 +19,12 @@ enum EstadoUsuario {
   INACTIVO
 }
 
+enum EstadoAsistencia {
+  PRESENTE
+  AUSENTE
+  TARDANZA
+}
+
 model Usuario {
   id           Int           @id @default(autoincrement())
   nombre       String        @db.VarChar(100)
@@ -30,5 +36,64 @@ model Usuario {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  @@map("usuarios")
+  // Relaciones
+  estudiantePerfil EstudiantePerfil?
+  notas             Nota[]
+  asistencias       Asistencia[]
+}
+
+model Curso {
+  id       Int    @id @default(autoincrement())
+  nombre   String @db.VarChar(50)
+  jornada  String? @db.VarChar(20)
+
+  estudiantes EstudiantePerfil[]
+  asistencias Asistencia[]
+}
+
+model Asignatura {
+  id     Int    @id @default(autoincrement())
+  nombre String @db.VarChar(80)
+
+  notas Nota[]
+}
+
+model EstudiantePerfil {
+  id              Int    @id @default(autoincrement())
+  usuarioId       Int    @unique
+  cursoId         Int
+  codigoEstudiantil String @unique @db.VarChar(30)
+
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  curso       Curso   @relation(fields: [cursoId], references: [id])
+  notas       Nota[]
+  asistencias Asistencia[]
+}
+
+model Nota {
+  id            Int      @id @default(autoincrement())
+  estudianteId  Int
+  asignaturaId  Int
+  docenteId     Int
+  periodo       String   @db.VarChar(10)
+  valor         Decimal  @db.Decimal(3, 1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  estudiante EstudiantePerfil @relation(fields: [estudianteId], references: [id])
+  asignatura Asignatura       @relation(fields: [asignaturaId], references: [id])
+  docente    Usuario          @relation(fields: [docenteId], references: [id])
+}
+
+model Asistencia {
+  id           Int              @id @default(autoincrement())
+  estudianteId Int
+  cursoId      Int
+  docenteId    Int
+  fecha        DateTime         @db.Date
+  estado       EstadoAsistencia
+
+  estudiante EstudiantePerfil @relation(fields: [estudianteId], references: [id])
+  curso      Curso             @relation(fields: [cursoId], references: [id])
+  docente    Usuario           @relation(fields: [docenteId], references: [id])
 }
