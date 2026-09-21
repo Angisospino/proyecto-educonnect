@@ -1,21 +1,9 @@
 import "dotenv/config";
-import { PrismaClient } from '@prisma/client';
+import prisma from "../src/config/prisma.js";
 
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { hashPassword } from "../src/utils/bcrypt.util.js";
 
-const adapter = new PrismaMariaDb({
-	host: process.env.DB_HOST,
-	port: Number(process.env.DB_PORT || 3306),
-	user: process.env.DB_USER,
-	password: process.env.DB_PASSWORD,
-	database: process.env.DB_NAME,
-	connectionLimit: 5,
-});
 
-const prisma = new PrismaClient({
-	adapter,
-});
 
 async function main() {
 	console.log("🌱 Iniciando seed de EduConnect BR...");
