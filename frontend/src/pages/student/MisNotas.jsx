@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./MisNotas.css";
 
 function MisNotas() {
   const [periodo, setPeriodo] = useState("1 Periodo - 2026");
@@ -83,7 +84,7 @@ function MisNotas() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content mis-notas-page">
 
       {/* ENCABEZADO */}
       <div className="page-top">

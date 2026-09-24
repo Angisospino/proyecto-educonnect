@@ -1,0 +1,614 @@
+/* =========================
+   ASISTENCIA
+========================= */
+
+.asistencia-page {
+  min-height: 100vh;
+  padding: var(--spacing-8) var(--spacing-8);
+  background: var(--bg-body);
+}
+
+.asistencia-page .page-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.asistencia-page .page-top h1 {
+  font-size: 26px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.asistencia-page .page-top p {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.asistencia-page .student-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.asistencia-page .student-info strong {
+  display: block;
+  font-size: 12px;
+}
+
+.asistencia-page .student-info small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.asistencia-page .avatar {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-success)
+  );
+
+  color: var(--text-light);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+.asistencia-page .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.asistencia-page .filter-group label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.asistencia-page .filter-group select {
+  width: 190px;
+  height: 40px;
+
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+
+  background: var(--bg-surface);
+
+  color: var(--text-primary);
+
+  padding: 0 var(--spacing-3);
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+.asistencia-page .filter-group select:focus {
+  border-color: var(--color-primary);
+}
+
+.asistencia-page .download-button {
+  border: none;
+
+  background: var(--color-primary);
+
+  color: var(--text-light);
+
+  border-radius: var(--radius-sm);
+
+  padding: var(--spacing-3) var(--spacing-4);
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.asistencia-page .download-button:hover {
+  background: var(--color-primary-hover);
+}
+
+.asistencia-page .table-container {
+  overflow-x: auto;
+}
+
+
+.attendance-filter {
+  background: var(--card-bg);
+
+  border-radius: var(--radius-xl);
+
+  padding: var(--spacing-5) var(--spacing-6);
+
+  margin-bottom: var(--spacing-5);
+
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* RESUMEN */
+
+.attendance-summary {
+  display: grid;
+
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+
+  gap: var(--spacing-5);
+
+  margin-bottom: var(--spacing-6);
+}
+
+
+/* TARJETA PRINCIPAL */
+
+.attendance-main-card {
+  background: linear-gradient(
+    110deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+
+  border-radius: var(--radius-xl);
+
+  padding: var(--spacing-6);
+
+  color: var(--text-light);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--spacing-5);
+}
+
+
+/* CÍRCULO */
+
+.attendance-circle {
+  width: 100px;
+  height: 100px;
+
+  border-radius: 50%;
+
+  border: 8px solid rgba(255, 255, 255, 0.22);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.attendance-circle div {
+  text-align: center;
+}
+
+.attendance-circle strong {
+  display: block;
+
+  font-size: 24px;
+}
+
+.attendance-circle span {
+  font-size: 9px;
+
+  color: var(--color-primary-light);
+}
+
+
+/* INFORMACIÓN */
+
+.attendance-main-info {
+  flex: 1;
+}
+
+.attendance-main-info h2 {
+  font-size: 16px;
+
+  margin-bottom: var(--spacing-2);
+}
+
+.attendance-main-info p {
+  font-size: 10px;
+
+  color: var(--color-primary-light);
+
+  line-height: 1.5;
+
+  margin-bottom: var(--spacing-3);
+}
+
+
+/* BARRA */
+
+.attendance-progress {
+  height: 7px;
+
+  background: rgba(255, 255, 255, 0.2);
+
+  border-radius: var(--radius-full);
+
+  overflow: hidden;
+}
+
+.attendance-progress-bar {
+  height: 100%;
+
+  background: var(--color-success);
+
+  border-radius: var(--radius-full);
+}
+
+
+/* ESTADÍSTICAS */
+
+.attendance-stat {
+  background: var(--card-bg);
+
+  border-radius: var(--radius-xl);
+
+  padding: var(--spacing-5);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--spacing-4);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.attendance-stat-icon {
+  width: 45px;
+  height: 45px;
+
+  border-radius: var(--radius-lg);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 18px;
+
+  font-weight: bold;
+}
+
+.present-icon {
+  background: var(--color-success-light);
+
+  color: var(--color-success);
+}
+
+.absent-icon {
+  background: var(--color-danger-light);
+
+  color: var(--color-danger);
+}
+
+.late-icon {
+  background: var(--color-warning-light);
+
+  color: var(--color-warning);
+}
+
+.attendance-stat span {
+  display: block;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+
+  margin-bottom: var(--spacing-2);
+}
+
+.attendance-stat strong {
+  font-size: 24px;
+
+  color: var(--text-primary);
+}
+
+
+/* TARJETA DE REGISTROS */
+
+.attendance-card {
+  background: var(--card-bg);
+
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+}
+
+.attendance-card-header {
+  padding: var(--spacing-6);
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-card-header h2 {
+  font-size: 16px;
+
+  color: var(--text-primary);
+
+  margin-bottom: var(--spacing-2);
+}
+
+.attendance-card-header p {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+}
+
+
+/* TABLA */
+
+.attendance-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.attendance-table thead {
+  background: var(--table-header-bg);
+}
+
+.attendance-table th {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+
+  font-weight: bold;
+
+  text-align: left;
+
+  padding: var(--spacing-4) var(--spacing-5);
+
+  white-space: nowrap;
+}
+
+.attendance-table td {
+  padding: var(--spacing-4) var(--spacing-5);
+
+  border-top: 1px solid var(--border-color);
+
+  font-size: 11px;
+
+  color: var(--text-primary);
+}
+
+.attendance-day {
+  color: var(--text-secondary) !important;
+}
+
+.attendance-time {
+  color: var(--text-secondary) !important;
+}
+
+
+/* ASIGNATURA */
+
+.attendance-subject {
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--spacing-3);
+}
+
+.attendance-subject-icon {
+  width: 32px;
+  height: 32px;
+
+  border-radius: var(--radius-md);
+
+  background: var(--color-primary-light);
+
+  color: var(--color-primary);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+.attendance-subject strong {
+  color: var(--text-primary);
+
+  font-size: 11px;
+}
+
+
+/* ESTADOS */
+
+.attendance-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  border-radius: var(--radius-sm);
+
+  padding: 6px 9px;
+
+  font-size: 10px;
+
+  font-weight: bold;
+}
+
+.status-present {
+  background: var(--color-success-light);
+
+  color: var(--color-success);
+}
+
+.status-absent {
+  background: var(--color-danger-light);
+
+  color: var(--color-danger);
+}
+
+.status-late {
+  background: var(--color-warning-light);
+
+  color: var(--color-warning);
+}
+
+
+/* PIE */
+
+.attendance-footer {
+  border-top: 1px solid var(--border-color);
+
+  padding: var(--spacing-4) var(--spacing-5);
+
+  display: flex;
+
+  justify-content: space-between;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+}
+
+.attendance-footer strong {
+  color: var(--text-primary);
+}
+
+
+/* INFORMACIÓN */
+
+.attendance-info-box {
+  margin-top: var(--spacing-5);
+
+  background: var(--color-primary-light);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: var(--radius-lg);
+
+  padding: var(--spacing-4) var(--spacing-5);
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: var(--spacing-3);
+}
+
+.info-box-icon {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: var(--color-primary);
+
+  color: var(--text-light);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-weight: bold;
+
+  flex-shrink: 0;
+}
+
+.attendance-info-box strong {
+  display: block;
+
+  color: var(--color-primary-dark);
+
+  font-size: 12px;
+
+  margin-bottom: var(--spacing-2);
+}
+
+.attendance-info-box p {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+
+  .attendance-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .attendance-main-card {
+    grid-column: span 2;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .asistencia-page {
+    padding: var(--spacing-5);
+  }
+
+  .asistencia-page .page-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+
+  .attendance-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-main-card {
+    grid-column: span 1;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .attendance-card-header {
+    gap: var(--spacing-4);
+
+    align-items: flex-start;
+  }
+
+  .attendance-footer {
+    flex-direction: column;
+
+    gap: var(--spacing-2);
+  }
+
+}

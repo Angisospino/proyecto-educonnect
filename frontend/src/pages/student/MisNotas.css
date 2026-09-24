@@ -1,0 +1,457 @@
+/* =========================
+   MIS NOTAS
+========================= */
+
+.mis-notas-page {
+  min-height: 100vh;
+  padding: var(--spacing-8) var(--spacing-8);
+  background: var(--bg-body);
+}
+
+.mis-notas-page .page-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.mis-notas-page .page-top h1 {
+  font-size: 26px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.mis-notas-page .page-top p {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.mis-notas-page .student-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.mis-notas-page .student-info strong {
+  display: block;
+  font-size: 12px;
+}
+
+.mis-notas-page .student-info small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.mis-notas-page .avatar {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-success)
+  );
+
+  color: var(--text-light);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+
+/* FILTROS */
+
+.notes-filters {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-5) var(--spacing-6);
+
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-5);
+
+  box-shadow: var(--shadow-sm);
+
+  margin-bottom: var(--spacing-5);
+}
+
+.mis-notas-page .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.mis-notas-page .filter-group label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.mis-notas-page .filter-group select {
+  width: 190px;
+  height: 40px;
+
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+
+  background: var(--bg-surface);
+
+  color: var(--text-primary);
+
+  padding: 0 var(--spacing-3);
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+.mis-notas-page .filter-group select:focus {
+  border-color: var(--color-primary);
+}
+
+
+/* RESUMEN */
+
+.notes-summary {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--spacing-5);
+  margin-bottom: var(--spacing-6);
+}
+
+.average-card {
+  background: linear-gradient(
+    110deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+
+  color: var(--text-light);
+
+  border-radius: var(--radius-xl);
+
+  padding: var(--spacing-5);
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.average-icon {
+  width: 48px;
+  height: 48px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  border-radius: var(--radius-lg);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+}
+
+.average-card span {
+  display: block;
+  color: var(--color-primary-light);
+  font-size: 11px;
+}
+
+.average-card strong {
+  display: block;
+  font-size: 30px;
+  margin: 2px 0;
+}
+
+.average-card small {
+  color: var(--color-primary-light);
+  font-size: 9px;
+}
+
+.summary-item {
+  background: var(--card-bg);
+
+  border-radius: var(--radius-xl);
+
+  padding: var(--spacing-5);
+
+  box-shadow: var(--shadow-sm);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary-item span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-bottom: var(--spacing-2);
+}
+
+.summary-item strong {
+  color: var(--text-primary);
+  font-size: 24px;
+}
+
+.summary-item .approved {
+  color: var(--color-success);
+}
+
+.summary-item .best-grade {
+  color: var(--color-primary);
+}
+
+
+/* TABLA */
+
+.notes-card {
+  background: var(--card-bg);
+
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
+}
+
+.notes-card-header {
+  padding: var(--spacing-6);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.notes-card-header h2 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.notes-card-header p {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.mis-notas-page .download-button {
+  border: none;
+
+  background: var(--color-primary);
+
+  color: var(--text-light);
+
+  border-radius: var(--radius-sm);
+
+  padding: var(--spacing-3) var(--spacing-4);
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.mis-notas-page .download-button:hover {
+  background: var(--color-primary-hover);
+}
+
+
+/* TABLA */
+
+.mis-notas-page .table-container {
+  overflow-x: auto;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table thead {
+  background: var(--table-header-bg);
+}
+
+.grades-table th {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+
+  font-weight: bold;
+
+  text-align: left;
+
+  padding: var(--spacing-4) var(--spacing-5);
+
+  white-space: nowrap;
+}
+
+.grades-table td {
+  padding: var(--spacing-4) var(--spacing-5);
+
+  border-top: 1px solid var(--border-color);
+
+  font-size: 11px;
+
+  color: var(--text-primary);
+}
+
+.subject-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.subject-cell strong {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+.subject-icon {
+  width: 32px;
+  height: 32px;
+
+  border-radius: var(--radius-md);
+
+  background: var(--color-primary-light);
+
+  color: var(--color-primary);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+.teacher {
+  color: var(--text-secondary) !important;
+}
+
+
+/* NOTAS */
+
+.grade {
+  display: inline-flex;
+
+  min-width: 38px;
+  height: 27px;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-sm);
+
+  font-size: 11px;
+
+  font-weight: bold;
+}
+
+.nota-excelente {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.nota-buena {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.nota-baja {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.average-grade {
+  display: inline-flex;
+
+  min-width: 42px;
+  height: 29px;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-sm);
+
+  background: var(--color-primary);
+
+  color: var(--text-light);
+
+  font-size: 11px;
+
+  font-weight: bold;
+}
+
+
+/* PIE DE TABLA */
+
+.table-footer {
+  border-top: 1px solid var(--border-color);
+
+  padding: var(--spacing-4) var(--spacing-5);
+
+  display: flex;
+  justify-content: space-between;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+}
+
+.table-footer strong {
+  color: var(--text-primary);
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+
+  .notes-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .mis-notas-page {
+    padding: var(--spacing-5);
+  }
+
+  .mis-notas-page .page-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+
+  .notes-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group select {
+    width: 100%;
+  }
+
+  .notes-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-card-header {
+    gap: var(--spacing-4);
+    align-items: flex-start;
+  }
+
+  .table-footer {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+}

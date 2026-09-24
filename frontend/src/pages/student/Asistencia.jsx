@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Asistencia.css";
 
 function Asistencia() {
   const [periodo, setPeriodo] = useState("1 Periodo - 2026");
@@ -85,7 +86,7 @@ function Asistencia() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content asistencia-page">
 
       {/* ENCABEZADO */}
 

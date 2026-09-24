@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Mensajes.css";
 
 function Mensajes() {
   const contactos = [
@@ -97,7 +98,7 @@ function Mensajes() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content mensajes-page">
       <div className="page-top">
         <div>
           <h1>Mensajes</h1>
