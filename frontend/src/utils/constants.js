@@ -57,6 +57,7 @@ export const ROUTES = Object.freeze({
 	GRADES: "/notas",
 	ATTENDANCE: "/asistencia",
 	COMMUNICATIONS: "/comunicados",
+	MESSAGES: "/mensajes",
 	NOTIFICATIONS: "/notificaciones",
 	REPORTS: "/reportes",
 	SETTINGS: "/configuracion",
