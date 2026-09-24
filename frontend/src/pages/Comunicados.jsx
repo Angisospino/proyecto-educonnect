@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./Comunicados.css";
 
 function Comunicados() {
   const [categoria, setCategoria] = useState("Todos");
@@ -95,7 +96,7 @@ function Comunicados() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content comunicados-page">
 
       {/* ENCABEZADO */}
 
