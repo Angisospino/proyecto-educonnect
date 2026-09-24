@@ -13,6 +13,7 @@ import Login from "../pages/auth/Login.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Perfil from "../pages/profile/Perfil.jsx";
 import Usuarios from "../pages/admin/usuarios/Usuarios.jsx";
+import MisNotas from "../pages/notas/MisNotas.jsx";
 
 /* Constantes */
 import { ROUTES, ROLES } from "../utils/constants.js";
@@ -55,6 +56,15 @@ const AppRoutes = () => {
 
 					<Route element={<RoleRoute allowedRoles={[ROLES.ADMINISTRADOR]} />}>
 						<Route path={ROUTES.USERS} element={<Usuarios />} />
+					</Route>
+
+					{/* ===============================
+              ESTUDIANTE
+              Solo ESTUDIANTE
+              =============================== */}
+
+					<Route element={<RoleRoute allowedRoles={[ROLES.ESTUDIANTE]} />}>
+						<Route path={ROUTES.GRADES} element={<MisNotas />} />
 					</Route>
 				</Route>
 			</Route>

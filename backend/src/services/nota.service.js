@@ -1,4 +1,5 @@
 import notaRepository from '../repositories/nota.repository.js';
+import estudiantePerfilRepository from '../repositories/estudiantePerfil.repository.js';
 
 /**
  * Registra una nueva nota.
@@ -38,8 +39,20 @@ const consultarNotas = async (usuario, filtros = {}) => {
   const periodo = filtros.periodo;
 
   // Auto-escopado para estudiantes.
+  //
+  // IMPORTANTE: usuario.id es el ID de la tabla Usuario, pero
+  // Nota.estudianteId referencia EstudiantePerfil.id (tabla distinta).
+  // Hay que resolver el perfil del estudiante a partir del usuario.
   if (usuario.rol === 'ESTUDIANTE') {
-    estudianteId = usuario.id;
+    const perfil = await estudiantePerfilRepository.buscarPorUsuarioId(usuario.id);
+
+    if (!perfil) {
+      // Usuario con rol ESTUDIANTE sin perfil asociado: no explota,
+      // simplemente no tiene notas que consultar.
+      return [];
+    }
+
+    estudianteId = perfil.id;
   }
 
   return notaRepository.buscarPorEstudiante(
