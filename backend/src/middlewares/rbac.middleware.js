@@ -28,6 +28,38 @@ const TODOS_LOS_ROLES = Object.values(ROLES);
 export const PERMISOS = {
 	USUARIOS: [ROLES.ADMINISTRADOR],
 	PERFIL: TODOS_LOS_ROLES,
+	/*
+ * Sprint 3 - 07 [01]
+ * Permisos de gestión académica.
+ *
+ * Agregar dentro del objeto PERMISOS existente.
+ */
+
+NOTAS: {
+  CREAR: ["DOCENTE"],
+  LEER: [
+    "ADMINISTRADOR",
+    "DOCENTE",
+    "ESTUDIANTE",
+    "PADRE_FAMILIA",
+    "DIRECTIVO",
+  ],
+  ACTUALIZAR: ["DOCENTE"],
+  ELIMINAR: ["DOCENTE"],
+},
+
+ASISTENCIA: {
+  CREAR: ["DOCENTE"],
+  LEER: [
+    "ADMINISTRADOR",
+    "DOCENTE",
+    "ESTUDIANTE",
+    "PADRE_FAMILIA",
+    "DIRECTIVO",
+  ],
+  ACTUALIZAR: ["DOCENTE"],
+  ELIMINAR: ["DOCENTE"],
+},
 };
 
 /**
