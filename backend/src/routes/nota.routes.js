@@ -1,8 +1,14 @@
+
 import { Router } from "express";
 
 import notaController from "../controllers/nota.controller.js";
+
 import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorizeRoles } from "../middlewares/rbac.middleware.js";
+
+import {
+  authorizeRoles,
+  PERMISOS,
+} from "../middlewares/rbac.middleware.js";
 
 const router = Router();
 
@@ -20,12 +26,13 @@ router.use(authenticate);
  * POST /api/notas
  *
  * Registrar una nueva nota.
+ *
  * Solo docentes.
  */
 router.post(
-    "/",
-    authorizeRoles("DOCENTE"),
-    notaController.crearNota,
+  "/",
+  authorizeRoles("DOCENTE"),
+  notaController.crearNota,
 );
 
 /**
@@ -33,35 +40,35 @@ router.post(
  *
  * Consultar notas.
  *
- * Placeholder temporal:
- * Sprint 3 - 07 [02] reemplazará authorizeRoles
- * por PERMISOS.NOTAS.
+ * Permisos definidos en:
+ * PERMISOS.NOTAS.LEER
+ *
+ * ADMINISTRADOR: lectura
+ * DOCENTE: lectura de notas autorizadas
+ * ESTUDIANTE: lectura de notas propias
+ * PADRE_FAMILIA: lectura de hijos vinculados
+ * DIRECTIVO: lectura
  */
 router.get(
-    "/",
-    authorizeRoles(
-        "DOCENTE",
-        "ESTUDIANTE",
-        "PADRE_FAMILIA",
-        "DIRECTIVO",
-    ),
-    notaController.obtenerNotas,
+  "/",
+  authorizeRoles(...PERMISOS.NOTAS.LEER),
+  notaController.obtenerNotas,
 );
 
 /**
  * PATCH /api/notas/:id
  *
  * Actualizar una nota.
+ *
  * Solo docentes.
  *
- * La validación de que el docente únicamente pueda
- * modificar sus propias notas debe realizarse en
- * la capa de servicio/autorización.
+ * El servicio debe verificar que el docente
+ * esté autorizado a modificar la nota.
  */
 router.patch(
-    "/:id",
-    authorizeRoles("DOCENTE"),
-    notaController.actualizarNota,
+  "/:id",
+  authorizeRoles("DOCENTE"),
+  notaController.actualizarNota,
 );
 
 export default router;
