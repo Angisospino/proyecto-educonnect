@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
 import perfilRoutes from "./routes/perfil.routes.js";
 import notaRoutes from "./routes/nota.routes.js";
+import asistenciaRoutes from "./routes/asistencia.routes.js";
 
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
@@ -149,6 +150,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/perfil", perfilRoutes);
 app.use("/api/notas", notaRoutes);
+app.use("/api/asistencia", asistenciaRoutes);
 
 /*
  * Posteriormente agregaremos:
