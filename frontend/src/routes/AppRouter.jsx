@@ -4,6 +4,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
 
+import RegistrarNotas from "../pages/notas/RegistrarNotas";
+import RegistrarAsistencia from "../pages/asistencia/RegistrarAsistencia";
 /* Protección de rutas */
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import RoleRoute from "./RoleRoute.jsx";
@@ -13,6 +15,7 @@ import Login from "../pages/auth/Login.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Perfil from "../pages/profile/Perfil.jsx";
 import Usuarios from "../pages/admin/usuarios/Usuarios.jsx";
+import ConsultarAsistencia from "../pages/asistencia/ConsultarAsistencia";
 
 /* Constantes */
 import { ROUTES, ROLES } from "../utils/constants.js";
@@ -58,6 +61,24 @@ const AppRoutes = () => {
 					</Route>
 				</Route>
 			</Route>
+
+			<Route
+  path={ROUTES.GRADES}
+  element={
+    <RoleRoute allowedRoles={[ROLES.DOCENTE]}>
+      <RegistrarNotas />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path={ROUTES.ATTENDANCE}
+  element={
+    <RoleRoute allowedRoles={[ROLES.DOCENTE]}>
+      <RegistrarAsistencia />
+    </RoleRoute>
+  }
+/>
 
 			{/* =====================================
           RUTA RAÍZ
