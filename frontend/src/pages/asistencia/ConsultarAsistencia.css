@@ -1,0 +1,257 @@
+
+/* ==========================================
+   CONSULTAR ASISTENCIA
+   EduConnect BR
+   ========================================== */
+
+.consultar-asistencia {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--spacing-lg);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.consultar-asistencia__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.consultar-asistencia__header h1 {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.consultar-asistencia__header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* ==========================================
+   TARJETAS
+   ========================================== */
+
+.consultar-asistencia__card {
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.consultar-asistencia__section-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.consultar-asistencia__section-header h2 {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consultar-asistencia__section-header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+
+.consultar-asistencia__filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.consultar-asistencia__field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: var(--spacing-sm);
+}
+
+.consultar-asistencia__field label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consultar-asistencia__field input {
+  width: 100%;
+  min-height: var(--input-height);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font: inherit;
+}
+
+.consultar-asistencia__field input:focus {
+  outline: var(--border-width) solid var(--color-primary);
+  outline-offset: var(--border-width);
+}
+
+.consultar-asistencia__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-lg);
+}
+
+.consultar-asistencia__validation {
+  margin-top: var(--spacing-md);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+.consultar-asistencia__refresh,
+.consultar-asistencia__clear,
+.consultar-asistencia__state button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.consultar-asistencia__refresh:hover,
+.consultar-asistencia__clear:hover {
+  background: var(--color-background);
+}
+
+.consultar-asistencia__refresh:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   RESUMEN
+   ========================================== */
+
+.consultar-asistencia__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.consultar-asistencia__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.consultar-asistencia__stat span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.consultar-asistencia__stat strong {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.consultar-asistencia__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.consultar-asistencia__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.consultar-asistencia__table th,
+.consultar-asistencia__table td {
+  padding: var(--spacing-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.consultar-asistencia__table th {
+  color: var(--color-text-secondary);
+  background: var(--color-background);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consultar-asistencia__table td {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   ESTADOS DE LA VISTA
+   ========================================== */
+
+.consultar-asistencia__state {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.consultar-asistencia__state h3 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.consultar-asistencia__state--error {
+  color: var(--color-danger);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .consultar-asistencia__filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .consultar-asistencia__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .consultar-asistencia__summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .consultar-asistencia__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .consultar-asistencia__refresh {
+    width: 100%;
+  }
+}
