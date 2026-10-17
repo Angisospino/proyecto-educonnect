@@ -1,0 +1,236 @@
+
+/* ==========================================
+   REGISTRAR ASISTENCIA
+   EduConnect BR - Sprint 3
+   ========================================== */
+
+.registrar-asistencia {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding: var(--spacing-lg);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.registrar-asistencia__header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.registrar-asistencia__header h1 {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.registrar-asistencia__header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* ==========================================
+   TARJETA
+   ========================================== */
+
+.registrar-asistencia__card {
+  padding: var(--spacing-xl);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.registrar-asistencia__section-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.registrar-asistencia__section-header h2,
+.registrar-asistencia__list-header h2 {
+  margin: 0 0 var(--spacing-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.registrar-asistencia__section-header p,
+.registrar-asistencia__list-header p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+
+.registrar-asistencia__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.registrar-asistencia__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.registrar-asistencia__field label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.registrar-asistencia__field input[type="date"] {
+  width: 100%;
+  min-height: var(--input-height);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font: inherit;
+}
+
+/* ==========================================
+   LISTA
+   ========================================== */
+
+.registrar-asistencia__list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.registrar-asistencia__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.registrar-asistencia__summary span {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-background);
+  border-radius: var(--border-radius-md);
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.registrar-asistencia__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.registrar-asistencia__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.registrar-asistencia__table th,
+.registrar-asistencia__table td {
+  padding: var(--spacing-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.registrar-asistencia__table th {
+  color: var(--color-text-secondary);
+  background: var(--color-background);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.registrar-asistencia__table td {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.registrar-asistencia__table th:not(:first-child),
+.registrar-asistencia__table td:not(:first-child) {
+  text-align: center;
+}
+
+.registrar-asistencia__table input[type="radio"] {
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* ==========================================
+   MENSAJES
+   ========================================== */
+
+.registrar-asistencia__mensaje {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: var(--border-width) solid;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.registrar-asistencia__mensaje--exito {
+  color: var(--color-success);
+  background: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.registrar-asistencia__mensaje--error {
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.registrar-asistencia__errors {
+  margin-top: var(--spacing-lg);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.registrar-asistencia__empty {
+  padding: var(--spacing-xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* ==========================================
+   ACCIONES
+   ========================================== */
+
+.registrar-asistencia__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .registrar-asistencia__filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .registrar-asistencia__list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .registrar-asistencia__actions > * {
+    width: 100%;
+  }
+}
