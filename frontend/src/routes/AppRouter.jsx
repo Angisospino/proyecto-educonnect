@@ -13,9 +13,58 @@ import Login from "../pages/auth/Login.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Perfil from "../pages/profile/Perfil.jsx";
 import Usuarios from "../pages/admin/usuarios/Usuarios.jsx";
+import MisNotas from "../pages/notas/MisNotas";
+import ConsultarAsistencia from "../pages/asistencia/ConsultarAsistencia";
 
+import RegistrarNotas from "../pages/notas/RegistrarNotas";
+import RegistrarAsistencia from "../pages/asistencia/RegistrarAsistencia";
 /* Constantes */
 import { ROUTES, ROLES } from "../utils/constants.js";
+
+export function NotasPorRol() {
+  const { usuario } = useAuth();
+
+  if (usuario?.rol === ROLES.DOCENTE) {
+    return (
+      <RoleRoute allowedRoles={[ROLES.DOCENTE]}>
+        <RegistrarNotas />
+      </RoleRoute>
+    );
+  }
+
+  return (
+    <RoleRoute allowedRoles={[ROLES.ESTUDIANTE]}>
+      <MisNotas />
+    </RoleRoute>
+  );
+}
+
+/* ==========================================
+   RUTA DE ASISTENCIA
+   ========================================== */
+
+export function AsistenciaPorRol() {
+  const { usuario } = useAuth();
+
+  if (usuario?.rol === ROLES.DOCENTE) {
+    return (
+      <RoleRoute allowedRoles={[ROLES.DOCENTE]}>
+        <RegistrarAsistencia />
+      </RoleRoute>
+    );
+  }
+
+  return (
+    <RoleRoute
+      allowedRoles={[
+        ROLES.ESTUDIANTE,
+        ROLES.PADRE_FAMILIA,
+      ]}
+    >
+      <ConsultarAsistencia />
+    </RoleRoute>
+  );
+}
 
 const AppRoutes = () => {
 	return (
@@ -58,6 +107,28 @@ const AppRoutes = () => {
 					</Route>
 				</Route>
 			</Route>
+
+			{/* ==========================================
+    NOTAS
+    DOCENTE: RegistrarNotas
+    ESTUDIANTE: MisNotas
+    ========================================== */}
+
+<Route
+  path={ROUTES.GRADES}
+  element={<NotasPorRol />}
+/>
+
+{/* ==========================================
+    ASISTENCIA
+    DOCENTE: RegistrarAsistencia
+    ESTUDIANTE/PADRE: ConsultarAsistencia
+    ========================================== */}
+
+<Route
+  path={ROUTES.ATTENDANCE}
+  element={<AsistenciaPorRol />}
+/>
 
 			{/* =====================================
           RUTA RAÍZ
