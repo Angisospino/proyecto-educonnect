@@ -3,9 +3,15 @@
  *
  * Implementa la matriz de permisos del DDS §7.3, limitada
  * a los módulos ya implementados en el backend. A medida que
- * se agreguen nuevos módulos (Notas, Asistencia, Comunicados,
- * Reportes), se declaran aquí como una nueva entrada de
- * PERMISOS — las rutas no deben hardcodear roles sueltos.
+ * se agreguen nuevos módulos (Comunicados, Reportes), se
+ * declaran aquí como una nueva entrada de PERMISOS — las
+ * rutas no deben hardcodear roles sueltos.
+ *
+ * Forma de cada entrada de PERMISOS:
+ *  - Módulos simples (USUARIOS, PERFIL): un arreglo de roles.
+ *  - Módulos académicos (NOTAS, ASISTENCIA): un objeto
+ *    { CREAR, LEER, ACTUALIZAR, ELIMINAR }, donde cada clave es
+ *    un arreglo de roles. Ej.: authorizeRoles(...PERMISOS.NOTAS.LEER)
  */
 
 export const ROLES = {
@@ -24,17 +30,15 @@ const TODOS_LOS_ROLES = Object.values(ROLES);
  * Módulo               Administrador  Docente  Estudiante  Padre  Directivo
  * Gestión de usuarios   CRUD           —        —           —      —
  * Perfil propio         CRUD           CRUD     CRUD        CRUD   CRUD
+ * Notas                 R              CRUD     R           R      R
+ * Asistencia            R              CRUD     R           R      R
+ *
+ * Notas y Asistencia son objetos { CREAR, LEER, ACTUALIZAR, ELIMINAR }
+ * (C = CREAR, R = LEER, U = ACTUALIZAR, D = ELIMINAR).
  */
 export const PERMISOS = {
 	USUARIOS: [ROLES.ADMINISTRADOR],
 	PERFIL: TODOS_LOS_ROLES,
-	/*
- * Sprint 3 - 07 [01]
- * Permisos de gestión académica.
- *
- * Agregar dentro del objeto PERMISOS existente.
- */
-
 NOTAS: {
   CREAR: ["DOCENTE"],
   LEER: [
