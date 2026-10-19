@@ -1,8 +1,17 @@
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import Badge from "../../components/ui/Badge";
-import asistenciaService from "../../services/asistencia.service";
+import { Users } from "lucide-react";
+
+import Badge from "../../components/ui/Badge.jsx";
+import Button from "../../components/ui/Button.jsx";
+import EmptyState from "../../components/ui/EmptyState.jsx";
+import Input from "../../components/ui/Input.jsx";
+import Loader from "../../components/ui/Loader.jsx";
+
+import { useAuth } from "../../hooks/useAuth.js";
+import asistenciaService from "../../services/asistencia.service.js";
+import { ROLES } from "../../utils/constants.js";
 
 import "./ConsultarAsistencia.css";
 
@@ -26,7 +35,6 @@ const ESTADOS = {
 };
 
 const FILTROS_INICIALES = {
-  estudianteId: "",
   inicio: "",
   fin: "",
 };
@@ -65,21 +73,11 @@ const formatearFecha = (valor) => {
 };
 
 const obtenerNombreEstudiante = (registro) => {
-  const estudiante = registro.estudiante;
-
-  if (!estudiante) {
-    return `Estudiante #${registro.estudianteId}`;
-  }
-
-  if (estudiante.nombreCompleto) {
-    return estudiante.nombreCompleto;
-  }
-
-  const usuario = estudiante.usuario || estudiante;
+  const usuario = registro.estudiante?.usuario;
 
   const nombre = [
-    usuario.nombre,
-    usuario.apellido,
+    usuario?.nombre,
+    usuario?.apellido,
   ].filter(Boolean).join(" ");
 
   return nombre ||
@@ -91,6 +89,10 @@ const obtenerNombreEstudiante = (registro) => {
    ========================================== */
 
 export default function ConsultarAsistencia() {
+  const { user } = useAuth();
+
+  const esPadre = user?.rol === ROLES.PADRE_FAMILIA;
+
   const [filtros, setFiltros] = useState(
     FILTROS_INICIALES
   );
@@ -112,6 +114,12 @@ export default function ConsultarAsistencia() {
      ========================================== */
 
   useEffect(() => {
+    // TODO [Sprint 3 - 21] [04]: el backend aún no tiene la relación
+    // padre-estudiante y responde 403, así que para el Padre no se
+    // llama a la API. Cuando exista GET /api/padres/mis-hijos, aquí va
+    // un selector de hijos y se consulta con el estudianteId elegido.
+    if (esPadre) return undefined;
+
     let activo = true;
 
     const cargarAsistencias = async () => {
@@ -119,12 +127,9 @@ export default function ConsultarAsistencia() {
       setError("");
 
       try {
+        // El backend resuelve el perfil del Estudiante desde el
+        // token: no se envía estudianteId.
         const parametros = {};
-
-        if (filtros.estudianteId.trim()) {
-          parametros.estudianteId =
-            filtros.estudianteId.trim();
-        }
 
         if (filtros.inicio) {
           parametros.inicio = filtros.inicio;
@@ -175,7 +180,7 @@ export default function ConsultarAsistencia() {
       activo = false;
     };
   }, [
-    filtros.estudianteId,
+    esPadre,
     filtros.inicio,
     filtros.fin,
     actualizacion,
@@ -185,15 +190,16 @@ export default function ConsultarAsistencia() {
      FILTROS
      ========================================== */
 
-  const actualizarFiltro = useCallback(
-    (campo, valor) => {
-      setFiltros((anterior) => ({
-        ...anterior,
-        [campo]: valor,
-      }));
-    },
-    []
-  );
+  // Input pasa onChange directo al elemento nativo:
+  // el handler recibe el evento, no el valor.
+  const actualizarFiltro = (campo) => (evento) => {
+    const valor = evento.target.value;
+
+    setFiltros((anterior) => ({
+      ...anterior,
+      [campo]: valor,
+    }));
+  };
 
   const limpiarFiltros = () => {
     setFiltros({ ...FILTROS_INICIALES });
@@ -246,6 +252,34 @@ export default function ConsultarAsistencia() {
     );
 
   /* ==========================================
+     PADRE DE FAMILIA (sin consulta por ahora)
+     ========================================== */
+
+  if (esPadre) {
+    return (
+      <main className="consultar-asistencia">
+        <header className="consultar-asistencia__header">
+          <div>
+            <h1>Consultar asistencia</h1>
+            <p>
+              Consulta el historial de asistencia
+              de tus hijos.
+            </p>
+          </div>
+        </header>
+
+        <section className="consultar-asistencia__card">
+          <EmptyState
+            icon={Users}
+            title="Consulta no disponible todavía"
+            description="La consulta de asistencia para padres estará disponible cuando se vinculen los hijos."
+          />
+        </section>
+      </main>
+    );
+  }
+
+  /* ==========================================
      INTERFAZ
      ========================================== */
 
@@ -255,19 +289,18 @@ export default function ConsultarAsistencia() {
         <div>
           <h1>Consultar asistencia</h1>
           <p>
-            Consulta el historial de asistencia
-            registrado en la institución.
+            Consulta tu historial de asistencia.
           </p>
         </div>
 
-        <button
+        <Button
           type="button"
-          className="consultar-asistencia__refresh"
+          variant="secondary"
           onClick={recargar}
           disabled={cargando}
         >
           Actualizar
-        </button>
+        </Button>
       </header>
 
       {/* FILTROS */}
@@ -282,68 +315,29 @@ export default function ConsultarAsistencia() {
           </h2>
 
           <p>
-            Puedes consultar todos los registros
-            disponibles o limitar la búsqueda.
+            Puedes consultar todos tus registros
+            o limitar la búsqueda por fechas.
           </p>
         </div>
 
         <div className="consultar-asistencia__filters">
-          <div className="consultar-asistencia__field">
-            <label htmlFor="consulta-estudiante">
-              ID del estudiante
-            </label>
+          <Input
+            id="consulta-inicio"
+            name="inicio"
+            type="date"
+            label="Desde"
+            value={filtros.inicio}
+            onChange={actualizarFiltro("inicio")}
+          />
 
-            <input
-              id="consulta-estudiante"
-              type="number"
-              min="1"
-              step="1"
-              placeholder="Opcional"
-              value={filtros.estudianteId}
-              onChange={(evento) =>
-                actualizarFiltro(
-                  "estudianteId",
-                  evento.target.value
-                )
-              }
-            />
-          </div>
-
-          <div className="consultar-asistencia__field">
-            <label htmlFor="consulta-inicio">
-              Desde
-            </label>
-
-            <input
-              id="consulta-inicio"
-              type="date"
-              value={filtros.inicio}
-              onChange={(evento) =>
-                actualizarFiltro(
-                  "inicio",
-                  evento.target.value
-                )
-              }
-            />
-          </div>
-
-          <div className="consultar-asistencia__field">
-            <label htmlFor="consulta-fin">
-              Hasta
-            </label>
-
-            <input
-              id="consulta-fin"
-              type="date"
-              value={filtros.fin}
-              onChange={(evento) =>
-                actualizarFiltro(
-                  "fin",
-                  evento.target.value
-                )
-              }
-            />
-          </div>
+          <Input
+            id="consulta-fin"
+            name="fin"
+            type="date"
+            label="Hasta"
+            value={filtros.fin}
+            onChange={actualizarFiltro("fin")}
+          />
         </div>
 
         {fechasInvalidas && (
@@ -357,13 +351,13 @@ export default function ConsultarAsistencia() {
         )}
 
         <div className="consultar-asistencia__filter-actions">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={limpiarFiltros}
-            className="consultar-asistencia__clear"
           >
             Limpiar filtros
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -414,35 +408,26 @@ export default function ConsultarAsistencia() {
         </div>
 
         {cargando ? (
-          <div
-            className="consultar-asistencia__state"
-            role="status"
-          >
-            Cargando registros de asistencia...
-          </div>
+          <Loader message="Cargando registros de asistencia..." />
         ) : error ? (
-          <div
-            className="consultar-asistencia__state consultar-asistencia__state--error"
-            role="alert"
-          >
-            <p>{error}</p>
-
-            <button
-              type="button"
-              onClick={recargar}
-            >
-              Reintentar
-            </button>
-          </div>
+          <EmptyState
+            title="No se pudo consultar la asistencia"
+            description={error}
+            action={
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={recargar}
+              >
+                Reintentar
+              </Button>
+            }
+          />
         ) : asistencias.length === 0 ? (
-          <div className="consultar-asistencia__state">
-            <h3>Sin registros</h3>
-
-            <p>
-              No se encontraron registros de
-              asistencia para esta consulta.
-            </p>
-          </div>
+          <EmptyState
+            title="Sin registros"
+            description="No se encontraron registros de asistencia para esta consulta."
+          />
         ) : (
           <div className="consultar-asistencia__table-wrapper">
             <table className="consultar-asistencia__table">
