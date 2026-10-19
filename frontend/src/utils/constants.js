@@ -53,6 +53,7 @@ export const ROUTES = Object.freeze({
 	PROFILE: "/perfil",
 
 	USERS: "/admin/usuarios",
+	FAMILY_LINKS: "/admin/vinculos",
 
 	GRADES: "/notas",
 	ATTENDANCE: "/asistencia",

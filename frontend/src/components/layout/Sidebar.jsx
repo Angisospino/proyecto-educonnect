@@ -6,6 +6,7 @@ import {
 	FileText,
 	GraduationCap,
 	Home,
+	Link2,
 	LogOut,
 	Megaphone,
 	Settings,
@@ -48,6 +49,13 @@ const Sidebar = ({ isOpen = false, onClose }) => {
 			label: "Usuarios",
 			icon: Users,
 			path: ROUTES.USERS,
+			roles: [ROLES.ADMINISTRADOR],
+		},
+
+		{
+			label: "Vínculos familiares",
+			icon: Link2,
+			path: ROUTES.FAMILY_LINKS,
 			roles: [ROLES.ADMINISTRADOR],
 		},
 
