@@ -36,6 +36,17 @@ const obtenerEstudiantesDeCurso = async (cursoId) => {
 };
 
 /* ==========================================
+   OBTENER MIS HIJOS (solo Padre de familia)
+   GET /api/padres/mis-hijos
+   ========================================== */
+
+const obtenerMisHijos = async () => {
+	const response = await api.get("/padres/mis-hijos");
+
+	return response.data;
+};
+
+/* ==========================================
    EXPORT
    ========================================== */
 
@@ -43,6 +54,7 @@ const catalogoService = {
 	obtenerCursos,
 	obtenerAsignaturas,
 	obtenerEstudiantesDeCurso,
+	obtenerMisHijos,
 };
 
 export default catalogoService;
