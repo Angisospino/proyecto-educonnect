@@ -11,6 +11,7 @@ import notaRoutes from "./routes/nota.routes.js";
 import asistenciaRoutes from "./routes/asistencia.routes.js";
 import padreRoutes from "./routes/padre.routes.js";
 import comunicadoRoutes from "./routes/comunicado.routes.js";
+import notificacionRoutes from "./routes/notificacion.routes.js";
 
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
