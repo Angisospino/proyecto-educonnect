@@ -193,6 +193,49 @@ console.log('🌱 Iniciando seed de Sprint 3...');
   }
 
   // =====================================================
+  // 4.1 VINCULAR PADRE CON ESTUDIANTE
+  // =====================================================
+
+  const padre = await prisma.usuario.findUnique({
+    where: {
+      email: 'padre@educonnectbr.edu.co',
+    },
+  });
+
+  const perfilHijo = await prisma.estudiantePerfil.findFirst({
+    where: {
+      usuario: {
+        email: 'estudiante@educonnectbr.edu.co',
+      },
+    },
+  });
+
+  if (padre && perfilHijo) {
+    // Idempotente: @@unique([padreId, estudianteId]) evita duplicados.
+    await prisma.padreEstudiante.upsert({
+      where: {
+        padreId_estudianteId: {
+          padreId: padre.id,
+          estudianteId: perfilHijo.id,
+        },
+      },
+      update: {},
+      create: {
+        padreId: padre.id,
+        estudianteId: perfilHijo.id,
+      },
+    });
+
+    console.log(
+      `✅ Padre ${padre.nombre} ${padre.apellido} vinculado con el perfil ${perfilHijo.id}.`
+    );
+  } else {
+    console.warn(
+      '⚠️ No se encontró el padre o el estudiante semilla; no se creó el vínculo.'
+    );
+  }
+
+  // =====================================================
   // 5. BUSCAR UN DOCENTE
   // =====================================================
 

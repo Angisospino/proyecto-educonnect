@@ -41,6 +41,7 @@ model Usuario {
   estudiantePerfil EstudiantePerfil?
   notas             Nota[]
   asistencias       Asistencia[]
+  hijos             PadreEstudiante[]
 
   @@map("usuarios")
 }
@@ -71,6 +72,21 @@ model EstudiantePerfil {
   curso       Curso   @relation(fields: [cursoId], references: [id])
   notas       Nota[]
   asistencias Asistencia[]
+  padres      PadreEstudiante[]
+}
+
+// Vinculo padre/madre de familia - estudiante (muchos a muchos):
+// un padre puede tener varios hijos y un estudiante varios padres.
+// estudianteId referencia a EstudiantePerfil.id (no a Usuario.id).
+model PadreEstudiante {
+  id           Int              @id @default(autoincrement())
+  padreId      Int
+  estudianteId Int
+
+  padre      Usuario          @relation(fields: [padreId], references: [id])
+  estudiante EstudiantePerfil @relation(fields: [estudianteId], references: [id])
+
+  @@unique([padreId, estudianteId])
 }
 
 model Nota {
