@@ -18,21 +18,53 @@ const incluirEstudiante = {
    ========================================== */
 
 /**
- * Registra una asistencia en la base de datos.
+ * Registra la asistencia de un estudiante en una fecha.
+ *
+ * Hay un único registro por estudiante y fecha (restricción
+ * @@unique([estudianteId, fecha])): si ya existe, se actualiza
+ * el estado y el docente que lo registró en vez de duplicarse,
+ * de modo que volver a guardar el mismo día sirve para corregir
+ * el estado. El curso no se modifica al actualizar: es el del
+ * estudiante y un cursoId equivocado no debe mover el registro.
  *
  * @param {Object} datos
  * @returns {Promise<Object>}
  */
 const registrar = async (datos) => {
-  return prisma.asistencia.create({
-    data: {
-      estudianteId: Number(datos.estudianteId),
-      cursoId: Number(datos.cursoId),
-      docenteId: Number(datos.docenteId),
-      fecha: new Date(datos.fecha),
-      estado: datos.estado,
-    },
-  });
+  const estudianteId = Number(datos.estudianteId);
+  const fecha = new Date(datos.fecha);
+  const docenteId = Number(datos.docenteId);
+
+  const upsert = () =>
+    prisma.asistencia.upsert({
+      where: {
+        estudianteId_fecha: { estudianteId, fecha },
+      },
+      create: {
+        estudianteId,
+        fecha,
+        cursoId: Number(datos.cursoId),
+        docenteId,
+        estado: datos.estado,
+      },
+      update: {
+        docenteId,
+        estado: datos.estado,
+      },
+    });
+
+  try {
+    return await upsert();
+  } catch (error) {
+    // Prisma emula el upsert en MySQL (buscar y luego crear): si dos
+    // pedidos crean a la vez, el segundo choca con la restricción
+    // única (P2002) y basta repetirlo para que actualice.
+    if (error.code === "P2002") {
+      return upsert();
+    }
+
+    throw error;
+  }
 };
 
 
