@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
 import perfilRoutes from "./routes/perfil.routes.js";
+import catalogoRoutes from "./routes/catalogo.routes.js";
 import notaRoutes from "./routes/nota.routes.js";
 import asistenciaRoutes from "./routes/asistencia.routes.js";
 
@@ -149,15 +150,13 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/perfil", perfilRoutes);
+app.use("/api/catalogos", catalogoRoutes);
 app.use("/api/notas", notaRoutes);
 app.use("/api/asistencia", asistenciaRoutes);
 
 /*
  * Posteriormente agregaremos:
  *
- * app.use("/api/cursos", cursoRoutes);
- * app.use("/api/asignaturas", asignaturaRoutes);
- * app.use("/api/notas", notaRoutes);
  * app.use("/api/asistencias", asistenciaRoutes);
  * app.use("/api/comunicados", comunicadoRoutes);
  * app.use("/api/notificaciones", notificacionRoutes);
