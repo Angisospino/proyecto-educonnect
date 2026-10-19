@@ -6,7 +6,10 @@ import notaService from "../services/nota.service.js";
 
 const crearNota = async (req, res, next) => {
     try {
-        const nota = await notaService.registrarNota(req.body);
+        const nota = await notaService.registrarNota(
+            req.body,
+            req.usuario,
+        );
 
         return res.status(201).json({
             success: true,
@@ -48,6 +51,7 @@ const actualizarNota = async (req, res, next) => {
         const nota = await notaService.actualizarNota(
             req.params.id,
             req.body,
+            req.usuario,
         );
 
         return res.status(200).json({
