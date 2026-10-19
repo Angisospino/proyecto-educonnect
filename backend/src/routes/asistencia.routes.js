@@ -1,10 +1,8 @@
 
 import { Router } from "express";
 
-import {
-  authenticate,
-  authorizeRoles,
-} from "../middlewares/auth.middleware.js";
+import { authenticate } from "../middlewares/auth.middleware.js";
+import { authorizeRoles } from "../middlewares/rbac.middleware.js";
 
 import {
   registrarAsistencia,
@@ -29,15 +27,15 @@ router.use(authenticate);
    POST /api/asistencia
    ========================================== */
 
-// Solo docentes y administradores pueden
-// registrar asistencias.
+// Solo los docentes pueden registrar
+// asistencias.
 //
 // La validación de asignación del docente
 // al curso se implementará en el servicio.
 
 router.post(
   "/",
-  authorizeRoles("ADMINISTRADOR", "DOCENTE"),
+  authorizeRoles("DOCENTE"),
   registrarAsistencia
 );
 
