@@ -60,7 +60,7 @@ const QUICK_ACTIONS = [
 		icon: GraduationCap,
 		route: ROUTES.GRADES,
 		// Solo los roles con vista en AppRouter.jsx (RolePage).
-		roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE],
+		roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE, ROLES.PADRE_FAMILIA],
 		enabled: true,
 	},
 

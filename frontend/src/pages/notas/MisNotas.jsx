@@ -3,15 +3,57 @@ import { useEffect, useMemo, useState } from "react";
 import { BookOpen, GraduationCap, RefreshCw } from "lucide-react";
 
 import notaService from "../../services/nota.service.js";
+import catalogoService from "../../services/catalogo.service.js";
 
 import { useAuth } from "../../hooks/useAuth.js";
+
+import { ROLES } from "../../utils/constants.js";
 
 import Loader from "../../components/ui/Loader.jsx";
 import EmptyState from "../../components/ui/EmptyState.jsx";
 import Badge from "../../components/ui/Badge.jsx";
 import Button from "../../components/ui/Button.jsx";
+import Select from "../../components/ui/Select.jsx";
 
 import "./MisNotas.css";
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+
+// El backend responde { message } y, en desarrollo, un objeto en
+// `error`: solo se aceptan textos para no pintar un objeto en pantalla.
+const obtenerMensajeError = (err, porDefecto) => {
+	const data = err?.response?.data;
+
+	if (typeof data?.message === "string") {
+		return data.message;
+	}
+
+	if (typeof data?.error === "string") {
+		return data.error;
+	}
+
+	return porDefecto;
+};
+
+const obtenerEtiquetaHijo = (hijo) => {
+	const nombre = [hijo.usuario?.nombre, hijo.usuario?.apellido]
+		.filter(Boolean)
+		.join(" ");
+
+	const base = nombre || `Estudiante #${hijo.id}`;
+
+	return hijo.curso?.nombre ? `${base} (${hijo.curso.nombre})` : base;
+};
+
+// Estado de la lista de hijos del Padre. Empieza cargando porque la
+// consulta de notas espera a tener un hijo seleccionado.
+const HIJOS_INICIALES = {
+	cargando: true,
+	lista: [],
+	error: "",
+};
 
 /* ==========================================
    VARIANTE DE BADGE SEGÚN RANGO DE NOTA
@@ -49,38 +91,120 @@ const MisNotas = () => {
 
 	const [error, setError] = useState("");
 
+	const [actualizacion, setActualizacion] = useState(0);
+
+	// Solo Padre de familia: hijos vinculados y el hijo elegido
+	// (EstudiantePerfil.id como texto, para el <select>).
+	const esPadre = user?.rol === ROLES.PADRE_FAMILIA;
+
+	const [hijos, setHijos] = useState(HIJOS_INICIALES);
+
+	const [hijoId, setHijoId] = useState("");
+
+	const [intentoHijos, setIntentoHijos] = useState(0);
+
+	/* ========================================
+     HIJOS DEL PADRE
+     ======================================== */
+
+	useEffect(() => {
+		if (!esPadre) return undefined;
+
+		let activo = true;
+
+		const cargarHijos = async () => {
+			try {
+				const respuesta = await catalogoService.obtenerMisHijos();
+
+				const lista = respuesta?.data;
+
+				if (!Array.isArray(lista)) {
+					throw new Error("El servidor devolvió un formato de hijos no válido.");
+				}
+
+				if (activo) {
+					setHijos({ cargando: false, lista, error: "" });
+
+					// Con un solo hijo (lo habitual) se consulta de una vez.
+					setHijoId(lista.length > 0 ? String(lista[0].id) : "");
+				}
+			} catch (err) {
+				if (activo) {
+					setHijos({
+						cargando: false,
+						lista: [],
+						error: obtenerMensajeError(err, "No fue posible cargar tus hijos."),
+					});
+				}
+			}
+		};
+
+		cargarHijos();
+
+		return () => {
+			activo = false;
+		};
+	}, [esPadre, intentoHijos]);
+
 	/* ========================================
      CARGAR NOTAS
      ======================================== */
 
-	const cargarNotas = async () => {
-		try {
+	useEffect(() => {
+		// El Padre solo puede consultar a un hijo vinculado: sin hijo
+		// elegido no se llama a la API (respondería 400).
+		if (esPadre && !hijoId) return undefined;
+
+		let activo = true;
+
+		const cargarNotas = async () => {
 			setLoading(true);
 			setError("");
 
-			const response = await notaService.obtenerNotas();
+			try {
+				// Estudiante: el backend resuelve su perfil desde el token.
+				// Padre: se envía el hijo elegido (el backend verifica que
+				// sea su hijo).
+				const filtros = esPadre ? { estudianteId: hijoId } : {};
 
-			const lista = Array.isArray(response)
-				? response
-				: response?.data || [];
+				const response = await notaService.obtenerNotas(filtros);
 
-			setNotas(lista);
-		} catch (err) {
-			console.error("Error cargando notas:", err);
+				const lista = Array.isArray(response)
+					? response
+					: response?.data || [];
 
-			setError(
-				err.response?.data?.error ||
-					err.response?.data?.message ||
-					"No fue posible cargar las notas.",
-			);
-		} finally {
-			setLoading(false);
-		}
+				if (activo) {
+					setNotas(lista);
+				}
+			} catch (err) {
+				if (activo) {
+					setNotas([]);
+					setError(
+						obtenerMensajeError(err, "No fue posible cargar las notas."),
+					);
+				}
+			} finally {
+				if (activo) {
+					setLoading(false);
+				}
+			}
+		};
+
+		cargarNotas();
+
+		return () => {
+			activo = false;
+		};
+	}, [esPadre, hijoId, actualizacion]);
+
+	const recargar = () => {
+		setActualizacion((valor) => valor + 1);
 	};
 
-	useEffect(() => {
-		cargarNotas();
-	}, []);
+	const reintentarHijos = () => {
+		setHijos(HIJOS_INICIALES);
+		setIntentoHijos((valor) => valor + 1);
+	};
 
 	/* ========================================
      PROMEDIO GENERAL
@@ -100,7 +224,57 @@ const MisNotas = () => {
      NOMBRE DEL ESTUDIANTE (SESIÓN REAL)
      ======================================== */
 
-	const nombreCompleto = `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
+	const hijoActual = hijos.lista.find((hijo) => String(hijo.id) === hijoId);
+
+	const nombreCompleto = esPadre
+		? [hijoActual?.usuario?.nombre, hijoActual?.usuario?.apellido]
+				.filter(Boolean)
+				.join(" ")
+		: `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
+
+	/* ========================================
+     PADRE DE FAMILIA: HIJOS NO DISPONIBLES
+     ======================================== */
+
+	if (esPadre && (hijos.cargando || hijos.error || hijos.lista.length === 0)) {
+		return (
+			<section className="mis-notas-page">
+				<div className="mis-notas-page__header">
+					<div>
+						<h2 className="mis-notas-page__title">Notas de mis hijos</h2>
+
+						<p className="mis-notas-page__description">
+							Consulta las calificaciones de tus hijos.
+						</p>
+					</div>
+				</div>
+
+				{hijos.cargando ? (
+					<div className="mis-notas-page__loading">
+						<Loader />
+
+						<p>Cargando tus hijos...</p>
+					</div>
+				) : hijos.error ? (
+					<EmptyState
+						title="No se pudieron cargar tus hijos"
+						description={hijos.error}
+						action={
+							<Button variant="secondary" onClick={reintentarHijos}>
+								Reintentar
+							</Button>
+						}
+					/>
+				) : (
+					<EmptyState
+						icon={GraduationCap}
+						title="Sin hijos vinculados"
+						description="Tu cuenta todavía no tiene estudiantes vinculados. Comunícate con la institución para que los vinculen."
+					/>
+				)}
+			</section>
+		);
+	}
 
 	/* ========================================
      RENDER
@@ -114,7 +288,9 @@ const MisNotas = () => {
 
 			<div className="mis-notas-page__header">
 				<div>
-					<h2 className="mis-notas-page__title">Mis notas</h2>
+					<h2 className="mis-notas-page__title">
+						{esPadre ? "Notas de mis hijos" : "Mis notas"}
+					</h2>
 
 					<p className="mis-notas-page__description">
 						{nombreCompleto
@@ -125,13 +301,34 @@ const MisNotas = () => {
 
 				<Button
 					variant="outline"
-					onClick={cargarNotas}
+					onClick={recargar}
 					leftIcon={<RefreshCw size={17} />}
 					title="Actualizar notas"
 				>
 					Actualizar
 				</Button>
 			</div>
+
+			{/* =====================================
+          SELECTOR DE HIJO (solo Padre)
+          ===================================== */}
+
+			{esPadre && (
+				<div className="mis-notas-page__child-selector">
+					<Select
+						id="notas-hijo"
+						name="hijoId"
+						label="Hijo o hija"
+						value={hijoId}
+						options={hijos.lista.map((hijo) => ({
+							value: String(hijo.id),
+							label: obtenerEtiquetaHijo(hijo),
+						}))}
+						placeholder={null}
+						onChange={(evento) => setHijoId(evento.target.value)}
+					/>
+				</div>
+			)}
 
 			{/* =====================================
           ERROR
@@ -165,7 +362,11 @@ const MisNotas = () => {
 				<EmptyState
 					icon={GraduationCap}
 					title="No hay notas registradas"
-					description="Todavía no se han registrado calificaciones para tu cuenta."
+					description={
+						esPadre
+							? "Todavía no se han registrado calificaciones para este estudiante."
+							: "Todavía no se han registrado calificaciones para tu cuenta."
+					}
 				/>
 			) : (
 				<>
