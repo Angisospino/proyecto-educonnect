@@ -17,6 +17,25 @@ const buscarPorUsuarioId = async (usuarioId) => {
   });
 };
 
+/**
+ * Busca un perfil de estudiante por su ID.
+ *
+ * @param {number} id - ID del perfil (EstudiantePerfil.id).
+ * @returns {Promise<Object|null>} Perfil (id y código) o null.
+ */
+const buscarPorId = async (id) => {
+  return prisma.estudiantePerfil.findUnique({
+    where: {
+      id: Number(id),
+    },
+    select: {
+      id: true,
+      codigoEstudiantil: true,
+    },
+  });
+};
+
 export default {
   buscarPorUsuarioId,
+  buscarPorId,
 };
