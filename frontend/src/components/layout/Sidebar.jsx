@@ -64,30 +64,23 @@ const Sidebar = ({ isOpen = false, onClose }) => {
 			],
 		},
 
+		/*
+		 * Notas y Asistencia: solo los roles que tienen vista en
+		 * AppRouter.jsx (RolePage). Un rol sin vista que entre a la
+		 * ruta vuelve al dashboard, así que no se le ofrece la entrada.
+		 */
 		{
 			label: "Notas",
 			icon: GraduationCap,
 			path: ROUTES.GRADES,
-			roles: [
-				ROLES.ADMINISTRADOR,
-				ROLES.DOCENTE,
-				ROLES.ESTUDIANTE,
-				ROLES.PADRE_FAMILIA,
-				ROLES.DIRECTIVO,
-			],
+			roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE],
 		},
 
 		{
 			label: "Asistencia",
 			icon: CalendarCheck,
 			path: ROUTES.ATTENDANCE,
-			roles: [
-				ROLES.ADMINISTRADOR,
-				ROLES.DOCENTE,
-				ROLES.ESTUDIANTE,
-				ROLES.PADRE_FAMILIA,
-				ROLES.DIRECTIVO,
-			],
+			roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE, ROLES.PADRE_FAMILIA],
 		},
 
 		{
