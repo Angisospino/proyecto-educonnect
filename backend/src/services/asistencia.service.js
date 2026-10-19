@@ -1,6 +1,7 @@
 
 import asistenciaRepository from "../repositories/asistencia.repository.js";
 import estudiantePerfilRepository from "../repositories/estudiantePerfil.repository.js";
+import padreEstudianteRepository from "../repositories/padreEstudiante.repository.js";
 
 /* ==========================================
    CONSTANTES
@@ -11,6 +12,9 @@ const ESTADOS_ASISTENCIA = [
   "AUSENTE",
   "TARDANZA",
 ];
+
+// Máximo valor de un INT de MySQL (los ids de las tablas).
+const INT_MAX = 2147483647;
 
 /* ==========================================
    MANEJO DE ERRORES
@@ -148,6 +152,12 @@ const registrarAsistencia = async (datos = {}, usuario) => {
  * Consulta registros de asistencia respetando
  * los permisos del usuario autenticado.
  *
+ * - ESTUDIANTE: solo su propia asistencia (se ignora estudianteId).
+ * - PADRE_FAMILIA: estudianteId obligatorio (400) y debe ser de un hijo
+ *   vinculado (403); admite inicio/fin y nunca cursoId + fecha.
+ * - ADMINISTRADOR / DOCENTE / DIRECTIVO: por estudianteId o por
+ *   cursoId + fecha.
+ *
  * @param {Object} usuario
  * @param {Object} filtros
  * @returns {Promise<Array>}
@@ -206,16 +216,51 @@ const consultarAsistencia = async (
 
   if (usuario.rol === "PADRE_FAMILIA") {
     /*
-     * El modelo de vínculo padre-estudiante todavía no existe
-     * en el schema, por lo que no hay forma de saber qué
-     * estudiantes pertenecen a este padre. Para no exponer
-     * asistencia de estudiantes ajenos, se deniega el acceso.
+     * Solo puede consultar la asistencia de un hijo vinculado.
+     *
+     * estudianteId (EstudiantePerfil.id) es obligatorio. Los filtros
+     * cursoId y fecha se ignoran para este rol: un padre nunca puede
+     * listar un curso completo. Cualquier consulta sin estudianteId
+     * vinculado termina en 400 o 403 antes de llegar al repositorio.
      */
 
-    throw crearError(
-      "La consulta de asistencia para padres de familia no está disponible " +
-      "hasta que se vinculen los hijos al padre.",
-      403
+    if (
+      filtros.estudianteId === undefined ||
+      filtros.estudianteId === ""
+    ) {
+      throw crearError(
+        "El campo estudianteId es obligatorio para consultar " +
+        "la asistencia de un hijo."
+      );
+    }
+
+    const estudianteId = validarId(
+      filtros.estudianteId,
+      "estudianteId"
+    );
+
+    // Un id fuera del rango de INT de MySQL haría fallar la consulta (500).
+    if (estudianteId > INT_MAX) {
+      throw crearError(
+        "El campo estudianteId debe ser un identificador válido."
+      );
+    }
+
+    const esPadre = await padreEstudianteRepository.esPadreDe(
+      usuario.id,
+      estudianteId
+    );
+
+    if (!esPadre) {
+      throw crearError(
+        "No tiene permisos para consultar la asistencia de este estudiante.",
+        403
+      );
+    }
+
+    return asistenciaRepository.buscarPorEstudiante(
+      estudianteId,
+      rangoFechas
     );
   }
 
