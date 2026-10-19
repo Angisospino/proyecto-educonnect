@@ -3,19 +3,20 @@ import asistenciaService from "../services/asistencia.service.js";
 
 /* ==========================================
    REGISTRAR ASISTENCIA
-   POST /api/asistencias
+   POST /api/asistencia
    ========================================== */
 
 /**
  * Registra la asistencia de un estudiante.
  *
- * @route POST /api/asistencias
- * @access Usuarios autorizados
+ * @route POST /api/asistencia
+ * @access DOCENTE
  */
 export const registrarAsistencia = async (req, res, next) => {
   try {
     const asistencia = await asistenciaService.registrarAsistencia(
-      req.body
+      req.body,
+      req.usuario
     );
 
     return res.status(201).json({
@@ -30,14 +31,14 @@ export const registrarAsistencia = async (req, res, next) => {
 
 /* ==========================================
    OBTENER ASISTENCIA
-   GET /api/asistencias
+   GET /api/asistencia
    ========================================== */
 
 /**
  * Consulta los registros de asistencia
  * aplicando las restricciones por rol.
  *
- * @route GET /api/asistencias
+ * @route GET /api/asistencia
  * @access Usuarios autenticados
  */
 export const obtenerAsistencia = async (req, res, next) => {
