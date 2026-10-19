@@ -9,6 +9,7 @@ import perfilRoutes from "./routes/perfil.routes.js";
 import catalogoRoutes from "./routes/catalogo.routes.js";
 import notaRoutes from "./routes/nota.routes.js";
 import asistenciaRoutes from "./routes/asistencia.routes.js";
+import padreRoutes from "./routes/padre.routes.js";
 
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
@@ -153,6 +154,7 @@ app.use("/api/perfil", perfilRoutes);
 app.use("/api/catalogos", catalogoRoutes);
 app.use("/api/notas", notaRoutes);
 app.use("/api/asistencia", asistenciaRoutes);
+app.use("/api/padres", padreRoutes);
 
 /*
  * Posteriormente agregaremos:
