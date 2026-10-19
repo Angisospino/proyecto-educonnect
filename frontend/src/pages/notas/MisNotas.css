@@ -1,0 +1,378 @@
+/* ==========================================
+   PÁGINA
+   ========================================== */
+
+.mis-notas-page {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.mis-notas-page__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	gap: var(--spacing-4);
+}
+
+.mis-notas-page__header > div:first-child {
+	min-width: 0;
+}
+
+.mis-notas-page__title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-2xl);
+	font-weight: var(--font-weight-semibold);
+}
+
+.mis-notas-page__description {
+	max-width: 720px;
+
+	margin: var(--spacing-2) 0 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+	line-height: 1.6;
+}
+
+/* ==========================================
+   ALERTA DE ERROR
+   ========================================== */
+
+.mis-notas-page__alert {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid rgba(220, 53, 69, 0.2);
+
+	border-radius: var(--radius-md);
+
+	background-color: rgba(220, 53, 69, 0.08);
+
+	color: var(--color-danger);
+
+	font-size: var(--font-size-sm);
+}
+
+.mis-notas-page__alert span {
+	flex: 1;
+}
+
+.mis-notas-page__alert button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 30px;
+	height: 30px;
+
+	padding: 0;
+
+	border: 0;
+	border-radius: var(--radius-sm);
+
+	background-color: transparent;
+
+	color: currentColor;
+
+	font-size: 22px;
+	line-height: 1;
+
+	cursor: pointer;
+
+	transition: background-color var(--transition-fast);
+}
+
+.mis-notas-page__alert button:hover {
+	background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* ==========================================
+   LOADING
+   ========================================== */
+
+.mis-notas-page__loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 300px;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-6);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+.mis-notas-page__loading p {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   TARJETA DE PROMEDIO
+   ========================================== */
+
+.mis-notas-page__summary {
+	display: flex;
+	align-items: center;
+
+	gap: var(--spacing-4);
+
+	padding: var(--spacing-5);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+.mis-notas-page__summary-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: 56px;
+	height: 56px;
+
+	border-radius: var(--radius-full);
+
+	background-color: var(--color-primary-light);
+
+	color: var(--color-primary);
+}
+
+.mis-notas-page__summary-content {
+	display: flex;
+	flex-direction: column;
+
+	min-width: 0;
+
+	gap: var(--spacing-1);
+}
+
+.mis-notas-page__summary-label {
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+}
+
+.mis-notas-page__summary-value {
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-3xl);
+	font-weight: var(--font-weight-bold);
+}
+
+.mis-notas-page__summary > .badge {
+	margin-left: auto;
+}
+
+/* ==========================================
+   CARD PRINCIPAL
+   ========================================== */
+
+.mis-notas-page__card {
+	position: relative;
+
+	width: 100%;
+	min-width: 0;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   TABLA - WRAPPER
+   ========================================== */
+
+.mis-notas-page__table-wrapper {
+	width: 100%;
+
+	overflow-x: auto;
+
+	border-radius: var(--radius-lg);
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.mis-notas-page__table {
+	width: 100%;
+	min-width: 600px;
+
+	border-collapse: collapse;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+}
+
+.mis-notas-page__table thead {
+	background-color: var(--background-secondary);
+}
+
+.mis-notas-page__table th {
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+	font-weight: var(--font-weight-semibold);
+
+	text-align: left;
+
+	text-transform: uppercase;
+
+	letter-spacing: 0.03em;
+
+	white-space: nowrap;
+}
+
+.mis-notas-page__table td {
+	padding: var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	vertical-align: middle;
+}
+
+.mis-notas-page__table tbody tr {
+	transition: background-color var(--transition-fast);
+}
+
+.mis-notas-page__table tbody tr:hover {
+	background-color: var(--background-secondary);
+}
+
+.mis-notas-page__table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+/* ==========================================
+   ASIGNATURA
+   ========================================== */
+
+.mis-notas-page__asignatura {
+	display: flex;
+	align-items: center;
+
+	gap: var(--spacing-2);
+
+	color: var(--text-primary);
+
+	font-weight: var(--font-weight-medium);
+}
+
+.mis-notas-page__asignatura svg {
+	flex-shrink: 0;
+
+	color: var(--color-primary);
+}
+
+/* ==========================================
+   EMPTY STATE
+   ========================================== */
+
+.mis-notas-page .empty-state {
+	min-height: 330px;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+	.mis-notas-page {
+		gap: var(--spacing-4);
+	}
+
+	.mis-notas-page__header {
+		flex-direction: column;
+	}
+
+	.mis-notas-page__header > button {
+		width: 100%;
+	}
+
+	.mis-notas-page__title {
+		font-size: var(--font-size-xl);
+	}
+
+	.mis-notas-page__summary {
+		flex-wrap: wrap;
+	}
+
+	.mis-notas-page__summary > .badge {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 576px) {
+	.mis-notas-page__card {
+		border-radius: var(--radius-md);
+	}
+
+	.mis-notas-page__table-wrapper {
+		border-radius: var(--radius-md);
+	}
+
+	.mis-notas-page__alert {
+		align-items: flex-start;
+	}
+}

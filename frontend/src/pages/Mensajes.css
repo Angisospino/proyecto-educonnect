@@ -1,0 +1,306 @@
+/* =========================================================
+   EduConnect BR
+   Archivo: Mensajes.css
+   Descripción:
+   Estilos de la página de Mensajes. Migrado desde el
+   antiguo index.css (bloque muerto, nunca importado).
+   Nota: esta página aún no tiene un requisito funcional
+   definido (RF pendiente de decisión de producto, ver
+   Notion [Sprint 3-19]).
+   ========================================================= */
+
+/* =========================
+   ENCABEZADO
+   ========================= */
+
+.mensajes-page .page-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 25px;
+}
+
+.mensajes-page .page-top h1 {
+	font-size: 26px;
+	color: var(--text-primary);
+	margin-bottom: 6px;
+}
+
+.mensajes-page .page-top p {
+	color: var(--text-secondary);
+	font-size: 13px;
+}
+
+.mensajes-page .student-info {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.mensajes-page .student-info strong {
+	display: block;
+	font-size: 12px;
+}
+
+.mensajes-page .student-info small {
+	display: block;
+	color: var(--text-secondary);
+	font-size: 10px;
+	margin-top: 3px;
+}
+
+.mensajes-page .avatar {
+	width: 40px;
+	height: 40px;
+
+	border-radius: 50%;
+
+	background: linear-gradient(
+		135deg,
+		var(--color-primary),
+		#45b76b
+	);
+
+	color: white;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-weight: bold;
+}
+
+
+/* =========================
+   CONTENEDOR PRINCIPAL
+   ========================= */
+
+.messages-container {
+	height: calc(100vh - 150px);
+	min-height: 600px;
+	display: grid;
+	grid-template-columns: 320px 1fr;
+	background: var(--bg-surface);
+	border-radius: 18px;
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+}
+
+
+/* =========================
+   PANEL DE CONTACTOS
+   ========================= */
+
+.contacts-panel {
+	border-right: var(--border-width) solid var(--border-color);
+	display: flex;
+	flex-direction: column;
+}
+
+.contacts-header {
+	padding: 20px;
+	border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.contacts-header h2 {
+	font-size: 16px;
+	margin-bottom: 14px;
+}
+
+.contacts-header input {
+	width: 100%;
+	padding: 10px;
+	border: var(--border-width) solid var(--border-color-dark);
+	border-radius: 8px;
+	outline: none;
+}
+
+.contacts-list {
+	overflow-y: auto;
+}
+
+.contact-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 15px;
+	cursor: pointer;
+	border-bottom: var(--border-width) solid var(--color-gray-200);
+}
+
+.contact-item:hover {
+	background: var(--bg-body);
+}
+
+.contact-item.selected {
+	background: var(--color-primary-light);
+}
+
+.contact-avatar {
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	background: var(--color-primary);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	flex-shrink: 0;
+}
+
+.contact-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.contact-info strong {
+	display: block;
+	font-size: 12px;
+}
+
+.contact-info span {
+	display: block;
+	font-size: 10px;
+	color: var(--text-secondary);
+	margin-top: 4px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.contact-item small {
+	font-size: 9px;
+	color: var(--text-secondary);
+	align-self: flex-start;
+}
+
+
+/* =========================
+   PANEL DE CHAT
+   ========================= */
+
+.chat-panel {
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-header {
+	padding: 18px 22px;
+	border-bottom: var(--border-width) solid var(--border-color);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.chat-user {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.chat-user h2 {
+	font-size: 15px;
+}
+
+.chat-user span {
+	color: var(--color-success);
+	font-size: 10px;
+}
+
+.chat-info {
+	border: none;
+	background: var(--bg-body);
+	width: 36px;
+	height: 36px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.chat-body {
+	flex: 1;
+	background: var(--bg-body);
+	padding: 22px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.message-bubble {
+	max-width: 65%;
+	padding: 11px 14px;
+	border-radius: 12px;
+	font-size: 11px;
+	line-height: 1.5;
+}
+
+.message-bubble p {
+	margin-bottom: 5px;
+}
+
+.message-bubble small {
+	font-size: 8px;
+	opacity: .7;
+}
+
+.received-message {
+	background: var(--bg-surface);
+	align-self: flex-start;
+	border-bottom-left-radius: 3px;
+}
+
+.my-message {
+	background: var(--color-primary);
+	color: white;
+	align-self: flex-end;
+	border-bottom-right-radius: 3px;
+}
+
+.chat-input {
+	padding: 15px;
+	border-top: var(--border-width) solid var(--border-color);
+	display: flex;
+	gap: 10px;
+}
+
+.chat-input input {
+	flex: 1;
+	border: var(--border-width) solid var(--border-color-dark);
+	border-radius: 9px;
+	padding: 11px 13px;
+	outline: none;
+}
+
+.chat-input button {
+	width: 45px;
+	border: none;
+	border-radius: 9px;
+	background: var(--color-primary);
+	color: white;
+	cursor: pointer;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 700px) {
+
+	.messages-container {
+		grid-template-columns: 1fr;
+		height: auto;
+	}
+
+	.contacts-panel {
+		max-height: 300px;
+		border-right: none;
+		border-bottom: var(--border-width) solid var(--border-color);
+	}
+
+	.chat-body {
+		min-height: 400px;
+	}
+
+}
