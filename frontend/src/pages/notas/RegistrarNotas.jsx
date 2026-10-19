@@ -1,11 +1,12 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Input from "../../components/ui/Input.jsx";
 import Select from "../../components/ui/Select.jsx";
 import Button from "../../components/ui/Button.jsx";
 
 import notaService from "../../services/nota.service.js";
+import catalogoService from "../../services/catalogo.service.js";
 
 import "./RegistrarNotas.css";
 
@@ -17,32 +18,49 @@ const ESTADO_INICIAL = {
   periodo: "",
 };
 
-const obtenerMensajeError = (error) => {
+const obtenerMensajeError = (
+  error,
+  porDefecto = "No fue posible registrar la nota."
+) => {
   return (
     error.response?.data?.message ||
     error.response?.data?.error ||
     error.message ||
-    "No fue posible registrar la nota."
+    porDefecto
   );
 };
 
+// El servicio devuelve el sobre del backend
+// ({ success, data, error }); se extrae la lista.
+const extraerLista = (respuesta) => {
+  const lista = Array.isArray(respuesta)
+    ? respuesta
+    : respuesta?.data;
+
+  return Array.isArray(lista) ? lista : [];
+};
+
+const obtenerEtiquetaEstudiante = (estudiante) => {
+  const nombre =
+    `${estudiante.usuario?.apellido ?? ""} ${estudiante.usuario?.nombre ?? ""}`.trim();
+
+  return estudiante.codigoEstudiantil
+    ? `${nombre} (${estudiante.codigoEstudiantil})`
+    : nombre;
+};
+
+// Estado inicial de los estudiantes cargados: sin curso asociado.
+const ESTUDIANTES_INICIAL = {
+  cursoId: "",
+  lista: [],
+  error: "",
+};
+
 /**
- * @param {Array} cursos
- * @param {Array} estudiantes
- * @param {Array} asignaturas
- *
- * Los catálogos deben contener IDs y sus
- * relaciones académicas correspondientes.
- *
- * TODO: los catálogos llegan por props (default []) porque el
- * backend de catálogos aún no existe ([Sprint 3 - 20]); cuando
- * exista se cargarán dentro de la vista con catalogo.service.js.
+ * Los catálogos (cursos, asignaturas y estudiantes del
+ * curso seleccionado) se cargan desde catalogo.service.js.
  */
-export default function RegistrarNotas({
-  cursos = [],
-  estudiantes = [],
-  asignaturas = [],
-}) {
+export default function RegistrarNotas() {
   const [formulario, setFormulario] =
     useState(ESTADO_INICIAL);
 
@@ -51,28 +69,118 @@ export default function RegistrarNotas({
   const [guardando, setGuardando] = useState(false);
 
   /* ==========================================
-     CATÁLOGOS DEPENDIENTES
+     CATÁLOGOS
      ========================================== */
 
-  const estudiantesFiltrados = useMemo(() => {
-    if (!formulario.cursoId) return [];
+  const [cursos, setCursos] = useState([]);
+  const [asignaturas, setAsignaturas] = useState([]);
+  const [cargandoCatalogos, setCargandoCatalogos] =
+    useState(true);
+  const [errorCatalogos, setErrorCatalogos] =
+    useState("");
 
-    return estudiantes.filter(
-      (estudiante) =>
-        String(estudiante.cursoId) ===
-        String(formulario.cursoId)
-    );
-  }, [estudiantes, formulario.cursoId]);
+  const [estudiantesCargados, setEstudiantesCargados] =
+    useState(ESTUDIANTES_INICIAL);
 
-  const asignaturasFiltradas = useMemo(() => {
-    if (!formulario.cursoId) return [];
+  // Cursos y asignaturas: una sola carga al montar.
+  useEffect(() => {
+    let activo = true;
 
-    return asignaturas.filter(
-      (asignatura) =>
-        String(asignatura.cursoId) ===
-        String(formulario.cursoId)
-    );
-  }, [asignaturas, formulario.cursoId]);
+    const cargarCatalogos = async () => {
+      try {
+        const [respuestaCursos, respuestaAsignaturas] =
+          await Promise.all([
+            catalogoService.obtenerCursos(),
+            catalogoService.obtenerAsignaturas(),
+          ]);
+
+        if (!activo) return;
+
+        setCursos(extraerLista(respuestaCursos));
+        setAsignaturas(extraerLista(respuestaAsignaturas));
+      } catch (error) {
+        if (!activo) return;
+
+        setErrorCatalogos(
+          obtenerMensajeError(
+            error,
+            "No fue posible cargar los cursos y asignaturas."
+          )
+        );
+      } finally {
+        if (activo) setCargandoCatalogos(false);
+      }
+    };
+
+    cargarCatalogos();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  // Estudiantes: se vuelven a cargar al cambiar el curso.
+  // El resultado queda asociado al curso que lo originó; la
+  // limpieza del efecto descarta respuestas de un curso
+  // anterior o recibidas tras desmontar.
+  useEffect(() => {
+    if (!formulario.cursoId) return;
+
+    const cursoId = formulario.cursoId;
+    let activo = true;
+
+    const cargarEstudiantes = async () => {
+      try {
+        const respuesta =
+          await catalogoService.obtenerEstudiantesDeCurso(
+            cursoId
+          );
+
+        if (!activo) return;
+
+        setEstudiantesCargados({
+          cursoId,
+          lista: extraerLista(respuesta),
+          error: "",
+        });
+      } catch (error) {
+        if (!activo) return;
+
+        setEstudiantesCargados({
+          cursoId,
+          lista: [],
+          error: obtenerMensajeError(
+            error,
+            "No fue posible cargar los estudiantes del curso."
+          ),
+        });
+      }
+    };
+
+    cargarEstudiantes();
+
+    return () => {
+      activo = false;
+    };
+  }, [formulario.cursoId]);
+
+  // Solo se consideran los estudiantes cargados para el
+  // curso actualmente seleccionado.
+  const estudiantesVigentes =
+    estudiantesCargados.cursoId === formulario.cursoId;
+
+  const estudiantes = estudiantesVigentes
+    ? estudiantesCargados.lista
+    : [];
+
+  const errorEstudiantes = estudiantesVigentes
+    ? estudiantesCargados.error
+    : "";
+
+  const cargandoEstudiantes =
+    Boolean(formulario.cursoId) && !estudiantesVigentes;
+
+  const errorCarga = errorCatalogos || errorEstudiantes;
 
   /* ==========================================
      OPCIONES DE LOS SELECTORES
@@ -84,16 +192,14 @@ export default function RegistrarNotas({
     label: curso.nombre,
   }));
 
-  const opcionesEstudiantes = estudiantesFiltrados.map(
+  const opcionesEstudiantes = estudiantes.map(
     (estudiante) => ({
       value: String(estudiante.id),
-      label:
-        estudiante.nombreCompleto ||
-        `${estudiante.nombre ?? ""} ${estudiante.apellido ?? ""}`.trim(),
+      label: obtenerEtiquetaEstudiante(estudiante),
     })
   );
 
-  const opcionesAsignaturas = asignaturasFiltradas.map(
+  const opcionesAsignaturas = asignaturas.map(
     (asignatura) => ({
       value: String(asignatura.id),
       label: asignatura.nombre,
@@ -111,7 +217,6 @@ export default function RegistrarNotas({
           ...anterior,
           cursoId: valor,
           estudianteId: "",
-          asignaturaId: "",
         };
       }
 
@@ -180,7 +285,7 @@ export default function RegistrarNotas({
     }
 
     const estudianteValido =
-      estudiantesFiltrados.some(
+      estudiantes.some(
         (estudiante) =>
           String(estudiante.id) ===
           formulario.estudianteId
@@ -195,7 +300,7 @@ export default function RegistrarNotas({
     }
 
     const asignaturaValida =
-      asignaturasFiltradas.some(
+      asignaturas.some(
         (asignatura) =>
           String(asignatura.id) ===
           formulario.asignaturaId
@@ -206,7 +311,7 @@ export default function RegistrarNotas({
       !asignaturaValida
     ) {
       nuevosErrores.asignaturaId =
-        "La asignatura no pertenece al curso.";
+        "La asignatura seleccionada no es válida.";
     }
 
     setErrores(nuevosErrores);
@@ -301,6 +406,15 @@ export default function RegistrarNotas({
           </p>
         </div>
 
+        {errorCarga && (
+          <div
+            className="registrar-notas__mensaje registrar-notas__mensaje--error"
+            role="alert"
+          >
+            {errorCarga}
+          </div>
+        )}
+
         {mensaje && (
           <div
             className={
@@ -333,11 +447,15 @@ export default function RegistrarNotas({
                 name="cursoId"
                 value={formulario.cursoId}
                 options={opcionesCursos}
-                placeholder="Selecciona un curso"
+                placeholder={
+                  cargandoCatalogos
+                    ? "Cargando cursos..."
+                    : "Selecciona un curso"
+                }
                 onChange={(e) =>
                   actualizarCampo("cursoId", e.target.value)
                 }
-                disabled={guardando}
+                disabled={guardando || cargandoCatalogos}
               />
 
               {errores.cursoId && (
@@ -357,7 +475,11 @@ export default function RegistrarNotas({
                 name="estudianteId"
                 value={formulario.estudianteId}
                 options={opcionesEstudiantes}
-                placeholder="Selecciona un estudiante"
+                placeholder={
+                  cargandoEstudiantes
+                    ? "Cargando estudiantes..."
+                    : "Selecciona un estudiante"
+                }
                 onChange={(e) =>
                   actualizarCampo(
                     "estudianteId",
@@ -366,7 +488,8 @@ export default function RegistrarNotas({
                 }
                 disabled={
                   guardando ||
-                  !formulario.cursoId
+                  !formulario.cursoId ||
+                  cargandoEstudiantes
                 }
               />
 
@@ -387,17 +510,18 @@ export default function RegistrarNotas({
                 name="asignaturaId"
                 value={formulario.asignaturaId}
                 options={opcionesAsignaturas}
-                placeholder="Selecciona una asignatura"
+                placeholder={
+                  cargandoCatalogos
+                    ? "Cargando asignaturas..."
+                    : "Selecciona una asignatura"
+                }
                 onChange={(e) =>
                   actualizarCampo(
                     "asignaturaId",
                     e.target.value
                   )
                 }
-                disabled={
-                  guardando ||
-                  !formulario.cursoId
-                }
+                disabled={guardando || cargandoCatalogos}
               />
 
               {errores.asignaturaId && (
