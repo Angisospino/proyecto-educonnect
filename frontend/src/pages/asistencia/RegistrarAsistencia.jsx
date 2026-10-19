@@ -6,6 +6,7 @@ import Button from "../../components/ui/Button.jsx";
 
 import asistenciaService from "../../services/asistencia.service.js";
 import catalogoService from "../../services/catalogo.service.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import "./RegistrarAsistencia.css";
 
@@ -32,19 +33,6 @@ const obtenerFechaLocal = () => {
   ).padStart(2, "0");
 
   return `${anio}-${mes}-${dia}`;
-};
-
-const obtenerMensajeError = (
-  error,
-  porDefecto = "Error desconocido."
-) => {
-  const mensaje = error?.response?.data?.message;
-  const detalle = error?.response?.data?.error;
-
-  if (typeof mensaje === "string") return mensaje;
-  if (typeof detalle === "string") return detalle;
-
-  return error?.message || porDefecto;
 };
 
 // El servicio devuelve el sobre del backend
@@ -378,7 +366,7 @@ export default function RegistrarAsistencia() {
         erroresRegistro.push({
           estudianteId: estudiante.id,
           nombre: obtenerNombreEstudiante(estudiante),
-          mensaje: obtenerMensajeError(error),
+          mensaje: obtenerMensajeError(error, "Error desconocido."),
         });
       }
     }

@@ -15,6 +15,7 @@ import {
 	ESTADOS_USUARIO,
 	ESTADO_USUARIO_LABELS,
 } from "../../../utils/constants.js";
+import { obtenerMensajeError } from "../../../utils/errores.js";
 
 import "./UsuarioForm.css";
 
@@ -332,8 +333,7 @@ const UsuarioForm = ({ isOpen, onClose, usuario = null, onSuccess }) => {
 
 			const status = error.response?.status;
 
-			const message =
-				error.response?.data?.message || error.response?.data?.error;
+			const message = obtenerMensajeError(error, "");
 
 			/* EMAIL DUPLICADO */
 

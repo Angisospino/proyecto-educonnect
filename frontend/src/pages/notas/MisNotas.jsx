@@ -5,6 +5,7 @@ import { BookOpen, GraduationCap, RefreshCw } from "lucide-react";
 import notaService from "../../services/nota.service.js";
 
 import { useAuth } from "../../hooks/useAuth.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import Loader from "../../components/ui/Loader.jsx";
 import EmptyState from "../../components/ui/EmptyState.jsx";
@@ -68,11 +69,7 @@ const MisNotas = () => {
 		} catch (err) {
 			console.error("Error cargando notas:", err);
 
-			setError(
-				err.response?.data?.error ||
-					err.response?.data?.message ||
-					"No fue posible cargar las notas.",
-			);
+			setError(obtenerMensajeError(err, "No fue posible cargar las notas."));
 		} finally {
 			setLoading(false);
 		}

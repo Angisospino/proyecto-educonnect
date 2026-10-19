@@ -12,6 +12,7 @@ import Loader from "../../components/ui/Loader.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
 import asistenciaService from "../../services/asistencia.service.js";
 import { ROLES } from "../../utils/constants.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import "./ConsultarAsistencia.css";
 
@@ -42,21 +43,6 @@ const FILTROS_INICIALES = {
 /* ==========================================
    UTILIDADES
    ========================================== */
-
-const obtenerMensajeError = (error) => {
-  const data = error?.response?.data;
-
-  if (typeof data?.message === "string") {
-    return data.message;
-  }
-
-  if (typeof data?.error === "string") {
-    return data.error;
-  }
-
-  return error?.message ||
-    "No fue posible consultar la asistencia.";
-};
 
 const formatearFecha = (valor) => {
   if (!valor) return "Sin fecha";
@@ -165,7 +151,12 @@ export default function ConsultarAsistencia() {
       } catch (err) {
         if (activo) {
           setAsistencias([]);
-          setError(obtenerMensajeError(err));
+          setError(
+            obtenerMensajeError(
+              err,
+              "No fue posible consultar la asistencia."
+            )
+          );
         }
       } finally {
         if (activo) {

@@ -21,6 +21,7 @@ import Input from "../../components/ui/Input.jsx";
 import Loader from "../../components/ui/Loader.jsx";
 
 import { ROLE_LABELS } from "../../utils/constants.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import "./Perfil.css";
 
@@ -115,9 +116,10 @@ const Perfil = () => {
 			console.error("Error cargando perfil:", err);
 
 			setError(
-				err.response?.data?.message ||
-					err.response?.data?.error ||
+				obtenerMensajeError(
+					err,
 					"No fue posible cargar la información del perfil.",
+				),
 			);
 		} finally {
 			setLoading(false);
@@ -266,7 +268,7 @@ const Perfil = () => {
 
 			const status = err.response?.status;
 
-			const message = err.response?.data?.message || err.response?.data?.error;
+			const message = obtenerMensajeError(err, "");
 
 			if (status === 409) {
 				setErrors((previous) => ({
@@ -382,9 +384,7 @@ const Perfil = () => {
 			console.error("Error cambiando contraseña:", err);
 
 			setPasswordError(
-				err.response?.data?.message ||
-					err.response?.data?.error ||
-					"No fue posible cambiar la contraseña.",
+				obtenerMensajeError(err, "No fue posible cambiar la contraseña."),
 			);
 		} finally {
 			setChangingPassword(false);

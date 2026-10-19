@@ -31,6 +31,7 @@ import {
 	ESTADOS_USUARIO,
 	ESTADO_USUARIO_LABELS,
 } from "../../../utils/constants.js";
+import { obtenerMensajeError } from "../../../utils/errores.js";
 
 import "./Usuarios.css";
 
@@ -171,11 +172,7 @@ const Usuarios = () => {
 		} catch (err) {
 			console.error("Error cargando usuarios:", err);
 
-			setError(
-				err.response?.data?.message ||
-					err.response?.data?.error ||
-					"No fue posible cargar los usuarios.",
-			);
+			setError(obtenerMensajeError(err, "No fue posible cargar los usuarios."));
 		} finally {
 			setLoading(false);
 		}
