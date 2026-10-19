@@ -43,39 +43,28 @@ export const registrarAsistencia = async (req, res, next) => {
  */
 export const obtenerAsistencia = async (req, res, next) => {
   try {
-    const asistencias = await asistenciaService.consultarAsistencia(
-      req.usuario,
-      req.query
-    );
+    const { asistencias, paginacion } =
+      await asistenciaService.consultarAsistencia(
+        req.usuario,
+        req.query
+      );
 
+    // Sin paginación la respuesta es la de siempre. Si se paginó, total es
+    // el total de registros visibles (no el largo de la página) y se
+    // agregan page y pageSize dentro de data.
     return res.status(200).json({
       success: true,
       message: "Asistencias obtenidas correctamente.",
       data: {
         asistencias,
-        total: asistencias.length,
+        total: paginacion ? paginacion.total : asistencias.length,
+        ...(paginacion && {
+          page: paginacion.page,
+          pageSize: paginacion.pageSize,
+        }),
       },
     });
   } catch (error) {
     next(error);
   }
 };
-
-const resultado =
-  await asistenciaService.consultarAsistencia({
-    // Conservar filtros y usuario autenticado.
-    ...filtrosAutorizados,
-    page: req.query.page,
-    pageSize: req.query.pageSize,
-  });
-
-return res.status(200).json({
-  success: true,
-  data: {
-    asistencias: resultado.asistencias,
-    total: resultado.total,
-  },
-  page: resultado.page,
-  pageSize: resultado.pageSize,
-});
-

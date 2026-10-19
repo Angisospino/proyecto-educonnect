@@ -27,14 +27,18 @@ const crearNota = async (req, res, next) => {
 
 const obtenerNotas = async (req, res, next) => {
     try {
-        const notas = await notaService.consultarNotas(
+        const { notas, paginacion } = await notaService.consultarNotas(
             req.usuario,
             req.query,
         );
 
+        // data sigue siendo siempre un arreglo. Solo si la consulta se
+        // paginó se agrega meta junto a data (compatibilidad con el
+        // frontend actual, que lee el arreglo completo).
         return res.status(200).json({
             success: true,
             data: notas,
+            ...(paginacion && { meta: paginacion }),
             error: null,
         });
     } catch (error) {
@@ -67,25 +71,6 @@ const actualizarNota = async (req, res, next) => {
 /* ==========================================
    EXPORTAR CONTROLADOR
    ========================================== */
-
-   
-const resultado = await notaService.consultarNotas({
-  // Conservar aquí los filtros existentes
-  // y el contexto del usuario autenticado.
-  ...filtrosAutorizados,
-  page: req.query.page,
-  pageSize: req.query.pageSize,
-});
-
-return res.status(200).json({
-  success: true,
-  data: resultado.notas,
-  meta: {
-    total: resultado.total,
-    page: resultado.page,
-    pageSize: resultado.pageSize,
-  },
-});
 
 const notaController = {
     crearNota,

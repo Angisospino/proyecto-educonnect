@@ -1,7 +1,7 @@
 import notaRepository from '../repositories/nota.repository.js';
 import estudiantePerfilRepository from '../repositories/estudiantePerfil.repository.js';
 import padreEstudianteRepository from '../repositories/padreEstudiante.repository.js';
-import { validarPaginacion } from "../utils/pagination.util.js";
+import { hayPaginacion, validarPaginacion } from '../utils/pagination.util.js';
 
 const crearError = (mensaje, statusCode) => {
   const error = new Error(mensaje);
@@ -90,9 +90,15 @@ const registrarNota = async (datos = {}, usuario) => {
  * estudianteId es opcional y debe ser un entero positivo (400 si no lo es);
  * periodo se usa como texto.
  *
+ * La paginación es opcional: solo se aplica si llega page y/o pageSize
+ * (ver pagination.util.js) y siempre DESPUÉS de resolver el alcance por
+ * rol, de modo que el total cuenta únicamente las notas que el usuario
+ * puede ver. Sin esos parámetros se devuelven todas las notas.
+ *
  * @param {Object} usuario - Usuario autenticado.
  * @param {Object} filtros - Filtros de búsqueda.
- * @returns {Promise<Array>} Lista de notas.
+ * @returns {Promise<{ notas: Array, paginacion: ({ total: number, page: number, pageSize: number }|null) }>}
+ *   paginacion es null cuando la consulta no se paginó.
  */
 const consultarNotas = async (usuario, filtros = {}) => {
   let estudianteId;
@@ -109,7 +115,13 @@ const consultarNotas = async (usuario, filtros = {}) => {
     if (!perfil) {
       // Usuario con rol ESTUDIANTE sin perfil asociado: no explota,
       // simplemente no tiene notas que consultar.
-      return [];
+      if (!hayPaginacion(filtros)) {
+        return { notas: [], paginacion: null };
+      }
+
+      const { page, pageSize } = validarPaginacion(filtros);
+
+      return { notas: [], paginacion: { total: 0, page, pageSize } };
     }
 
     estudianteId = perfil.id;
@@ -162,10 +174,26 @@ const consultarNotas = async (usuario, filtros = {}) => {
     throw crearError('periodo no es válido.', 400);
   }
 
-  return notaRepository.buscarPorEstudiante(
+  // Con el alcance ya validado, se resuelve la consulta completa o la
+  // paginada. Los errores de permisos (400/403) tienen prioridad sobre los
+  // de paginación.
+  if (!hayPaginacion(filtros)) {
+    const notas = await notaRepository.buscarPorEstudiante(
+      estudianteId,
+      periodo
+    );
+
+    return { notas, paginacion: null };
+  }
+
+  const { page, pageSize, skip, take } = validarPaginacion(filtros);
+  const { notas, total } = await notaRepository.buscarPaginadasPorEstudiante(
     estudianteId,
-    periodo
+    periodo,
+    { skip, take }
   );
+
+  return { notas, paginacion: { total, page, pageSize } };
 };
 
 /**
@@ -201,32 +229,6 @@ const actualizarNota = async (id, datos = {}, usuario) => {
     valor: validarValor(datos.valor),
   });
 };
-
-
-const { page, pageSize, skip, take } =
-  validarPaginacion({
-    page: filtros.page,
-    pageSize: filtros.pageSize,
-  });
-
-// IMPORTANTE:
-// "where" debe ser el filtro autorizado
-// construido previamente por el servicio.
-
-const { notas, total } =
-  await notaRepository.buscarPaginadas({
-    where,
-    skip,
-    take,
-  });
-
-return {
-  notas,
-  total,
-  page,
-  pageSize,
-};
-
 
 export default {
   registrarNota,

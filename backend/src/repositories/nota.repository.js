@@ -12,6 +12,29 @@ const crear = async (datos) => {
   });
 };
 
+// No se usa `docente: true` a secas: el modelo Usuario incluye
+// passwordHash, y ese campo nunca debe salir hacia el cliente
+// (mismo criterio que usuario.repository.js, que siempre hace
+// select explícito para excluirlo).
+const incluirRelaciones = {
+  asignatura: true,
+  docente: {
+    select: {
+      id: true,
+      nombre: true,
+      apellido: true,
+      email: true,
+    },
+  },
+};
+
+// Filtro compartido por la consulta completa y la paginada: así el
+// total (count) siempre se calcula sobre las mismas notas que se listan.
+const filtrarPorEstudiante = (estudianteId, periodo) => ({
+  estudianteId,
+  periodo,
+});
+
 /**
  * Busca las notas de un estudiante en un período académico.
  *
@@ -21,26 +44,42 @@ const crear = async (datos) => {
  */
 const buscarPorEstudiante = async (estudianteId, periodo) => {
   return prisma.nota.findMany({
-    where: {
-      estudianteId,
-      periodo,
-    },
-    include: {
-      asignatura: true,
-      // No se usa `docente: true` a secas: el modelo Usuario incluye
-      // passwordHash, y ese campo nunca debe salir hacia el cliente
-      // (mismo criterio que usuario.repository.js, que siempre hace
-      // select explícito para excluirlo).
-      docente: {
-        select: {
-          id: true,
-          nombre: true,
-          apellido: true,
-          email: true,
-        },
-      },
-    },
+    where: filtrarPorEstudiante(estudianteId, periodo),
+    include: incluirRelaciones,
   });
+};
+
+/**
+ * Igual que buscarPorEstudiante pero devuelve una sola página y el total
+ * de notas que cumplen el filtro (no el de la página).
+ *
+ * El orden es fijo (período e id) para que las páginas sean estables y
+ * no se repitan ni se salten notas entre una página y otra.
+ *
+ * @param {number} estudianteId - ID del perfil del estudiante.
+ * @param {string} periodo - Período académico.
+ * @param {{ skip: number, take: number }} paginacion
+ * @returns {Promise<{ notas: Array, total: number }>}
+ */
+const buscarPaginadasPorEstudiante = async (
+  estudianteId,
+  periodo,
+  { skip, take }
+) => {
+  const where = filtrarPorEstudiante(estudianteId, periodo);
+
+  const [notas, total] = await prisma.$transaction([
+    prisma.nota.findMany({
+      where,
+      include: incluirRelaciones,
+      orderBy: [{ periodo: 'asc' }, { id: 'asc' }],
+      skip,
+      take,
+    }),
+    prisma.nota.count({ where }),
+  ]);
+
+  return { notas, total };
 };
 
 /**
@@ -73,39 +112,10 @@ const actualizar = async (id, datos) => {
   });
 };
 
-
-const buscarPaginadas = async ({
-  where,
-  skip,
-  take,
-}) => {
-  const [notas, total] = await prisma.$transaction([
-    prisma.nota.findMany({
-      where,
-      skip,
-      take,
-      orderBy: [
-        { periodo: "asc" },
-        { id: "asc" },
-      ],
-    }),
-
-    prisma.nota.count({
-      where,
-    }),
-  ]);
-
-  return {
-    notas,
-    total,
-  };
-};
-
-
 export default {
   crear,
   buscarPorEstudiante,
+  buscarPaginadasPorEstudiante,
   buscarPorId,
   actualizar,
-  buscarPaginadas
 };
