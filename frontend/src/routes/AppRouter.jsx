@@ -7,13 +7,17 @@ import DashboardLayout from "../layouts/DashboardLayout.jsx";
 /* Protección de rutas */
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import RoleRoute from "./RoleRoute.jsx";
+import RolePage from "./RolePage.jsx";
 
 /* Páginas */
 import Login from "../pages/auth/Login.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Perfil from "../pages/profile/Perfil.jsx";
 import Usuarios from "../pages/admin/usuarios/Usuarios.jsx";
+import RegistrarNotas from "../pages/notas/RegistrarNotas.jsx";
 import MisNotas from "../pages/notas/MisNotas.jsx";
+import RegistrarAsistencia from "../pages/asistencia/RegistrarAsistencia.jsx";
+import ConsultarAsistencia from "../pages/asistencia/ConsultarAsistencia.jsx";
 
 /* Constantes */
 import { ROUTES, ROLES } from "../utils/constants.js";
@@ -59,13 +63,36 @@ const AppRoutes = () => {
 					</Route>
 
 					{/* ===============================
-              ESTUDIANTE
-              Solo ESTUDIANTE
+              NOTAS Y ASISTENCIA
+              Una sola ruta por path: RolePage elige
+              la vista según el rol y, si el rol no
+              tiene vista, redirige al dashboard.
               =============================== */}
 
-					<Route element={<RoleRoute allowedRoles={[ROLES.ESTUDIANTE]} />}>
-						<Route path={ROUTES.GRADES} element={<MisNotas />} />
-					</Route>
+					<Route
+						path={ROUTES.GRADES}
+						element={
+							<RolePage
+								pages={{
+									[ROLES.DOCENTE]: <RegistrarNotas />,
+									[ROLES.ESTUDIANTE]: <MisNotas />,
+								}}
+							/>
+						}
+					/>
+
+					<Route
+						path={ROUTES.ATTENDANCE}
+						element={
+							<RolePage
+								pages={{
+									[ROLES.DOCENTE]: <RegistrarAsistencia />,
+									[ROLES.ESTUDIANTE]: <ConsultarAsistencia />,
+									[ROLES.PADRE_FAMILIA]: <ConsultarAsistencia />,
+								}}
+							/>
+						}
+					/>
 				</Route>
 			</Route>
 
