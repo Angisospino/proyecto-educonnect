@@ -1,0 +1,179 @@
+
+/* ==========================================
+   CONSULTAR ASISTENCIA
+   EduConnect BR
+   ========================================== */
+
+.consultar-asistencia {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: var(--spacing-6);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.consultar-asistencia__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+}
+
+.consultar-asistencia__header h1 {
+  margin: 0 0 var(--spacing-2);
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.consultar-asistencia__header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+/* ==========================================
+   TARJETAS
+   ========================================== */
+
+.consultar-asistencia__card {
+  padding: var(--spacing-8);
+  margin-bottom: var(--spacing-6);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.consultar-asistencia__section-header {
+  margin-bottom: var(--spacing-6);
+}
+
+.consultar-asistencia__section-header h2 {
+  margin: 0 0 var(--spacing-2);
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consultar-asistencia__section-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+
+.consultar-asistencia__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-6);
+}
+
+.consultar-asistencia__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-6);
+}
+
+.consultar-asistencia__validation {
+  margin-top: var(--spacing-4);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   RESUMEN
+   ========================================== */
+
+.consultar-asistencia__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.consultar-asistencia__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-6);
+  background: var(--bg-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.consultar-asistencia__stat span {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.consultar-asistencia__stat strong {
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.consultar-asistencia__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.consultar-asistencia__table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.consultar-asistencia__table th,
+.consultar-asistencia__table td {
+  padding: var(--spacing-4);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.consultar-asistencia__table th {
+  color: var(--text-secondary);
+  background: var(--bg-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consultar-asistencia__table td {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .consultar-asistencia__filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .consultar-asistencia__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .consultar-asistencia__summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .consultar-asistencia__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
