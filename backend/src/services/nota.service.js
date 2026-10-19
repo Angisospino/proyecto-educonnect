@@ -83,14 +83,16 @@ const registrarNota = async (datos = {}, usuario) => {
  *
  * Si el usuario autenticado es ESTUDIANTE, únicamente puede
  * consultar sus propias notas. Si es PADRE_FAMILIA se rechaza (403)
- * hasta que exista el vínculo con sus hijos.
+ * hasta que exista el vínculo con sus hijos. Para los demás roles,
+ * estudianteId es opcional y debe ser un entero positivo (400 si no lo es);
+ * periodo se usa como texto.
  *
  * @param {Object} usuario - Usuario autenticado.
  * @param {Object} filtros - Filtros de búsqueda.
  * @returns {Promise<Array>} Lista de notas.
  */
 const consultarNotas = async (usuario, filtros = {}) => {
-  let estudianteId = filtros.estudianteId;
+  let estudianteId;
   const periodo = filtros.periodo;
 
   // Auto-escopado para estudiantes.
@@ -118,6 +120,19 @@ const consultarNotas = async (usuario, filtros = {}) => {
     );
     error.statusCode = 403;
     throw error;
+  }
+
+  // Para el resto de roles el estudianteId es un filtro opcional. Llega de
+  // req.query (siempre texto) y Prisma exige un Int: se valida y convierte
+  // aquí para devolver 400 en vez de un 500. Si no viene, se mantiene el
+  // comportamiento actual (sin filtro por estudiante).
+  if (usuario.rol !== 'ESTUDIANTE' && filtros.estudianteId !== undefined) {
+    estudianteId = validarId(filtros.estudianteId, 'estudianteId');
+  }
+
+  // Un periodo repetido en la URL (?periodo=1&periodo=2) llega como arreglo.
+  if (periodo !== undefined && typeof periodo !== 'string') {
+    throw crearError('periodo no es válido.', 400);
   }
 
   return notaRepository.buscarPorEstudiante(
