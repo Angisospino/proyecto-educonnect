@@ -203,11 +203,32 @@ const findByIdWithPassword = async (id) => {
 	});
 };
 
+
+/**
+ * Obtiene los usuarios activos que pueden recibir
+ * notificaciones por correo electrónico.
+ *
+ * Solo devuelve ID y correo electrónico.
+ *
+ * @returns {Promise<Array<{id: number, email: string}>>}
+ */
+const listarDestinatariosActivos = async () => {
+  return prisma.usuario.findMany({
+    where: {
+      estado: "ACTIVO",
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
+};
+
 /**
  * Repository de Usuario.
  */
 const usuarioRepository = {
-	findById,
+	findById,listarDestinatariosActivos, 
 	findByEmail,
 	existsByEmail,
 	create,
