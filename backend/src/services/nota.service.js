@@ -28,7 +28,8 @@ const registrarNota = async (datos) => {
  * Consulta las notas aplicando los filtros permitidos.
  *
  * Si el usuario autenticado es ESTUDIANTE, únicamente puede
- * consultar sus propias notas.
+ * consultar sus propias notas. Si es PADRE_FAMILIA se rechaza (403)
+ * hasta que exista el vínculo con sus hijos.
  *
  * @param {Object} usuario - Usuario autenticado.
  * @param {Object} filtros - Filtros de búsqueda.
@@ -53,6 +54,16 @@ const consultarNotas = async (usuario, filtros = {}) => {
     }
 
     estudianteId = perfil.id;
+  }
+
+  // Sin relación padre-estudiante no se puede limitar la consulta a sus hijos,
+  // y sin filtro Prisma devuelve las notas de todos los estudiantes.
+  if (usuario.rol === 'PADRE_FAMILIA') {
+    const error = new Error(
+      'La consulta de notas para padres no está disponible hasta que se vinculen los hijos.'
+    );
+    error.statusCode = 403;
+    throw error;
   }
 
   return notaRepository.buscarPorEstudiante(
