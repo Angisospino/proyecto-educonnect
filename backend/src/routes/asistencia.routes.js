@@ -1,70 +1,65 @@
 
 import { Router } from "express";
 
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorizeRoles } from "../middlewares/rbac.middleware.js";
-
 import {
   registrarAsistencia,
   obtenerAsistencia,
 } from "../controllers/asistencia.controller.js";
 
-/* ==========================================
-   CONFIGURACIÓN DEL ROUTER
-   ========================================== */
+import { authenticate } from "../middlewares/auth.middleware.js";
+
+import {
+  authorizeRoles,
+  PERMISOS,
+} from "../middlewares/rbac.middleware.js";
 
 const router = Router();
 
 /* ==========================================
-   AUTENTICACIÓN GLOBAL
+   AUTENTICACIÓN
    ========================================== */
 
 // Todas las rutas requieren un JWT válido.
 router.use(authenticate);
 
 /* ==========================================
-   REGISTRAR ASISTENCIA
-   POST /api/asistencia
+   RUTAS DE ASISTENCIA
    ========================================== */
 
-// Solo los docentes pueden registrar
-// asistencias.
-//
-// La validación de asignación del docente
-// al curso se implementará en el servicio.
-
+/**
+ * POST /api/asistencia
+ *
+ * Registrar asistencia de un estudiante.
+ *
+ * Solo docentes.
+ */
 router.post(
   "/",
   authorizeRoles("DOCENTE"),
-  registrarAsistencia
+  registrarAsistencia,
 );
 
-/* ==========================================
-   CONSULTAR ASISTENCIA
-   GET /api/asistencia
-   ========================================== */
-
-// PLACEHOLDER — Sprint 3 - 07 [03]
-//
-// Posteriormente se reemplazará por
-// PERMISOS.ASISTENCIA.
-//
-// Por ahora se permite consultar a:
-// DOCENTE, ESTUDIANTE, PADRE_FAMILIA,
-// DIRECTIVO.
-//
-// El servicio restringe los registros
-// que cada usuario puede consultar.
-
+/**
+ * GET /api/asistencia
+ *
+ * Consultar registros de asistencia.
+ *
+ * Permisos definidos en:
+ * PERMISOS.ASISTENCIA.LEER
+ *
+ * ADMINISTRADOR: lectura
+ * DOCENTE: lectura de registros autorizados
+ * ESTUDIANTE: lectura de asistencia propia
+ * PADRE_FAMILIA: lectura de hijos vinculados
+ * DIRECTIVO: lectura
+ *
+ * Las restricciones sobre qué registros puede
+ * consultar cada usuario se aplican en el servicio.
+ */
 router.get(
   "/",
-  authorizeRoles(
-    "DOCENTE",
-    "ESTUDIANTE",
-    "PADRE_FAMILIA",
-    "DIRECTIVO"
-  ),
-  obtenerAsistencia
+  authorizeRoles(...PERMISOS.ASISTENCIA.LEER),
+  obtenerAsistencia,
 );
 
 /* ==========================================
