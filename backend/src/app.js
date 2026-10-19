@@ -157,6 +157,7 @@ app.use("/api/catalogos", catalogoRoutes);
 app.use("/api/notas", notaRoutes);
 app.use("/api/asistencia", asistenciaRoutes);
 app.use("/api/padres", padreRoutes); app.use("/api/comunicados", comunicadoRoutes);
+app.use("/api/notificaciones", notificacionRoutes);
 
 /*
  * Posteriormente agregaremos:
