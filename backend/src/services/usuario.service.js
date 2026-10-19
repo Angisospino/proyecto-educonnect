@@ -1,5 +1,8 @@
 import usuarioRepository from "../repositories/usuario.repository.js";
 import { hashPassword } from "../utils/bcrypt.util.js";
+import padreEstudianteRepository from "../repositories/padreEstudiante.repository.js";
+
+import prisma from "../config/prisma.js";
 
 /**
  * Roles permitidos en EduConnect BR.
@@ -212,6 +215,11 @@ export const actualizarUsuario = async (id, data) => {
 
 	const usuarioActual = await usuarioRepository.findById(usuarioId);
 
+	const debeEliminarVinculos =
+  usuarioActual.rol === "PADRE_FAMILIA" &&
+  datos.rol !== undefined &&
+  datos.rol !== "PADRE_FAMILIA";
+
 	if (!usuarioActual) {
 		const error = new Error("Usuario no encontrado.");
 		error.statusCode = 404;
@@ -339,7 +347,56 @@ export const actualizarUsuario = async (id, data) => {
 		throw error;
 	}
 
-	return usuarioRepository.update(usuarioId, datosActualizar);
+	
+    /* ==========================================
+       ACTUALIZACIÓN TRANSACCIONAL
+       ========================================== */
+
+    return prisma.$transaction(async (tx) => {
+        // Consultamos nuevamente el rol dentro
+        // de la transacción.
+        const usuarioEnTransaccion =
+            await tx.usuario.findUnique({
+                where: {
+                    id: usuarioId,
+                },
+            });
+
+        if (!usuarioEnTransaccion) {
+            const error = new Error(
+                "Usuario no encontrado."
+            );
+
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const debeEliminarVinculos =
+            usuarioEnTransaccion.rol === "PADRE_FAMILIA" &&
+            datosActualizar.rol !== undefined &&
+            datosActualizar.rol !== "PADRE_FAMILIA";
+
+        // Actualizamos el usuario.
+        const usuarioActualizado =
+            await tx.usuario.update({
+                where: {
+                    id: usuarioId,
+                },
+                data: datosActualizar,
+            });
+
+        // Solo eliminamos vínculos cuando
+        // deja de ser PADRE_FAMILIA.
+        if (debeEliminarVinculos) {
+            await padreEstudianteRepository.eliminarPorPadre(
+                usuarioId,
+                tx
+            );
+        }
+
+        return usuarioActualizado;
+    });
+
 };
 
 /**
