@@ -100,5 +100,6 @@ model Asistencia {
   curso      Curso             @relation(fields: [cursoId], references: [id])
   docente    Usuario           @relation(fields: [docenteId], references: [id])
 
+  @@unique([estudianteId, fecha])
   @@index([cursoId, fecha])
 }

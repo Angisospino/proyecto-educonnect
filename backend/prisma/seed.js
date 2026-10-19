@@ -272,12 +272,13 @@ console.log('🌱 Iniciando seed de Sprint 3...');
     for (let j = 0; j < fechas.length; j++) {
       const fecha = fechas[j];
 
+      // Hay un único registro por estudiante y fecha
+      // (@@unique([estudianteId, fecha])): se busca solo por
+      // esa clave para no chocar con registros de otro docente.
       const asistenciaExistente =
         await prisma.asistencia.findFirst({
           where: {
             estudianteId: perfil.id,
-            cursoId: curso.id,
-            docenteId: docente.id,
             fecha,
           },
         });
