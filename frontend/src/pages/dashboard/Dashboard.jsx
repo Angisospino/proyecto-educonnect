@@ -59,14 +59,9 @@ const QUICK_ACTIONS = [
 		description: "Consulta y gestiona la información académica.",
 		icon: GraduationCap,
 		route: ROUTES.GRADES,
-		roles: [
-			ROLES.ADMINISTRADOR,
-			ROLES.DOCENTE,
-			ROLES.ESTUDIANTE,
-			ROLES.PADRE_FAMILIA,
-			ROLES.DIRECTIVO,
-		],
-		enabled: false,
+		// Solo los roles con vista en AppRouter.jsx (RolePage).
+		roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE],
+		enabled: true,
 	},
 
 	{
@@ -75,14 +70,9 @@ const QUICK_ACTIONS = [
 		description: "Consulta y registra la asistencia académica.",
 		icon: CalendarCheck,
 		route: ROUTES.ATTENDANCE,
-		roles: [
-			ROLES.ADMINISTRADOR,
-			ROLES.DOCENTE,
-			ROLES.ESTUDIANTE,
-			ROLES.PADRE_FAMILIA,
-			ROLES.DIRECTIVO,
-		],
-		enabled: false,
+		// Solo los roles con vista en AppRouter.jsx (RolePage).
+		roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE, ROLES.PADRE_FAMILIA],
+		enabled: true,
 	},
 
 	{
