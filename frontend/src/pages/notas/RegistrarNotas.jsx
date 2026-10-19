@@ -1,11 +1,11 @@
 
 import { useMemo, useState } from "react";
 
-import Input from "../../components/ui/Input";
-import Select from "../../components/ui/Select";
-import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input.jsx";
+import Select from "../../components/ui/Select.jsx";
+import Button from "../../components/ui/Button.jsx";
 
-import notaService from "../../services/nota.service";
+import notaService from "../../services/nota.service.js";
 
 import "./RegistrarNotas.css";
 
@@ -33,6 +33,10 @@ const obtenerMensajeError = (error) => {
  *
  * Los catálogos deben contener IDs y sus
  * relaciones académicas correspondientes.
+ *
+ * TODO: los catálogos llegan por props (default []) porque el
+ * backend de catálogos aún no existe ([Sprint 3 - 20]); cuando
+ * exista se cargarán dentro de la vista con catalogo.service.js.
  */
 export default function RegistrarNotas({
   cursos = [],
@@ -74,39 +78,27 @@ export default function RegistrarNotas({
      OPCIONES DE LOS SELECTORES
      ========================================== */
 
-  const opcionesCursos = [
-    { value: "", label: "Selecciona un curso" },
-    ...cursos.map((curso) => ({
-      value: String(curso.id),
-      label: curso.nombre,
-    })),
-  ];
+  // El placeholder lo aporta el propio Select (opción vacía).
+  const opcionesCursos = cursos.map((curso) => ({
+    value: String(curso.id),
+    label: curso.nombre,
+  }));
 
-  const opcionesEstudiantes = [
-    { value: "", label: "Selecciona un estudiante" },
-    ...estudiantesFiltrados.map((estudiante) => ({
+  const opcionesEstudiantes = estudiantesFiltrados.map(
+    (estudiante) => ({
       value: String(estudiante.id),
       label:
         estudiante.nombreCompleto ||
         `${estudiante.nombre ?? ""} ${estudiante.apellido ?? ""}`.trim(),
-    })),
-  ];
+    })
+  );
 
-  const opcionesAsignaturas = [
-    { value: "", label: "Selecciona una asignatura" },
-    ...asignaturasFiltradas.map((asignatura) => ({
+  const opcionesAsignaturas = asignaturasFiltradas.map(
+    (asignatura) => ({
       value: String(asignatura.id),
       label: asignatura.nombre,
-    })),
-  ];
-
-  const opcionesPeriodos = [
-    { value: "", label: "Selecciona un periodo" },
-    { value: "1", label: "Primer periodo" },
-    { value: "2", label: "Segundo periodo" },
-    { value: "3", label: "Tercer periodo" },
-    { value: "4", label: "Cuarto periodo" },
-  ];
+    })
+  );
 
   /* ==========================================
      CAMBIOS EN EL FORMULARIO
@@ -175,11 +167,16 @@ export default function RegistrarNotas({
       }
     }
 
-    if (!["1", "2", "3", "4"].includes(
-      formulario.periodo
-    )) {
+    // Texto libre de hasta 10 caracteres (ej. "2026-P3"),
+    // igual que la columna periodo VarChar(10) del schema.
+    const periodo = formulario.periodo.trim();
+
+    if (periodo === "") {
       nuevosErrores.periodo =
-        "Selecciona un periodo válido.";
+        "Ingresa el periodo (ej. 2026-P3).";
+    } else if (periodo.length > 10) {
+      nuevosErrores.periodo =
+        "El periodo no puede superar 10 caracteres.";
     }
 
     const estudianteValido =
@@ -240,7 +237,7 @@ export default function RegistrarNotas({
           formulario.asignaturaId
         ),
         valor: Number(formulario.valor),
-        periodo: Number(formulario.periodo),
+        periodo: String(formulario.periodo).trim(),
       };
 
       await notaService.crearNota(datos);
@@ -336,8 +333,9 @@ export default function RegistrarNotas({
                 name="cursoId"
                 value={formulario.cursoId}
                 options={opcionesCursos}
-                onChange={(valor) =>
-                  actualizarCampo("cursoId", valor)
+                placeholder="Selecciona un curso"
+                onChange={(e) =>
+                  actualizarCampo("cursoId", e.target.value)
                 }
                 disabled={guardando}
               />
@@ -359,10 +357,11 @@ export default function RegistrarNotas({
                 name="estudianteId"
                 value={formulario.estudianteId}
                 options={opcionesEstudiantes}
-                onChange={(valor) =>
+                placeholder="Selecciona un estudiante"
+                onChange={(e) =>
                   actualizarCampo(
                     "estudianteId",
-                    valor
+                    e.target.value
                   )
                 }
                 disabled={
@@ -388,10 +387,11 @@ export default function RegistrarNotas({
                 name="asignaturaId"
                 value={formulario.asignaturaId}
                 options={opcionesAsignaturas}
-                onChange={(valor) =>
+                placeholder="Selecciona una asignatura"
+                onChange={(e) =>
                   actualizarCampo(
                     "asignaturaId",
-                    valor
+                    e.target.value
                   )
                 }
                 disabled={
@@ -412,13 +412,15 @@ export default function RegistrarNotas({
                 Periodo académico
               </label>
 
-              <Select
+              <Input
                 id="nota-periodo"
                 name="periodo"
+                type="text"
+                maxLength={10}
+                placeholder="Ejemplo: 2026-P3"
                 value={formulario.periodo}
-                options={opcionesPeriodos}
-                onChange={(valor) =>
-                  actualizarCampo("periodo", valor)
+                onChange={(e) =>
+                  actualizarCampo("periodo", e.target.value)
                 }
                 disabled={guardando}
               />
@@ -444,8 +446,8 @@ export default function RegistrarNotas({
                 step="0.1"
                 placeholder="Ejemplo: 4.5"
                 value={formulario.valor}
-                onChange={(valor) =>
-                  actualizarCampo("valor", valor)
+                onChange={(e) =>
+                  actualizarCampo("valor", e.target.value)
                 }
                 disabled={guardando}
               />
