@@ -1,10 +1,11 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Select from "../../components/ui/Select.jsx";
 import Button from "../../components/ui/Button.jsx";
 
 import asistenciaService from "../../services/asistencia.service.js";
+import catalogoService from "../../services/catalogo.service.js";
 
 import "./RegistrarAsistencia.css";
 
@@ -33,27 +34,56 @@ const obtenerFechaLocal = () => {
   return `${anio}-${mes}-${dia}`;
 };
 
-const obtenerMensajeError = (error) => {
+const obtenerMensajeError = (
+  error,
+  porDefecto = "Error desconocido."
+) => {
   const mensaje = error?.response?.data?.message;
   const detalle = error?.response?.data?.error;
 
   if (typeof mensaje === "string") return mensaje;
   if (typeof detalle === "string") return detalle;
 
-  return error?.message || "Error desconocido.";
+  return error?.message || porDefecto;
+};
+
+// El servicio devuelve el sobre del backend
+// ({ success, data, error }); se extrae la lista.
+const extraerLista = (respuesta) => {
+  const lista = Array.isArray(respuesta)
+    ? respuesta
+    : respuesta?.data;
+
+  return Array.isArray(lista) ? lista : [];
+};
+
+const obtenerNombreEstudiante = (estudiante) => {
+  const nombre =
+    `${estudiante.usuario?.apellido ?? ""} ${estudiante.usuario?.nombre ?? ""}`.trim();
+
+  return estudiante.codigoEstudiantil
+    ? `${nombre} (${estudiante.codigoEstudiantil})`
+    : nombre;
+};
+
+// Referencia estable para "sin estudiantes" (evita recalcular
+// los useMemo que dependen de la lista en cada render).
+const SIN_ESTUDIANTES = [];
+
+// Estado inicial de los estudiantes cargados: sin curso asociado.
+const ESTUDIANTES_INICIAL = {
+  cursoId: "",
+  lista: SIN_ESTUDIANTES,
+  error: "",
 };
 
 /* ==========================================
    COMPONENTE
    ========================================== */
 
-// TODO: cursos y estudiantes llegan por props (default []) porque el
-// backend de catálogos aún no existe ([Sprint 3 - 20]); cuando exista
-// se cargarán dentro de la vista con catalogo.service.js.
-export default function RegistrarAsistencia({
-  cursos = [],
-  estudiantes = [],
-}) {
+// Los catálogos (cursos y estudiantes del curso seleccionado)
+// se cargan desde catalogo.service.js.
+export default function RegistrarAsistencia() {
   const [cursoId, setCursoId] = useState("");
   const [fecha, setFecha] = useState(
     obtenerFechaLocal
@@ -72,18 +102,115 @@ export default function RegistrarAsistencia({
     useState([]);
 
   /* ==========================================
+     CATÁLOGOS
+     ========================================== */
+
+  const [cursos, setCursos] = useState([]);
+  const [cargandoCursos, setCargandoCursos] =
+    useState(true);
+  const [errorCursos, setErrorCursos] = useState("");
+
+  const [estudiantesCargados, setEstudiantesCargados] =
+    useState(ESTUDIANTES_INICIAL);
+
+  // Cursos: una sola carga al montar.
+  useEffect(() => {
+    let activo = true;
+
+    const cargarCursos = async () => {
+      try {
+        const respuesta =
+          await catalogoService.obtenerCursos();
+
+        if (!activo) return;
+
+        setCursos(extraerLista(respuesta));
+      } catch (error) {
+        if (!activo) return;
+
+        setErrorCursos(
+          obtenerMensajeError(
+            error,
+            "No fue posible cargar los cursos."
+          )
+        );
+      } finally {
+        if (activo) setCargandoCursos(false);
+      }
+    };
+
+    cargarCursos();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  // Estudiantes: se vuelven a cargar al cambiar el curso.
+  // El resultado queda asociado al curso que lo originó; la
+  // limpieza del efecto descarta respuestas de un curso
+  // anterior o recibidas tras desmontar.
+  useEffect(() => {
+    if (!cursoId) return;
+
+    let activo = true;
+
+    const cargarEstudiantes = async () => {
+      try {
+        const respuesta =
+          await catalogoService.obtenerEstudiantesDeCurso(
+            cursoId
+          );
+
+        if (!activo) return;
+
+        setEstudiantesCargados({
+          cursoId,
+          lista: extraerLista(respuesta),
+          error: "",
+        });
+      } catch (error) {
+        if (!activo) return;
+
+        setEstudiantesCargados({
+          cursoId,
+          lista: SIN_ESTUDIANTES,
+          error: obtenerMensajeError(
+            error,
+            "No fue posible cargar los estudiantes del curso."
+          ),
+        });
+      }
+    };
+
+    cargarEstudiantes();
+
+    return () => {
+      activo = false;
+    };
+  }, [cursoId]);
+
+  /* ==========================================
      ESTUDIANTES DEL CURSO
      ========================================== */
 
-  const estudiantesDelCurso = useMemo(() => {
-    if (!cursoId) return [];
+  // Solo se consideran los estudiantes cargados para el
+  // curso actualmente seleccionado.
+  const estudiantesVigentes =
+    estudiantesCargados.cursoId === cursoId;
 
-    return estudiantes.filter(
-      (estudiante) =>
-        String(estudiante.cursoId) ===
-        String(cursoId)
-    );
-  }, [estudiantes, cursoId]);
+  const estudiantesDelCurso = estudiantesVigentes
+    ? estudiantesCargados.lista
+    : SIN_ESTUDIANTES;
+
+  const errorEstudiantes = estudiantesVigentes
+    ? estudiantesCargados.error
+    : "";
+
+  const cargandoEstudiantes =
+    Boolean(cursoId) && !estudiantesVigentes;
+
+  const errorCarga = errorCursos || errorEstudiantes;
 
   /* ==========================================
      OPCIONES DE CURSOS
@@ -250,9 +377,7 @@ export default function RegistrarAsistencia({
       } catch (error) {
         erroresRegistro.push({
           estudianteId: estudiante.id,
-          nombre:
-            estudiante.nombreCompleto ||
-            `${estudiante.nombre ?? ""} ${estudiante.apellido ?? ""}`.trim(),
+          nombre: obtenerNombreEstudiante(estudiante),
           mensaje: obtenerMensajeError(error),
         });
       }
@@ -327,9 +452,13 @@ export default function RegistrarAsistencia({
                 name="cursoId"
                 value={cursoId}
                 options={opcionesCursos}
-                placeholder="Selecciona un curso"
+                placeholder={
+                  cargandoCursos
+                    ? "Cargando cursos..."
+                    : "Selecciona un curso"
+                }
                 onChange={manejarCambioCurso}
-                disabled={guardando}
+                disabled={guardando || cargandoCursos}
               />
             </div>
 
@@ -348,6 +477,15 @@ export default function RegistrarAsistencia({
               />
             </div>
           </div>
+
+          {errorCarga && (
+            <div
+              className="registrar-asistencia__mensaje registrar-asistencia__mensaje--error"
+              role="alert"
+            >
+              {errorCarga}
+            </div>
+          )}
 
           {mensaje && (
             <div
@@ -371,8 +509,9 @@ export default function RegistrarAsistencia({
                 <div>
                   <h2>Lista de estudiantes</h2>
                   <p>
-                    {estudiantesDelCurso.length}
-                    {" "}estudiante(s) en el curso.
+                    {cargandoEstudiantes
+                      ? "Cargando estudiantes..."
+                      : `${estudiantesDelCurso.length} estudiante(s) en el curso.`}
                   </p>
                 </div>
 
@@ -382,6 +521,7 @@ export default function RegistrarAsistencia({
                   onClick={marcarTodosPresentes}
                   disabled={
                     guardando ||
+                    cargandoEstudiantes ||
                     estudiantesDelCurso.length === 0
                   }
                 >
@@ -404,10 +544,18 @@ export default function RegistrarAsistencia({
                 </span>
               </div>
 
-              {estudiantesDelCurso.length === 0 ? (
+              {cargandoEstudiantes ? (
+                <div
+                  className="registrar-asistencia__empty"
+                  role="status"
+                >
+                  Cargando estudiantes...
+                </div>
+              ) : estudiantesDelCurso.length === 0 ? (
                 <div className="registrar-asistencia__empty">
-                  No hay estudiantes disponibles
-                  para este curso.
+                  {errorEstudiantes
+                    ? "No se pudieron cargar los estudiantes de este curso."
+                    : "No hay estudiantes disponibles para este curso."}
                 </div>
               ) : (
                 <div className="registrar-asistencia__table-wrapper">
@@ -433,8 +581,7 @@ export default function RegistrarAsistencia({
                       {estudiantesDelCurso.map(
                         (estudiante) => {
                           const nombre =
-                            estudiante.nombreCompleto ||
-                            `${estudiante.nombre ?? ""} ${estudiante.apellido ?? ""}`.trim();
+                            obtenerNombreEstudiante(estudiante);
 
                           return (
                             <tr key={estudiante.id}>
