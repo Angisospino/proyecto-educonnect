@@ -1,6 +1,18 @@
 
 import prisma from "../config/prisma.js";
 
+/**
+ * Incluye el estudiante con solo nombre y apellido de su usuario
+ * (select explícito: nunca se devuelve passwordHash ni email).
+ */
+const incluirEstudiante = {
+  estudiante: {
+    include: {
+      usuario: { select: { nombre: true, apellido: true } },
+    },
+  },
+};
+
 /* ==========================================
    REGISTRAR ASISTENCIA
    ========================================== */
@@ -16,6 +28,7 @@ const registrar = async (datos) => {
     data: {
       estudianteId: Number(datos.estudianteId),
       cursoId: Number(datos.cursoId),
+      docenteId: Number(datos.docenteId),
       fecha: new Date(datos.fecha),
       estado: datos.estado,
     },
@@ -49,6 +62,7 @@ const buscarPorCurso = async (cursoId, fecha) => {
         lt: fin,
       },
     },
+    include: incluirEstudiante,
     orderBy: [
       { fecha: "asc" },
       { estudianteId: "asc" },
@@ -108,6 +122,8 @@ const buscarPorEstudiante = async (
         fecha: filtroFecha,
       }),
     },
+
+    include: incluirEstudiante,
 
     orderBy: {
       fecha: "desc",
