@@ -73,9 +73,39 @@ const actualizar = async (id, datos) => {
   });
 };
 
+
+const buscarPaginadas = async ({
+  where,
+  skip,
+  take,
+}) => {
+  const [notas, total] = await prisma.$transaction([
+    prisma.nota.findMany({
+      where,
+      skip,
+      take,
+      orderBy: [
+        { periodo: "asc" },
+        { id: "asc" },
+      ],
+    }),
+
+    prisma.nota.count({
+      where,
+    }),
+  ]);
+
+  return {
+    notas,
+    total,
+  };
+};
+
+
 export default {
   crear,
   buscarPorEstudiante,
   buscarPorId,
   actualizar,
+  buscarPaginadas
 };

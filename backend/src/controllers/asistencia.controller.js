@@ -60,3 +60,22 @@ export const obtenerAsistencia = async (req, res, next) => {
     next(error);
   }
 };
+
+const resultado =
+  await asistenciaService.consultarAsistencia({
+    // Conservar filtros y usuario autenticado.
+    ...filtrosAutorizados,
+    page: req.query.page,
+    pageSize: req.query.pageSize,
+  });
+
+return res.status(200).json({
+  success: true,
+  data: {
+    asistencias: resultado.asistencias,
+    total: resultado.total,
+  },
+  page: resultado.page,
+  pageSize: resultado.pageSize,
+});
+

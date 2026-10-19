@@ -164,6 +164,35 @@ const buscarPorEstudiante = async (
 };
 
 
+const buscarPaginadas = async ({
+  where,
+  skip,
+  take,
+}) => {
+  const [asistencias, total] =
+    await prisma.$transaction([
+      prisma.asistencia.findMany({
+        where,
+        skip,
+        take,
+        orderBy: [
+          { fecha: "desc" },
+          { id: "desc" },
+        ],
+      }),
+
+      prisma.asistencia.count({
+        where,
+      }),
+    ]);
+
+  return {
+    asistencias,
+    total,
+  };
+};
+
+
 /* ==========================================
    EXPORTAR REPOSITORIO
    ========================================== */
@@ -172,6 +201,7 @@ const asistenciaRepository = {
   registrar,
   buscarPorCurso,
   buscarPorEstudiante,
+  buscarPaginadas
 };
 
 export default asistenciaRepository;

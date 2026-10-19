@@ -1,6 +1,7 @@
 import notaRepository from '../repositories/nota.repository.js';
 import estudiantePerfilRepository from '../repositories/estudiantePerfil.repository.js';
 import padreEstudianteRepository from '../repositories/padreEstudiante.repository.js';
+import { validarPaginacion } from "../utils/pagination.util.js";
 
 const crearError = (mensaje, statusCode) => {
   const error = new Error(mensaje);
@@ -200,6 +201,32 @@ const actualizarNota = async (id, datos = {}, usuario) => {
     valor: validarValor(datos.valor),
   });
 };
+
+
+const { page, pageSize, skip, take } =
+  validarPaginacion({
+    page: filtros.page,
+    pageSize: filtros.pageSize,
+  });
+
+// IMPORTANTE:
+// "where" debe ser el filtro autorizado
+// construido previamente por el servicio.
+
+const { notas, total } =
+  await notaRepository.buscarPaginadas({
+    where,
+    skip,
+    take,
+  });
+
+return {
+  notas,
+  total,
+  page,
+  pageSize,
+};
+
 
 export default {
   registrarNota,

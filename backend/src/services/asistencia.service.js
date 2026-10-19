@@ -329,4 +329,28 @@ const asistenciaService = {
   consultarAsistencia,
 };
 
+
+const { page, pageSize, skip, take } =
+  validarPaginacion({
+    page: filtros.page,
+    pageSize: filtros.pageSize,
+  });
+
+// Conservar el filtro "where" que ya
+// restringe los registros según el rol.
+
+const { asistencias, total } =
+  await asistenciaRepository.buscarPaginadas({
+    where,
+    skip,
+    take,
+  });
+
+return {
+  asistencias,
+  total,
+  page,
+  pageSize,
+};
+
 export default asistenciaService;
