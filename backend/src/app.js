@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
 import perfilRoutes from "./routes/perfil.routes.js";
 import notaRoutes from "./routes/nota.routes.js";
+import catalogoRoutes from "./routes/catalogo.routes.js";
 
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
@@ -149,13 +150,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/perfil", perfilRoutes);
 app.use("/api/notas", notaRoutes);
+app.use("/api/catalogos", catalogoRoutes);
 
 /*
  * Posteriormente agregaremos:
  *
- * app.use("/api/cursos", cursoRoutes);
- * app.use("/api/asignaturas", asignaturaRoutes);
- * app.use("/api/notas", notaRoutes);
  * app.use("/api/asistencias", asistenciaRoutes);
  * app.use("/api/comunicados", comunicadoRoutes);
  * app.use("/api/notificaciones", notificacionRoutes);
