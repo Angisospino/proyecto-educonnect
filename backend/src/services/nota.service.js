@@ -1,5 +1,6 @@
 import notaRepository from '../repositories/nota.repository.js';
 import estudiantePerfilRepository from '../repositories/estudiantePerfil.repository.js';
+import padreEstudianteRepository from '../repositories/padreEstudiante.repository.js';
 
 const crearError = (mensaje, statusCode) => {
   const error = new Error(mensaje);
@@ -82,8 +83,9 @@ const registrarNota = async (datos = {}, usuario) => {
  * Consulta las notas aplicando los filtros permitidos.
  *
  * Si el usuario autenticado es ESTUDIANTE, únicamente puede
- * consultar sus propias notas. Si es PADRE_FAMILIA se rechaza (403)
- * hasta que exista el vínculo con sus hijos. Para los demás roles,
+ * consultar sus propias notas. Si es PADRE_FAMILIA, estudianteId
+ * (EstudiantePerfil.id) es obligatorio (400 si falta o no es válido) y debe
+ * ser de un hijo vinculado a él (403 si no lo es). Para los demás roles,
  * estudianteId es opcional y debe ser un entero positivo (400 si no lo es);
  * periodo se usa como texto.
  *
@@ -112,21 +114,45 @@ const consultarNotas = async (usuario, filtros = {}) => {
     estudianteId = perfil.id;
   }
 
-  // Sin relación padre-estudiante no se puede limitar la consulta a sus hijos,
-  // y sin filtro Prisma devuelve las notas de todos los estudiantes.
+  // Escopado para padres de familia.
+  //
+  // El estudianteId es OBLIGATORIO (EstudiantePerfil.id) y debe pertenecer
+  // a un hijo vinculado al padre autenticado. Sin ese filtro Prisma
+  // devolvería las notas de todos los estudiantes, así que no hay ningún
+  // camino que llegue a la consulta sin estudianteId validado.
   if (usuario.rol === 'PADRE_FAMILIA') {
-    const error = new Error(
-      'La consulta de notas para padres no está disponible hasta que se vinculen los hijos.'
+    if (filtros.estudianteId === undefined) {
+      throw crearError(
+        'estudianteId es obligatorio para consultar las notas de un hijo.',
+        400
+      );
+    }
+
+    estudianteId = validarId(filtros.estudianteId, 'estudianteId');
+
+    const esPadre = await padreEstudianteRepository.esPadreDe(
+      usuario.id,
+      estudianteId
     );
-    error.statusCode = 403;
-    throw error;
+
+    if (!esPadre) {
+      throw crearError(
+        'No tiene permisos para consultar las notas de este estudiante.',
+        403
+      );
+    }
   }
 
-  // Para el resto de roles el estudianteId es un filtro opcional. Llega de
+  // Para el resto de roles (excepto ESTUDIANTE y PADRE_FAMILIA, ya
+  // resueltos arriba) el estudianteId es un filtro opcional. Llega de
   // req.query (siempre texto) y Prisma exige un Int: se valida y convierte
   // aquí para devolver 400 en vez de un 500. Si no viene, se mantiene el
   // comportamiento actual (sin filtro por estudiante).
-  if (usuario.rol !== 'ESTUDIANTE' && filtros.estudianteId !== undefined) {
+  if (
+    usuario.rol !== 'ESTUDIANTE' &&
+    usuario.rol !== 'PADRE_FAMILIA' &&
+    filtros.estudianteId !== undefined
+  ) {
     estudianteId = validarId(filtros.estudianteId, 'estudianteId');
   }
 
