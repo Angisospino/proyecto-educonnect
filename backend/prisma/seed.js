@@ -360,7 +360,71 @@ console.log('🌱 Iniciando seed de Sprint 3...');
   );
   console.log('Periodo: 2026-P3');
   console.log('--------------------------------');
+
+
+  
+  // =====================================================
+  // 8. SEMBRAR COMUNICADOS (SPRINT 4 - RF-007)
+  // =====================================================
+
+  console.log('📢 Creando comunicados de ejemplo...');
+
+  const directivo = await prisma.usuario.findUnique({
+    where: {
+      email: 'directivo@educonnectbr.edu.co',
+    },
+  });
+
+  const comunicados = [
+    {
+      autorId: docente.id,
+      titulo: 'Recordatorio de actividades académicas',
+      contenido:
+        'Se recuerda a los estudiantes la importancia de cumplir con las actividades académicas y entregar sus trabajos dentro de las fechas establecidas.',
+    },
+    ...(directivo
+      ? [
+          {
+            autorId: directivo.id,
+            titulo: 'Información institucional',
+            contenido:
+              'La institución invita a toda la comunidad educativa a mantenerse informada sobre las actividades y los comunicados oficiales.',
+          },
+        ]
+      : []),
+  ];
+
+  for (const datos of comunicados) {
+    const comunicadoExistente = await prisma.comunicado.findFirst({
+      where: {
+        titulo: datos.titulo,
+        autorId: datos.autorId,
+      },
+    });
+
+    if (!comunicadoExistente) {
+      await prisma.comunicado.create({
+        data: datos,
+      });
+
+      console.log(`✅ Comunicado creado: ${datos.titulo}`);
+    } else {
+      console.log(`ℹ️ El comunicado ya existe: ${datos.titulo}`);
+    }
+  }
+
+  if (!directivo) {
+    console.warn(
+      '⚠️ No se encontró el directivo. Se creó o verificó únicamente el comunicado del docente.'
+    );
+  }
+
+  console.log('✅ Proceso de comunicados finalizado.');
+
 }
+
+
+
 
 
 main()
