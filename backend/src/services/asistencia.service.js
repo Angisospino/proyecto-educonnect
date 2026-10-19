@@ -1,7 +1,6 @@
 
-import prisma from "../config/prisma.js";
-
 import asistenciaRepository from "../repositories/asistencia.repository.js";
+import estudiantePerfilRepository from "../repositories/estudiantePerfil.repository.js";
 
 /* ==========================================
    CONSTANTES
@@ -91,10 +90,26 @@ const validarRangoFechas = (filtros = {}) => {
 /**
  * Registra la asistencia de un estudiante.
  *
+ * El docenteId siempre sale del usuario autenticado (token);
+ * cualquier docenteId recibido en el body se ignora.
+ *
  * @param {Object} datos
+ * @param {Object} usuario - Usuario autenticado (req.usuario)
  * @returns {Promise<Object>}
  */
-const registrarAsistencia = async (datos = {}) => {
+const registrarAsistencia = async (datos = {}, usuario) => {
+  if (!usuario?.id) {
+    throw crearError(
+      "Usuario no autenticado.",
+      401
+    );
+  }
+
+  const docenteId = validarId(
+    usuario.id,
+    "usuario.id"
+  );
+
   const estudianteId = validarId(
     datos.estudianteId,
     "estudianteId"
@@ -119,6 +134,7 @@ const registrarAsistencia = async (datos = {}) => {
   return asistenciaRepository.registrar({
     estudianteId,
     cursoId,
+    docenteId,
     fecha,
     estado,
   });
@@ -158,17 +174,28 @@ const consultarAsistencia = async (
      * Se ignora cualquier estudianteId
      * recibido desde el frontend.
      *
-     * La consulta queda limitada al
-     * usuario autenticado.
+     * Asistencia.estudianteId referencia EstudiantePerfil.id
+     * (no Usuario.id), así que primero se resuelve el perfil
+     * del usuario autenticado.
      */
 
-    const estudianteId = validarId(
+    const usuarioId = validarId(
       usuario.id,
       "usuario.id"
     );
 
+    const perfil =
+      await estudiantePerfilRepository.buscarPorUsuarioId(
+        usuarioId
+      );
+
+    if (!perfil) {
+      /* Sin perfil de estudiante: mismo resultado que una consulta vacía. */
+      return [];
+    }
+
     return asistenciaRepository.buscarPorEstudiante(
-      estudianteId,
+      perfil.id,
       rangoFechas
     );
   }
@@ -178,70 +205,17 @@ const consultarAsistencia = async (
      ======================================== */
 
   if (usuario.rol === "PADRE_FAMILIA") {
-    const padreId = validarId(
-      usuario.id,
-      "usuario.id"
-    );
-
     /*
-     * Se consultan los estudiantes vinculados
-     * al padre de familia.
-     *
-     * Se supone que existe el modelo
-     * PadreEstudiante con los campos:
-     *
-     * padreId
-     * estudianteId
+     * El modelo de vínculo padre-estudiante todavía no existe
+     * en el schema, por lo que no hay forma de saber qué
+     * estudiantes pertenecen a este padre. Para no exponer
+     * asistencia de estudiantes ajenos, se deniega el acceso.
      */
 
-    const vinculaciones =
-      await prisma.padreEstudiante.findMany({
-        where: {
-          padreId,
-        },
-        select: {
-          estudianteId: true,
-        },
-      });
-
-    const hijosIds = vinculaciones.map(
-      (vinculacion) => vinculacion.estudianteId
-    );
-
-    if (hijosIds.length === 0) {
-      return [];
-    }
-
-    /*
-     * Para el padre es obligatorio indicar
-     * qué estudiante vinculado desea consultar.
-     */
-
-    if (
-      filtros.estudianteId === undefined ||
-      filtros.estudianteId === null ||
-      filtros.estudianteId === ""
-    ) {
-      throw crearError(
-        "Debe seleccionar un estudiante vinculado para consultar su asistencia."
-      );
-    }
-
-    const estudianteId = validarId(
-      filtros.estudianteId,
-      "estudianteId"
-    );
-
-    if (!hijosIds.includes(estudianteId)) {
-      throw crearError(
-        "No tiene autorización para consultar la asistencia de este estudiante.",
-        403
-      );
-    }
-
-    return asistenciaRepository.buscarPorEstudiante(
-      estudianteId,
-      rangoFechas
+    throw crearError(
+      "La consulta de asistencia para padres de familia no está disponible " +
+      "hasta que se vinculen los hijos al padre.",
+      403
     );
   }
 
