@@ -10,14 +10,19 @@ const crearError = (mensaje, statusCode) => {
 
 const INT_MAX = 2147483647;
 
-// Number(null), Number(''), Number([]) y Number(false) dan 0: sin esta
-// guarda un valor vacío pasaría la validación en vez de rechazarse.
+// Number(null), Number(''), Number([]) y Number(false) dan 0, y Number('0x10')
+// o Number('1e1') dan 16 y 10: sin esta guarda un valor vacío o un texto no
+// decimal pasaría la validación. Un texto solo vale si son dígitos decimales.
 const aNumero = (valor) => {
-  const esNumero = typeof valor === 'number';
-  const esTextoNumerico =
-    typeof valor === 'string' && valor.trim() !== '';
+  if (typeof valor === 'number') {
+    return valor;
+  }
 
-  return esNumero || esTextoNumerico ? Number(valor) : NaN;
+  if (typeof valor === 'string' && /^\d+$/.test(valor.trim())) {
+    return Number(valor);
+  }
+
+  return NaN;
 };
 
 const validarId = (valor, nombre) => {
