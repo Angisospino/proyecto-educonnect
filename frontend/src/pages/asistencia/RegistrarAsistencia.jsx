@@ -1,10 +1,10 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import Select from "../../components/ui/Select";
-import Button from "../../components/ui/Button";
+import Select from "../../components/ui/Select.jsx";
+import Button from "../../components/ui/Button.jsx";
 
-import asistenciaService from "../../services/asistencia.service";
+import asistenciaService from "../../services/asistencia.service.js";
 
 import "./RegistrarAsistencia.css";
 
@@ -47,6 +47,9 @@ const obtenerMensajeError = (error) => {
    COMPONENTE
    ========================================== */
 
+// TODO: cursos y estudiantes llegan por props (default []) porque el
+// backend de catálogos aún no existe ([Sprint 3 - 20]); cuando exista
+// se cargarán dentro de la vista con catalogo.service.js.
 export default function RegistrarAsistencia({
   cursos = [],
   estudiantes = [],
@@ -86,26 +89,33 @@ export default function RegistrarAsistencia({
      OPCIONES DE CURSOS
      ========================================== */
 
-  const opcionesCursos = [
-    {
-      value: "",
-      label: "Selecciona un curso",
-    },
-    ...cursos.map((curso) => ({
-      value: String(curso.id),
-      label: curso.nombre,
-    })),
-  ];
+  // El placeholder lo aporta el propio Select (opción vacía).
+  const opcionesCursos = cursos.map((curso) => ({
+    value: String(curso.id),
+    label: curso.nombre,
+  }));
 
   /* ==========================================
-     REINICIAR AL CAMBIAR CURSO
+     REINICIAR AL CAMBIAR CURSO O FECHA
      ========================================== */
 
-  useEffect(() => {
+  const reiniciarJornada = () => {
     setAsistencias({});
     setMensaje(null);
     setErrores([]);
-  }, [cursoId, fecha]);
+  };
+
+  // Select e Input pasan onChange directo al elemento nativo:
+  // el handler recibe el evento, no el valor.
+  const manejarCambioCurso = (evento) => {
+    setCursoId(evento.target.value);
+    reiniciarJornada();
+  };
+
+  const manejarCambioFecha = (evento) => {
+    setFecha(evento.target.value);
+    reiniciarJornada();
+  };
 
   /* ==========================================
      MARCAR ASISTENCIA
@@ -317,7 +327,8 @@ export default function RegistrarAsistencia({
                 name="cursoId"
                 value={cursoId}
                 options={opcionesCursos}
-                onChange={setCursoId}
+                placeholder="Selecciona un curso"
+                onChange={manejarCambioCurso}
                 disabled={guardando}
               />
             </div>
@@ -331,9 +342,7 @@ export default function RegistrarAsistencia({
                 id="asistencia-fecha"
                 type="date"
                 value={fecha}
-                onChange={(evento) =>
-                  setFecha(evento.target.value)
-                }
+                onChange={manejarCambioFecha}
                 disabled={guardando}
                 required
               />
