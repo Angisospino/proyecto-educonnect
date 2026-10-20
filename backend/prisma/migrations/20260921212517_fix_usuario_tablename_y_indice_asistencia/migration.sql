@@ -5,22 +5,22 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `asistencia` DROP FOREIGN KEY `Asistencia_docenteId_fkey`;
+ALTER TABLE `Asistencia` DROP FOREIGN KEY `Asistencia_docenteId_fkey`;
 
 -- DropForeignKey
-ALTER TABLE `estudianteperfil` DROP FOREIGN KEY `EstudiantePerfil_usuarioId_fkey`;
+ALTER TABLE `EstudiantePerfil` DROP FOREIGN KEY `EstudiantePerfil_usuarioId_fkey`;
 
 -- DropForeignKey
-ALTER TABLE `nota` DROP FOREIGN KEY `Nota_docenteId_fkey`;
+ALTER TABLE `Nota` DROP FOREIGN KEY `Nota_docenteId_fkey`;
 
 -- DropIndex
-DROP INDEX `Asistencia_docenteId_fkey` ON `asistencia`;
+DROP INDEX `Asistencia_docenteId_fkey` ON `Asistencia`;
 
 -- DropIndex
-DROP INDEX `Nota_docenteId_fkey` ON `nota`;
+DROP INDEX `Nota_docenteId_fkey` ON `Nota`;
 
 -- DropTable
-DROP TABLE `usuario`;
+DROP TABLE `Usuario`;
 
 -- CreateTable
 CREATE TABLE `usuarios` (
