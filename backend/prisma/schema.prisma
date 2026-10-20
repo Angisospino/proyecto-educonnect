@@ -42,7 +42,9 @@ model Usuario {
   notas             Nota[]
   asistencias       Asistencia[]
   hijos             PadreEstudiante[]
-notificaciones Notificacion[]
+  comunicados       Comunicado[]
+  notificaciones    Notificacion[]
+
   @@map("usuarios")
 }
 
@@ -120,6 +122,25 @@ model Asistencia {
   @@index([cursoId, fecha])
 }
 
+enum EstadoComunicado {
+  PUBLICADO
+  EDITADO
+  ELIMINADO
+}
+
+model Comunicado {
+  id               Int              @id @default(autoincrement())
+  autorId          Int
+  titulo           String           @db.VarChar(150)
+  contenido        String           @db.Text
+  fechaPublicacion DateTime         @default(now())
+  estado           EstadoComunicado @default(PUBLICADO)
+
+  autor          Usuario        @relation(fields: [autorId], references: [id])
+  notificaciones Notificacion[]
+
+  @@index([estado, fechaPublicacion])
+}
 
 enum CanalNotificacion {
   EMAIL
@@ -131,7 +152,6 @@ enum EstadoNotificacion {
   FALLIDA
 }
 
-
 model Notificacion {
   id           Int                @id @default(autoincrement())
   usuarioId    Int
@@ -140,8 +160,8 @@ model Notificacion {
   estado       EstadoNotificacion @default(PENDIENTE)
   fechaEnvio   DateTime?
 
-  usuario      Usuario            @relation(fields: [usuarioId], references: [id])
-  comunicado   Comunicado?        @relation(fields: [comunicadoId], references: [id])
+  usuario    Usuario     @relation(fields: [usuarioId], references: [id])
+  comunicado Comunicado? @relation(fields: [comunicadoId], references: [id])
 
   @@index([estado])
   @@index([usuarioId])
