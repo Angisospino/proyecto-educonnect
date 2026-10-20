@@ -451,9 +451,12 @@ const MisNotas = () => {
 							)}
 						</div>
 
-						<Badge variant={getNotaVariant(promedio)} size="lg">
-							{promedio >= 3.0 ? "Aprobado" : "En riesgo"}
-						</Badge>
+						{/* Con una sola página del listado el estado no sería el real: se oculta. */}
+						{!promedioParcial && (
+							<Badge variant={getNotaVariant(promedio)} size="lg">
+								{promedio >= 3.0 ? "Aprobado" : "En riesgo"}
+							</Badge>
+						)}
 					</div>
 
 					{/* ===============================
