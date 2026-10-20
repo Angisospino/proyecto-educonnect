@@ -427,9 +427,9 @@ const ResumenAcademico = () => {
 			comunicado: anterior.comunicado + 1,
 		}));
 
-		// Si la lista de hijos falló, las tarjetas no pueden consultar nada
-		// hasta que se vuelva a pedir.
-		if (esPadre && hijos.error) {
+		// Si la lista de hijos falló o estaba vacía (pudieron vincular un hijo
+		// después), las tarjetas no consultan nada hasta que se vuelva a pedir.
+		if (esPadre && (hijos.error || estadoHijos === "vacio")) {
 			reintentarHijos();
 		}
 	};
@@ -595,8 +595,8 @@ const ResumenAcademico = () => {
 
 							{notas.datos?.truncado && (
 								<p className="resumen-card__note">
-									Calculado con los primeros {notas.datos.registros.length}{" "}
-									registros.
+									Calculado con {notas.datos.registros.length} registros (se
+									alcanzó el tope de consulta).
 								</p>
 							)}
 						</>
@@ -633,8 +633,8 @@ const ResumenAcademico = () => {
 
 							{asistencia.datos?.truncado && (
 								<p className="resumen-card__note">
-									Calculado con los primeros {asistencia.datos.registros.length}{" "}
-									registros.
+									Calculado con {asistencia.datos.registros.length} registros (se
+									alcanzó el tope de consulta).
 								</p>
 							)}
 						</>
@@ -648,7 +648,7 @@ const ResumenAcademico = () => {
 					titulo="Último comunicado"
 					cargando={comunicado.cargando}
 					error={comunicado.error}
-					aviso={ultimoComunicado === null ? "Aún no hay comunicados" : ""}
+					aviso={ultimoComunicado === null ? "Aún no hay comunicados." : ""}
 					onReintentar={reintentar("comunicado")}
 				>
 					{ultimoComunicado && (
