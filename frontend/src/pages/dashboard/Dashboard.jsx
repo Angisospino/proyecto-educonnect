@@ -88,7 +88,7 @@ const QUICK_ACTIONS = [
 			ROLES.PADRE_FAMILIA,
 			ROLES.DIRECTIVO,
 		],
-		enabled: false,
+		enabled: true,
 	},
 
 	{
