@@ -121,6 +121,148 @@
 	overflow-wrap: anywhere;
 }
 
+.comunicados-page__item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--spacing-3);
+
+	padding-top: var(--spacing-3);
+
+	border-top: var(--border-width) solid var(--border-color);
+}
+
+/* ==========================================
+   MENSAJES
+   ========================================== */
+
+.comunicados-page__message {
+	margin: 0;
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: var(--border-width) solid transparent;
+	border-radius: var(--radius-md);
+
+	font-size: var(--font-size-sm);
+}
+
+.comunicados-page__message--success {
+	border-color: var(--color-success);
+	background: var(--color-success-light);
+	color: var(--color-success);
+}
+
+.comunicados-page__message--error {
+	border-color: var(--color-danger);
+	background: var(--color-danger-light);
+	color: var(--color-danger);
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+
+.comunicados-page__form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-5);
+}
+
+.comunicados-page__field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-2);
+}
+
+.comunicados-page__label {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-medium);
+}
+
+.comunicados-page__required {
+	color: var(--color-danger);
+}
+
+/* Mismo aspecto que el componente Input. */
+.comunicados-page__textarea {
+	width: 100%;
+	min-height: 160px;
+
+	padding: var(--input-padding-y) var(--spacing-3);
+
+	border: var(--border-width) solid var(--border-color);
+	border-radius: var(--radius-md);
+
+	background-color: var(--background-primary);
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-sm);
+	line-height: var(--line-height-md);
+
+	resize: vertical;
+	outline: none;
+
+	transition:
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast);
+}
+
+.comunicados-page__textarea::placeholder {
+	color: var(--text-muted);
+}
+
+.comunicados-page__textarea:hover:not(:disabled) {
+	border-color: var(--color-primary);
+}
+
+.comunicados-page__textarea:focus {
+	border-color: var(--color-primary);
+
+	box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.comunicados-page__textarea--error,
+.comunicados-page__textarea--error:hover:not(:disabled),
+.comunicados-page__textarea--error:focus {
+	border-color: var(--color-danger);
+}
+
+.comunicados-page__textarea:disabled {
+	background-color: var(--background-secondary);
+	opacity: 0.7;
+
+	cursor: not-allowed;
+}
+
+.comunicados-page__counter {
+	margin: 0;
+
+	color: var(--text-secondary);
+	font-size: var(--font-size-xs);
+	text-align: right;
+}
+
+.comunicados-page__field-error,
+.comunicados-page__form-error {
+	margin: 0;
+
+	color: var(--color-danger);
+	font-size: var(--font-size-xs);
+	line-height: 1.4;
+}
+
+.comunicados-page__form-error {
+	font-size: var(--font-size-sm);
+}
+
 /* ==========================================
    PIE
    ========================================== */
