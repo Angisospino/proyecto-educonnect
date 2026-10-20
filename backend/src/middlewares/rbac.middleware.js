@@ -3,7 +3,7 @@
  *
  * Implementa la matriz de permisos del DDS §7.3, limitada
  * a los módulos ya implementados en el backend. A medida que
- * se agreguen nuevos módulos (Comunicados, Reportes), se
+ * se agreguen nuevos módulos (Reportes), se
  * declaran aquí como una nueva entrada de PERMISOS — las
  * rutas no deben hardcodear roles sueltos.
  *
@@ -32,9 +32,15 @@ const TODOS_LOS_ROLES = Object.values(ROLES);
  * Perfil propio         CRUD           CRUD     CRUD        CRUD   CRUD
  * Notas                 R              CRUD     R           R      R
  * Asistencia            R              CRUD     R           R      R
+ * Comunicados           R              CRUD*    R           R      CRUD*
  *
- * Notas y Asistencia son objetos { CREAR, LEER, ACTUALIZAR, ELIMINAR }
+ * Notas, Asistencia y Comunicados son objetos
+ * { CREAR, LEER, ACTUALIZAR, ELIMINAR }
  * (C = CREAR, R = LEER, U = ACTUALIZAR, D = ELIMINAR).
+ *
+ * (*) En Comunicados, Docente y Directivo solo modifican o eliminan
+ * los comunicados propios: esa regla de autoría la valida el servicio,
+ * el middleware solo filtra por rol.
  */
 export const PERMISOS = {
 	USUARIOS: [ROLES.ADMINISTRADOR],
@@ -66,11 +72,17 @@ ASISTENCIA: {
 },
 
 COMUNICADOS: {
-    CREAR: ["DOCENTE", "DIRECTIVO"],
-    LEER: ["ADMIN", "DIRECTIVO", "DOCENTE", "ESTUDIANTE", "ACUDIENTE"],
-    ACTUALIZAR: ["DOCENTE", "DIRECTIVO"],
-    ELIMINAR: ["DOCENTE", "DIRECTIVO"],
-  },
+  CREAR: ["DOCENTE", "DIRECTIVO"],
+  LEER: [
+    "ADMINISTRADOR",
+    "DOCENTE",
+    "ESTUDIANTE",
+    "PADRE_FAMILIA",
+    "DIRECTIVO",
+  ],
+  ACTUALIZAR: ["DOCENTE", "DIRECTIVO"],
+  ELIMINAR: ["DOCENTE", "DIRECTIVO"],
+},
 };
 
 /**
