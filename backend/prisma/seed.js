@@ -361,8 +361,6 @@ console.log('🌱 Iniciando seed de Sprint 3...');
   console.log('Periodo: 2026-P3');
   console.log('--------------------------------');
 
-
-  
   // =====================================================
   // 8. SEMBRAR COMUNICADOS (SPRINT 4 - RF-007)
   // =====================================================
@@ -420,11 +418,7 @@ console.log('🌱 Iniciando seed de Sprint 3...');
   }
 
   console.log('✅ Proceso de comunicados finalizado.');
-
 }
-
-
-
 
 
 main()

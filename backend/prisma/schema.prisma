@@ -42,7 +42,7 @@ model Usuario {
   notas             Nota[]
   asistencias       Asistencia[]
   hijos             PadreEstudiante[]
-  comunicados Comunicado[]
+  comunicados       Comunicado[]
 
   @@map("usuarios")
 }
