@@ -1,6 +1,25 @@
 import prisma from '../config/prisma.js';
 
 /**
+ * Elimina todos los vínculos de un padre
+ * con sus estudiantes.
+ *
+ * @param {number} padreId
+ * @param {object} db - Cliente Prisma o transacción.
+ * @returns {Promise<{count: number}>}
+ */
+const eliminarPorPadre = async (
+  padreId,
+  db = prisma
+) => {
+  return db.padreEstudiante.deleteMany({
+    where: {
+      padreId: Number(padreId),
+    },
+  });
+};
+
+/**
  * Lista los hijos vinculados a un padre de familia.
  *
  * Devuelve un arreglo de perfiles de estudiante (ya aplanados, sin
@@ -90,28 +109,9 @@ const esPadreDe = async (padreId, estudianteId) => {
   return total > 0;
 };
 
-/**
- * Elimina todos los vínculos de un padre
- * con sus estudiantes.
- *
- * @param {number} padreId
- * @param {object} db - Cliente Prisma o transacción.
- * @returns {Promise<{count: number}>}
- */
-const eliminarPorPadre = async (
-  padreId,
-  db = prisma
-) => {
-  return db.padreEstudiante.deleteMany({
-    where: {
-      padreId: Number(padreId),
-    },
-  });
-};
-
 export default {
+  eliminarPorPadre,
   listarHijos,
   buscarHijosIdsPorPadre,
   esPadreDe,
-  eliminarPorPadre,
 };
