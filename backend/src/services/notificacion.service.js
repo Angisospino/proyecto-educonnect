@@ -1,4 +1,17 @@
 
+/**
+ * Servicio de notificaciones (RF-009).
+ *
+ * OJO: el export por defecto de este archivo es la FABRICA
+ * (`crearNotificacionService`), no el servicio listo para usar.
+ * Los consumidores (controladores, otros servicios) deben importar
+ * la instancia ya armada con la estrategia de correo:
+ *
+ *   import { notificacionService } from "../notifications/index.js";
+ *
+ * Esta fabrica se exporta para poder inyectar una estrategia falsa
+ * en las pruebas.
+ */
 import notificacionRepository from "../repositories/notificacion.repository.js";
 
 const TAMANO_LOTE = 10;
@@ -38,6 +51,37 @@ const construirContenido = (comunicado) => {
 };
 
 /**
+ * Procesa los elementos en lotes de TAMANO_LOTE: dentro de un lote las
+ * tareas corren en paralelo y los lotes se ejecutan uno tras otro, de
+ * modo que nunca hay mas de TAMANO_LOTE envios simultaneos.
+ * Promise.allSettled garantiza que un fallo no detenga al resto.
+ *
+ * @param {Array} elementos
+ * @param {(elemento: unknown) => Promise<unknown>} tarea
+ * @returns {Promise<PromiseSettledResult<unknown>[]>}
+ */
+const procesarPorLotes = async (elementos, tarea) => {
+  const resultados = [];
+
+  for (
+    let inicio = 0;
+    inicio < elementos.length;
+    inicio += TAMANO_LOTE
+  ) {
+    const lote = elementos.slice(
+      inicio,
+      inicio + TAMANO_LOTE
+    );
+
+    resultados.push(
+      ...(await Promise.allSettled(lote.map(tarea)))
+    );
+  }
+
+  return resultados;
+};
+
+/**
  * Fábrica del servicio.
  *
  * @param {object} estrategia
@@ -63,6 +107,11 @@ export const crearNotificacionService = (
    *
    * El error de envío no se propaga si se logra
    * registrar el estado FALLIDA.
+   *
+   * Si el correo SÍ salió pero no se pudo registrar ENVIADA en la base
+   * de datos, la fila NO se marca FALLIDA (el siguiente reintento
+   * reenviaría un correo duplicado): se registra el error y la fila
+   * queda como está.
    */
   const procesarEnvio = async ({
     notificacionId,
@@ -76,21 +125,6 @@ export const crearNotificacionService = (
         asunto,
         contenido
       );
-
-      // El transporte simulado no entrega correos.
-      if (simulacion) {
-        console.info(
-          `[NOTIFICACIONES] Simulación completada: ${notificacionId}`
-        );
-
-        return "PENDIENTE";
-      }
-
-      await notificacionRepository.marcarEnviada(
-        notificacionId
-      );
-
-      return "ENVIADA";
     } catch (error) {
       console.error(
         `[NOTIFICACIONES] Falló el envío ${notificacionId}:`,
@@ -113,6 +147,29 @@ export const crearNotificacionService = (
 
       return "FALLIDA";
     }
+
+    // El transporte simulado no entrega correos: la fila queda PENDIENTE.
+    if (simulacion) {
+      console.info(
+        `[NOTIFICACIONES] Simulación completada: ${notificacionId}`
+      );
+
+      return "PENDIENTE";
+    }
+
+    try {
+      await notificacionRepository.marcarEnviada(
+        notificacionId
+      );
+    } catch (errorBD) {
+      // El correo ya salió: no marcar FALLIDA para evitar duplicados.
+      console.error(
+        `[NOTIFICACIONES] El correo ${notificacionId} se envió pero no se pudo registrar ENVIADA:`,
+        errorBD.message
+      );
+    }
+
+    return "ENVIADA";
   };
 
   /**
@@ -151,56 +208,55 @@ export const crearNotificacionService = (
     const asunto = comunicado.titulo;
     const contenido = construirContenido(comunicado);
 
-    for (
-      let inicio = 0;
-      inicio < destinatarios.length;
-      inicio += TAMANO_LOTE
-    ) {
-      const lote = destinatarios.slice(
-        inicio,
-        inicio + TAMANO_LOTE
-      );
-
-      for (const destinatario of lote) {
-        let notificacion;
+    const resultados = await procesarPorLotes(
+      destinatarios,
+      async (destinatario) => {
+        const notificacion =
+          await notificacionRepository.crear({
+            usuarioId: destinatario.id,
+            comunicadoId: comunicado.id,
+          });
 
         try {
-          notificacion =
-            await notificacionRepository.crear({
-              usuarioId: destinatario.id,
-              comunicadoId: comunicado.id,
-            });
-
-          const estado = await procesarEnvio({
+          return await procesarEnvio({
             notificacionId: notificacion.id,
             email: destinatario.email,
             asunto,
             contenido,
           });
-
-          if (estado === "ENVIADA") {
-            resumen.enviadas++;
-          } else if (estado === "FALLIDA") {
-            resumen.fallidas++;
-          } else {
-            resumen.pendientes++;
-          }
         } catch (error) {
-          console.error(
-            "[NOTIFICACIONES] Error al procesar destinatario:",
-            {
-              usuarioId: destinatario.id,
-              notificacionId: notificacion?.id,
-              mensaje: error.message,
-            }
-          );
-
-          // Si falló la creación, no existe registro
-          // que pueda marcarse como FALLIDA.
-          resumen.fallidas++;
+          error.notificacionId = notificacion.id;
+          throw error;
         }
       }
-    }
+    );
+
+    resultados.forEach((resultado, indice) => {
+      if (resultado.status === "fulfilled") {
+        if (resultado.value === "ENVIADA") {
+          resumen.enviadas++;
+        } else if (resultado.value === "FALLIDA") {
+          resumen.fallidas++;
+        } else {
+          resumen.pendientes++;
+        }
+
+        return;
+      }
+
+      console.error(
+        "[NOTIFICACIONES] Error al procesar destinatario:",
+        {
+          usuarioId: destinatarios[indice]?.id,
+          notificacionId: resultado.reason?.notificacionId,
+          mensaje: resultado.reason?.message,
+        }
+      );
+
+      // Si falló la creación, no existe registro
+      // que pueda marcarse como FALLIDA.
+      resumen.fallidas++;
+    });
 
     return resumen;
   };
@@ -224,17 +280,9 @@ export const crearNotificacionService = (
       fallidas: 0,
     };
 
-    for (
-      let inicio = 0;
-      inicio < notificaciones.length;
-      inicio += TAMANO_LOTE
-    ) {
-      const lote = notificaciones.slice(
-        inicio,
-        inicio + TAMANO_LOTE
-      );
-
-      for (const notificacion of lote) {
+    const resultados = await procesarPorLotes(
+      notificaciones,
+      async (notificacion) => {
         const usuario = notificacion.usuario;
         const comunicado = notificacion.comunicado;
 
@@ -245,38 +293,46 @@ export const crearNotificacionService = (
           !usuario?.email ||
           !comunicado
         ) {
-          resumen.fallidas++;
-          continue;
+          return "OMITIDA";
         }
+
+        return procesarEnvio({
+          notificacionId: notificacion.id,
+          email: usuario.email,
+          asunto: comunicado.titulo,
+          contenido: construirContenido(comunicado),
+        });
+      }
+    );
+
+    resultados.forEach((resultado, indice) => {
+      if (resultado.status === "rejected") {
+        console.error(
+          "[NOTIFICACIONES] Error en reintento:",
+          {
+            notificacionId: notificaciones[indice].id,
+            mensaje: resultado.reason?.message,
+          }
+        );
 
         resumen.reintentadas++;
-
-        try {
-          const estado = await procesarEnvio({
-            notificacionId: notificacion.id,
-            email: usuario.email,
-            asunto: comunicado.titulo,
-            contenido: construirContenido(comunicado),
-          });
-
-          if (estado === "ENVIADA") {
-            resumen.enviadas++;
-          } else if (estado === "FALLIDA") {
-            resumen.fallidas++;
-          }
-        } catch (error) {
-          console.error(
-            "[NOTIFICACIONES] Error en reintento:",
-            {
-              notificacionId: notificacion.id,
-              mensaje: error.message,
-            }
-          );
-
-          resumen.fallidas++;
-        }
+        resumen.fallidas++;
+        return;
       }
-    }
+
+      if (resultado.value === "OMITIDA") {
+        resumen.fallidas++;
+        return;
+      }
+
+      resumen.reintentadas++;
+
+      if (resultado.value === "ENVIADA") {
+        resumen.enviadas++;
+      } else if (resultado.value === "FALLIDA") {
+        resumen.fallidas++;
+      }
+    });
 
     return resumen;
   };
