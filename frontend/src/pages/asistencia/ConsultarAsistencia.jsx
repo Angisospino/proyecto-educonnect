@@ -8,6 +8,7 @@ import Button from "../../components/ui/Button.jsx";
 import EmptyState from "../../components/ui/EmptyState.jsx";
 import Input from "../../components/ui/Input.jsx";
 import Loader from "../../components/ui/Loader.jsx";
+import Pagination from "../../components/ui/Pagination.jsx";
 import Select from "../../components/ui/Select.jsx";
 
 import { useAuth } from "../../hooks/useAuth.js";
@@ -35,6 +36,8 @@ const ESTADOS = {
     variant: "warning",
   },
 };
+
+const TAMANO_PAGINA = 10;
 
 const FILTROS_INICIALES = {
   inicio: "",
@@ -122,6 +125,17 @@ export default function ConsultarAsistencia() {
 
   const [asistencias, setAsistencias] =
     useState([]);
+
+  const [pagina, setPagina] =
+    useState(1);
+
+  // Total de registros visibles para el usuario (no solo los de
+  // la página).
+  const [total, setTotal] =
+    useState(0);
+
+  const [tamanoPagina, setTamanoPagina] =
+    useState(TAMANO_PAGINA);
 
   const [cargando, setCargando] =
     useState(true);
@@ -230,6 +244,9 @@ export default function ConsultarAsistencia() {
           parametros.fin = filtros.fin;
         }
 
+        parametros.page = pagina;
+        parametros.pageSize = TAMANO_PAGINA;
+
         const respuesta =
           await asistenciaService.obtenerAsistencia(
             parametros
@@ -238,11 +255,12 @@ export default function ConsultarAsistencia() {
         // Formato esperado del controlador:
         // {
         //   success: true,
-        //   data: { asistencias: [...], total: n }
+        //   data: { asistencias: [...], total, page, pageSize }
         // }
 
-        const registros =
-          respuesta?.data?.asistencias;
+        const datos = respuesta?.data;
+
+        const registros = datos?.asistencias;
 
         if (!Array.isArray(registros)) {
           throw new Error(
@@ -250,16 +268,47 @@ export default function ConsultarAsistencia() {
           );
         }
 
-        if (activo) {
-          setAsistencias(registros);
+        // Sin page/pageSize en la respuesta (sin paginar) la lista
+        // recibida es el total: la pantalla se comporta como antes,
+        // sin paginador.
+        const totalRegistros =
+          typeof datos.total === "number"
+            ? datos.total
+            : registros.length;
+
+        const tamano = datos.pageSize
+          ? Number(datos.pageSize) || TAMANO_PAGINA
+          : Math.max(registros.length, TAMANO_PAGINA);
+
+        if (!activo) return;
+
+        // Si la página quedó vacía (p. ej. el total bajó), se vuelve
+        // a la última página existente; el efecto se ejecuta de nuevo.
+        // Solo se salta hacia atrás, así que no puede ciclar.
+        const ultimaPagina = Math.max(
+          1,
+          Math.ceil(totalRegistros / tamano)
+        );
+
+        if (
+          registros.length === 0 &&
+          totalRegistros > 0 &&
+          ultimaPagina < pagina
+        ) {
+          setPagina(ultimaPagina);
+
+          return;
         }
+
+        setAsistencias(registros);
+        setTotal(totalRegistros);
+        setTamanoPagina(tamano);
+        setCargando(false);
       } catch (err) {
         if (activo) {
           setAsistencias([]);
+          setTotal(0);
           setError(obtenerMensajeError(err));
-        }
-      } finally {
-        if (activo) {
           setCargando(false);
         }
       }
@@ -275,6 +324,7 @@ export default function ConsultarAsistencia() {
     hijoId,
     filtros.inicio,
     filtros.fin,
+    pagina,
     actualizacion,
   ]);
 
@@ -291,10 +341,19 @@ export default function ConsultarAsistencia() {
       ...anterior,
       [campo]: valor,
     }));
+
+    // Otro filtro es otra consulta: vuelve a la primera página.
+    setPagina(1);
+  };
+
+  const cambiarHijo = (evento) => {
+    setHijoId(evento.target.value);
+    setPagina(1);
   };
 
   const limpiarFiltros = () => {
     setFiltros({ ...FILTROS_INICIALES });
+    setPagina(1);
     setActualizacion((valor) => valor + 1);
   };
 
@@ -308,7 +367,6 @@ export default function ConsultarAsistencia() {
 
   const resumen = useMemo(() => {
     const resultado = {
-      total: asistencias.length,
       presentes: 0,
       ausentes: 0,
       tardanzas: 0,
@@ -335,6 +393,19 @@ export default function ConsultarAsistencia() {
 
     return resultado;
   }, [asistencias]);
+
+  // Con varias páginas, los contadores por estado solo cubren los
+  // registros cargados (los de la página actual); el total sí es el real.
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(total / tamanoPagina)
+  );
+
+  const resumenParcial = total > tamanoPagina;
+
+  const sufijoPagina = resumenParcial
+    ? " (esta página)"
+    : "";
 
   const fechasInvalidas =
     Boolean(
@@ -455,9 +526,7 @@ export default function ConsultarAsistencia() {
                 label: obtenerEtiquetaHijo(hijo),
               }))}
               placeholder={null}
-              onChange={(evento) =>
-                setHijoId(evento.target.value)
-              }
+              onChange={cambiarHijo}
             />
           )}
 
@@ -510,23 +579,31 @@ export default function ConsultarAsistencia() {
         >
           <div className="consultar-asistencia__stat">
             <span>Total registros</span>
-            <strong>{resumen.total}</strong>
+            <strong>{total}</strong>
           </div>
 
           <div className="consultar-asistencia__stat">
-            <span>Presentes</span>
+            <span>Presentes{sufijoPagina}</span>
             <strong>{resumen.presentes}</strong>
           </div>
 
           <div className="consultar-asistencia__stat">
-            <span>Ausentes</span>
+            <span>Ausentes{sufijoPagina}</span>
             <strong>{resumen.ausentes}</strong>
           </div>
 
           <div className="consultar-asistencia__stat">
-            <span>Tardanzas</span>
+            <span>Tardanzas{sufijoPagina}</span>
             <strong>{resumen.tardanzas}</strong>
           </div>
+
+          {resumenParcial && (
+            <p className="consultar-asistencia__summary-note">
+              Presentes, ausentes y tardanzas se calculan
+              con los registros de esta página (
+              {asistencias.length} de {total}).
+            </p>
+          )}
         </section>
       )}
 
@@ -619,6 +696,16 @@ export default function ConsultarAsistencia() {
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!cargando && !error && (
+          <div className="consultar-asistencia__footer">
+            <Pagination
+              currentPage={pagina}
+              totalPages={totalPaginas}
+              onPageChange={setPagina}
+            />
           </div>
         )}
       </section>
