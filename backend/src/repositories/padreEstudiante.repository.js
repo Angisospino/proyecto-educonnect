@@ -1,6 +1,5 @@
 import prisma from '../config/prisma.js';
 
-
 /**
  * Lista los hijos vinculados a un padre de familia.
  *
@@ -91,9 +90,6 @@ const esPadreDe = async (padreId, estudianteId) => {
   return total > 0;
 };
 
-
-
-
 /**
  * Elimina todos los vínculos de un padre
  * con sus estudiantes.
@@ -112,9 +108,6 @@ const eliminarPorPadre = async (
     },
   });
 };
-
-
-
 
 export default {
   listarHijos,
