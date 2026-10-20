@@ -20,6 +20,8 @@ import Button from "../../components/ui/Button.jsx";
 
 import { ROLE_LABELS, ROLES, ROUTES } from "../../utils/constants.js";
 
+import ResumenAcademico from "./ResumenAcademico.jsx";
+
 import "./Dashboard.css";
 
 /* ==========================================
@@ -174,6 +176,11 @@ const Dashboard = () => {
 	const descripcionRol =
 		ROLE_DESCRIPTIONS[rol] || "Bienvenido a EduConnect BR.";
 
+	// El resumen académico solo aplica a quienes consultan notas y asistencia
+	// propias o de sus hijos.
+	const mostrarResumenAcademico =
+		rol === ROLES.ESTUDIANTE || rol === ROLES.PADRE_FAMILIA;
+
 	/* ========================================
      ACCIONES DISPONIBLES
      ======================================== */
@@ -278,6 +285,8 @@ const Dashboard = () => {
 					</div>
 				</article>
 			</section>
+
+			{mostrarResumenAcademico && <ResumenAcademico />}
 
 			{/* ===================================
           ACCESOS RÁPIDOS
