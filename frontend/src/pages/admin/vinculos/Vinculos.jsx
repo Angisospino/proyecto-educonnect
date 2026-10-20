@@ -336,6 +336,19 @@ const Vinculos = () => {
 		setIntentoVinculos((valor) => valor + 1);
 	};
 
+	// Los avisos del formulario y de la lista son de la última acción: al
+	// empezar otra (o al actualizar a mano) se limpian los dos para que no
+	// quede visible un aviso de una acción anterior.
+	const limpiarMensajes = () => {
+		setMensajeForm(null);
+		setMensajeLista(null);
+	};
+
+	const actualizarManual = () => {
+		limpiarMensajes();
+		recargarVinculos();
+	};
+
 	/* ========================================
      OPCIONES DE LOS SELECTORES
      ======================================== */
@@ -398,7 +411,7 @@ const Vinculos = () => {
 		if (!puedeVincular) return;
 
 		setGuardando(true);
-		setMensajeForm(null);
+		limpiarMensajes();
 
 		try {
 			await vinculoService.crearVinculo({
@@ -440,7 +453,7 @@ const Vinculos = () => {
 		if (!vinculo || eliminando) return;
 
 		setEliminando(true);
-		setMensajeLista(null);
+		limpiarMensajes();
 
 		try {
 			await vinculoService.eliminarVinculo(vinculo.id);
@@ -507,7 +520,7 @@ const Vinculos = () => {
 
 				<Button
 					variant="outline"
-					onClick={recargarVinculos}
+					onClick={actualizarManual}
 					disabled={cargandoVinculos}
 					leftIcon={<RefreshCw size={17} />}
 				>
@@ -678,7 +691,7 @@ const Vinculos = () => {
 					>
 						<span>{errorVinculos}</span>
 
-						<Button variant="outline" size="sm" onClick={recargarVinculos}>
+						<Button variant="outline" size="sm" onClick={actualizarManual}>
 							Reintentar
 						</Button>
 					</div>
