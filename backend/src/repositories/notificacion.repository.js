@@ -49,12 +49,19 @@ const marcarFallida = async (id) => {
  * Uso interno del servicio de reintentos.
  * Nunca devolver directamente este resultado
  * desde un controlador HTTP.
+ *
+ * Excluye las notificaciones de comunicados ELIMINADO para que un
+ * reintento nunca reenvie un comunicado borrado.
  */
 const listarFallidas = async () => {
   return prisma.notificacion.findMany({
     where: {
       estado: "FALLIDA",
       canal: "EMAIL",
+      OR: [
+        { comunicadoId: null },
+        { comunicado: { is: { estado: { not: "ELIMINADO" } } } },
+      ],
     },
     select: {
       ...selectNotificacion,
@@ -83,13 +90,16 @@ const listarFallidas = async () => {
   });
 };
 
+const filtrarPorEstado = (estado) =>
+  estado ? { estado } : {};
+
 const listar = async ({
   estado,
   skip = 0,
   take = 20,
 } = {}) => {
   return prisma.notificacion.findMany({
-    where: estado ? { estado } : {},
+    where: filtrarPorEstado(estado),
     skip,
     take,
     select: selectNotificacion,
@@ -99,10 +109,17 @@ const listar = async ({
   });
 };
 
+const contar = async ({ estado } = {}) => {
+  return prisma.notificacion.count({
+    where: filtrarPorEstado(estado),
+  });
+};
+
 export default {
   crear,
   marcarEnviada,
   marcarFallida,
   listarFallidas,
   listar,
+  contar,
 };

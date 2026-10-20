@@ -337,8 +337,31 @@ export const crearNotificacionService = (
     return resumen;
   };
 
-  const listar = async (filtros = {}) => {
-    return notificacionRepository.listar(filtros);
+  /**
+   * Lista notificaciones paginadas, sin datos personales (sin correos).
+   * El controlador valida estado, page y pageSize antes de llamar aqui.
+   *
+   * @param {object} filtros
+   * @param {string} [filtros.estado]
+   * @param {number} [filtros.page=1]
+   * @param {number} [filtros.pageSize=20]
+   * @returns {Promise<{ notificaciones: object[], total: number }>}
+   */
+  const listar = async ({
+    estado,
+    page = 1,
+    pageSize = 20,
+  } = {}) => {
+    const [notificaciones, total] = await Promise.all([
+      notificacionRepository.listar({
+        estado,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      notificacionRepository.contar({ estado }),
+    ]);
+
+    return { notificaciones, total };
   };
 
   return {
