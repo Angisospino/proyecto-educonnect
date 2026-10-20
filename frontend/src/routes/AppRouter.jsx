@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { BarChart3, Bell, Megaphone, Settings } from "lucide-react";
+import { BarChart3, Bell, Settings } from "lucide-react";
 
 /* Layouts */
 import AuthLayout from "../layouts/AuthLayout.jsx";
@@ -70,55 +70,12 @@ const AppRoutes = () => {
 					</Route>
 
 					{/* ===============================
-              NOTAS Y ASISTENCIA
-              Una sola ruta por path: RolePage elige
-              la vista según el rol y, si el rol no
-              tiene vista, redirige al dashboard.
-              =============================== */}
-
-					<Route
-						path={ROUTES.GRADES}
-						element={
-							<RolePage
-								pages={{
-									[ROLES.DOCENTE]: <RegistrarNotas />,
-									[ROLES.ESTUDIANTE]: <MisNotas />,
-								}}
-							/>
-						}
-					/>
-
-					<Route
-						path={ROUTES.ATTENDANCE}
-						element={
-							<RolePage
-								pages={{
-									[ROLES.DOCENTE]: <RegistrarAsistencia />,
-									[ROLES.ESTUDIANTE]: <ConsultarAsistencia />,
-									[ROLES.PADRE_FAMILIA]: <ConsultarAsistencia />,
-								}}
-							/>
-						}
-					/>
-
-					{/* ===============================
               MÓDULOS PENDIENTES
               Tienen entrada en el menú pero todavía
               no se construyen: muestran "Próximamente"
               en vez de redirigir al dashboard. Los
               roles son los mismos del menú lateral.
               =============================== */}
-
-					<Route
-						path={ROUTES.COMMUNICATIONS}
-						element={
-							<Proximamente
-								titulo="Comunicados"
-								descripcion="Aquí podrás consultar los anuncios y comunicados de la institución."
-								icon={Megaphone}
-							/>
-						}
-					/>
 
 					<Route
 						path={ROUTES.NOTIFICATIONS}
@@ -160,6 +117,38 @@ const AppRoutes = () => {
 							}
 						/>
 					</Route>
+
+					{/* ===============================
+              NOTAS Y ASISTENCIA
+              Una sola ruta por path: RolePage elige
+              la vista según el rol y, si el rol no
+              tiene vista, redirige al dashboard.
+              =============================== */}
+
+					<Route
+						path={ROUTES.GRADES}
+						element={
+							<RolePage
+								pages={{
+									[ROLES.DOCENTE]: <RegistrarNotas />,
+									[ROLES.ESTUDIANTE]: <MisNotas />,
+								}}
+							/>
+						}
+					/>
+
+					<Route
+						path={ROUTES.ATTENDANCE}
+						element={
+							<RolePage
+								pages={{
+									[ROLES.DOCENTE]: <RegistrarAsistencia />,
+									[ROLES.ESTUDIANTE]: <ConsultarAsistencia />,
+									[ROLES.PADRE_FAMILIA]: <ConsultarAsistencia />,
+								}}
+							/>
+						}
+					/>
 				</Route>
 			</Route>
 
