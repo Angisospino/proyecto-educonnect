@@ -1,297 +1,212 @@
 
-import prisma from "../config/prisma.js";
-import usuarioRepository from "../repositories/usuario.repository.js";
-import notificacionService from "./notificacion.service.js";
+import comunicadoRepository from "../repositories/comunicado.repository.js";
 
-/* ==========================================
-   FUNCIONES AUXILIARES
-   ========================================== */
-
-const crearError = (mensaje, statusCode = 400) => {
+export function crearError(mensaje, statusCode) {
   const error = new Error(mensaje);
   error.statusCode = statusCode;
   return error;
-};
+}
 
-const validarId = (id) => {
-  const texto = String(id);
+const ID_MAXIMO = 2147483647;
 
-  if (!/^[1-9]\d*$/.test(texto)) {
-    throw crearError("El ID no es válido.");
+function aNumero(valor, campo = "id") {
+  if (
+    Array.isArray(valor) ||
+    typeof valor === "boolean" ||
+    valor === null ||
+    valor === undefined ||
+    (typeof valor === "string" && valor.trim() === "") ||
+    !["number", "string"].includes(typeof valor)
+  ) {
+    throw crearError(`El campo ${campo} no es válido.`, 400);
   }
 
-  const numero = Number(texto);
+  const numero = Number(valor);
 
-  if (!Number.isSafeInteger(numero)) {
-    throw crearError("El ID no es válido.");
+  if (!Number.isFinite(numero)) {
+    throw crearError(`El campo ${campo} no es válido.`, 400);
   }
 
   return numero;
-};
+}
 
-const validarTexto = (valor, campo) => {
-  if (typeof valor !== "string" || !valor.trim()) {
-    throw crearError(`${campo} es obligatorio.`);
-  }
+function validarId(valor, campo = "id") {
+  const id = aNumero(valor, campo);
 
-  return valor.trim();
-};
-
-/* ==========================================
-   PUBLICAR COMUNICADO
-   ========================================== */
-
-/**
- * Publica un comunicado institucional.
- *
- * @param {Object} data
- * @param {string} data.titulo
- * @param {string} data.contenido
- * @param {number} autorId
- */
-export const publicarComunicado = async (
-  data,
-  autorId
-) => {
-  const idAutor = validarId(autorId);
-
-  const titulo = validarTexto(
-    data?.titulo,
-    "El título"
-  );
-
-  const contenido = validarTexto(
-    data?.contenido,
-    "El contenido"
-  );
-
-  // Comprobar que el autor existe y está activo.
-  const autor = await prisma.usuario.findUnique({
-    where: { id: idAutor },
-    select: {
-      id: true,
-      nombre: true,
-      apellido: true,
-      rol: true,
-      estado: true,
-    },
-  });
-
-  if (!autor || autor.estado !== "ACTIVO") {
+  if (
+    !Number.isInteger(id) ||
+    id < 1 ||
+    id > ID_MAXIMO
+  ) {
     throw crearError(
-      "El usuario no está autorizado para publicar.",
-      403
+      `El campo ${campo} debe ser un entero entre 1 y ${ID_MAXIMO}.`,
+      400
     );
   }
 
-  // Ajustar si las reglas del proyecto permiten
-  // publicar a otros roles.
-  const rolesPermitidos = [
-    "DOCENTE",
-    "DIRECTIVO",
-  ];
+  return id;
+}
 
-  if (!rolesPermitidos.includes(autor.rol)) {
+function validarTexto(valor, campo, maximo) {
+  if (typeof valor !== "string") {
     throw crearError(
-      "No tienes permisos para publicar comunicados.",
-      403
+      `El campo ${campo} debe ser un texto válido.`,
+      400
     );
   }
 
-  // Guardar primero el comunicado.
-  const comunicado = await prisma.comunicado.create({
-    data: {
-      titulo,
-      contenido,
-      autorId: idAutor,
-    },
-  });
+  const texto = valor.trim();
 
-  const nombreAutor =
-    `${autor.nombre} ${autor.apellido}`.trim();
+  if (!texto) {
+    throw crearError(
+      `El campo ${campo} no puede estar vacío.`,
+      400
+    );
+  }
 
-  // Solo información del comunicado y su autor.
-  const comunicadoNotificable = {
-    id: comunicado.id,
-    titulo: comunicado.titulo,
-    contenido: comunicado.contenido,
-    autor: nombreAutor,
+  if (texto.length > maximo) {
+    throw crearError(
+      `El campo ${campo} no puede superar ${maximo} caracteres.`,
+      400
+    );
+  }
+
+  return texto;
+}
+
+function validarDatosComunicado(datos) {
+  if (
+    datos === null ||
+    typeof datos !== "object" ||
+    Array.isArray(datos)
+  ) {
+    throw crearError("Los datos del comunicado no son válidos.", 400);
+  }
+
+  return {
+    titulo: validarTexto(datos.titulo, "titulo", 150),
+    contenido: validarTexto(datos.contenido, "contenido", 5000),
   };
+}
 
-  // No bloquear la publicación mientras se
-  // consultan destinatarios y envían correos.
-  void Promise.resolve()
-    .then(async () => {
-      const usuariosActivos =
-        await usuarioRepository.listarDestinatariosActivos();
+function validarUsuario(usuario) {
+  if (
+    usuario === null ||
+    typeof usuario !== "object" ||
+    Array.isArray(usuario)
+  ) {
+    throw crearError("El usuario autenticado no es válido.", 400);
+  }
 
-      const destinatarios = usuariosActivos.filter(
-        (usuario) => usuario.id !== idAutor
-      );
+  return validarId(usuario.id, "usuario.id");
+}
 
-      if (destinatarios.length === 0) {
-        return;
-      }
+function validarPaginacion(valor, campo, predeterminado) {
+  const numero =
+    valor === undefined ? predeterminado : aNumero(valor, campo);
 
-      await notificacionService.notificarComunicado(
-        comunicadoNotificable,
-        destinatarios
-      );
-    })
-    .catch((error) => {
-      console.error(
-        "[COMUNICADOS] Error al procesar notificaciones:",
-        {
-          comunicadoId: comunicado.id,
-          mensaje: error.message,
-        }
-      );
-    });
-
-  return comunicado;
-};
-
-/* ==========================================
-   LISTAR COMUNICADOS
-   ========================================== */
-
-export const listarComunicados = async () => {
-  return prisma.comunicado.findMany({
-    select: {
-      id: true,
-      titulo: true,
-      contenido: true,
-      autorId: true,
-    },
-    orderBy: {
-      id: "desc",
-    },
-  });
-};
-
-/* ==========================================
-   OBTENER COMUNICADO POR ID
-   ========================================== */
-
-export const obtenerComunicadoPorId = async (id) => {
-  const comunicadoId = validarId(id);
-
-  const comunicado = await prisma.comunicado.findUnique({
-    where: {
-      id: comunicadoId,
-    },
-  });
-
-  if (!comunicado) {
+  if (!Number.isInteger(numero) || numero < 1) {
     throw crearError(
-      "Comunicado no encontrado.",
-      404
+      `El campo ${campo} debe ser un entero positivo.`,
+      400
     );
   }
 
-  return comunicado;
-};
+  if (campo === "pageSize" && numero > 100) {
+    throw crearError("pageSize no puede superar 100.", 400);
+  }
 
-/* ==========================================
-   ACTUALIZAR COMUNICADO
-   ========================================== */
+  return numero;
+}
 
-export const actualizarComunicado = async (
-  id,
-  data,
-  usuario
-) => {
-  const comunicadoId = validarId(id);
+async function buscarComunicadoEditable(id, usuarioId) {
+  const comunicado = await comunicadoRepository.buscarPorId(id);
 
-  const comunicado =
-    await obtenerComunicadoPorId(comunicadoId);
+  if (!comunicado || comunicado.estado === "ELIMINADO") {
+    throw crearError("El comunicado no existe.", 404);
+  }
 
-  const esAutor =
-    comunicado.autorId === Number(usuario?.id);
+  // El DDS §7.3 permite al directivo gestionar sus comunicados propios.
+  // El administrador solo tiene permiso de lectura.
+  const autorId = validarId(
+    comunicado.autor?.id,
+    "comunicado.autor.id"
+  );
 
-  const esAdministrador =
-    usuario?.rol === "ADMINISTRADOR";
-
-  if (!esAutor && !esAdministrador) {
+  if (autorId !== usuarioId) {
     throw crearError(
-      "No tienes permisos para editar este comunicado.",
+      "No tienes permiso para modificar este comunicado.",
       403
     );
   }
 
-  const datosActualizar = {};
-
-  if (data?.titulo !== undefined) {
-    datosActualizar.titulo = validarTexto(
-      data.titulo,
-      "El título"
-    );
-  }
-
-  if (data?.contenido !== undefined) {
-    datosActualizar.contenido = validarTexto(
-      data.contenido,
-      "El contenido"
-    );
-  }
-
-  if (Object.keys(datosActualizar).length === 0) {
-    throw crearError(
-      "No se proporcionaron datos para actualizar."
-    );
-  }
-
-  return prisma.comunicado.update({
-    where: {
-      id: comunicadoId,
-    },
-    data: datosActualizar,
-  });
-};
-
-/* ==========================================
-   ELIMINAR COMUNICADO
-   ========================================== */
-
-export const eliminarComunicado = async (
-  id,
-  usuario
-) => {
-  const comunicadoId = validarId(id);
-
-  const comunicado =
-    await obtenerComunicadoPorId(comunicadoId);
-
-  const esAutor =
-    comunicado.autorId === Number(usuario?.id);
-
-  const esAdministrador =
-    usuario?.rol === "ADMINISTRADOR";
-
-  if (!esAutor && !esAdministrador) {
-    throw crearError(
-      "No tienes permisos para eliminar este comunicado.",
-      403
-    );
-  }
-
-  return prisma.comunicado.delete({
-    where: {
-      id: comunicadoId,
-    },
-  });
-};
-
-/* ==========================================
-   EXPORTACIÓN
-   ========================================== */
+  return comunicado;
+}
 
 const comunicadoService = {
-  publicarComunicado,
-  listarComunicados,
-  obtenerComunicadoPorId,
-  actualizarComunicado,
-  eliminarComunicado,
+  async publicarComunicado(datos, usuario) {
+    const autorId = validarUsuario(usuario);
+    const { titulo, contenido } = validarDatosComunicado(datos);
+
+    return comunicadoRepository.crear({
+      autorId,
+      titulo,
+      contenido,
+    });
+  },
+
+  async editarComunicado(id, datos, usuario) {
+    const comunicadoId = validarId(id);
+    const usuarioId = validarUsuario(usuario);
+
+    await buscarComunicadoEditable(comunicadoId, usuarioId);
+
+    const { titulo, contenido } = validarDatosComunicado(datos);
+
+    return comunicadoRepository.actualizar(comunicadoId, {
+      titulo,
+      contenido,
+    });
+  },
+
+  async eliminarComunicado(id, usuario) {
+    const comunicadoId = validarId(id);
+    const usuarioId = validarUsuario(usuario);
+
+    await buscarComunicadoEditable(comunicadoId, usuarioId);
+
+    const eliminado = await comunicadoRepository.marcarEliminado(
+      comunicadoId
+    );
+
+    return { id: eliminado.id };
+  },
+
+  async listarComunicados({ page, pageSize } = {}) {
+    const pagina = validarPaginacion(page, "page", 1);
+    const tamanoPagina = validarPaginacion(
+      pageSize,
+      "pageSize",
+      20
+    );
+
+    const skip = (pagina - 1) * tamanoPagina;
+
+    const [comunicados, total] = await Promise.all([
+      comunicadoRepository.listarVisibles({
+        skip,
+        take: tamanoPagina,
+      }),
+      comunicadoRepository.contarVisibles(),
+    ]);
+
+    return {
+      comunicados,
+      total,
+      page: pagina,
+      pageSize: tamanoPagina,
+    };
+  },
 };
 
 export default comunicadoService;
