@@ -2,6 +2,12 @@
 import nodemailer from "nodemailer";
 import INotificacionStrategy from "./INotificacionStrategy.js";
 
+// Tiempos maximos (ms) para hablar con el servidor SMTP. Sin ellos, un
+// servidor colgado bloquearia el envio a cada destinatario durante minutos.
+const SMTP_CONNECTION_TIMEOUT_MS = 10000;
+const SMTP_GREETING_TIMEOUT_MS = 10000;
+const SMTP_SOCKET_TIMEOUT_MS = 10000;
+
 class EmailNotificacionStrategy extends INotificacionStrategy {
   constructor() {
     super();
@@ -52,9 +58,19 @@ class EmailNotificacionStrategy extends INotificacionStrategy {
       SMTP_FROM,
     } = process.env;
 
-    if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM) {
+    const faltantes = Object.entries({
+      SMTP_USER,
+      SMTP_PASS,
+      SMTP_FROM,
+    })
+      .filter(([, valor]) => !valor)
+      .map(([nombre]) => nombre);
+
+    if (faltantes.length > 0) {
       throw new Error(
-        "Faltan variables de configuración SMTP."
+        "Faltan variables de configuración SMTP: " +
+        faltantes.join(", ") +
+        "."
       );
     }
 
@@ -66,6 +82,9 @@ class EmailNotificacionStrategy extends INotificacionStrategy {
         user: SMTP_USER,
         pass: SMTP_PASS,
       },
+      connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+      greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
+      socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
     });
   }
 
@@ -118,9 +137,11 @@ class EmailNotificacionStrategy extends INotificacionStrategy {
       });
 
       if (this.modoDesarrollo) {
+        // No se registra el cuerpo: es el texto de un comunicado y el
+        // destinatario es un dato personal; solo lo minimo para depurar.
         console.info(
-          "[EMAIL SIMULADO] Mensaje generado:",
-          resultado.message
+          "[EMAIL SIMULADO] Mensaje generado.",
+          { destinatario: destinatario.trim(), asunto: asunto.trim() }
         );
       }
 
