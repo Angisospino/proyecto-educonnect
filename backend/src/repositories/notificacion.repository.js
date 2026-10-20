@@ -53,8 +53,9 @@ const marcarFallida = async (id) => {
  * Excluye las notificaciones de comunicados ELIMINADO para que un
  * reintento nunca reenvie un comunicado borrado.
  */
-const listarFallidas = async () => {
+const listarFallidas = async ({ take } = {}) => {
   return prisma.notificacion.findMany({
+    ...(take !== undefined && { take }),
     where: {
       estado: "FALLIDA",
       canal: "EMAIL",

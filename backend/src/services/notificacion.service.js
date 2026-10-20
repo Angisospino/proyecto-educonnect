@@ -16,6 +16,12 @@ import notificacionRepository from "../repositories/notificacion.repository.js";
 
 const TAMANO_LOTE = 10;
 
+// Tope de notificaciones que reprocesa una corrida de reintento: evita
+// cargar en memoria miles de filas (cada una trae el texto del comunicado)
+// y que una sola petición quede abierta durante minutos. Lo que sobre se
+// toma en la siguiente corrida.
+const TOPE_REINTENTOS_POR_CORRIDA = 500;
+
 const crearError = (mensaje, statusCode = 400) => {
   const error = new Error(mensaje);
   error.statusCode = statusCode;
@@ -198,8 +204,26 @@ export const crearNotificacionService = (
       );
     }
 
+    // Un mismo usuario no debe recibir el correo dos veces aunque
+    // aparezca repetido en la lista.
+    const vistos = new Set();
+    const unicos = destinatarios.filter((destinatario) => {
+      const id = destinatario?.id;
+
+      if (id === undefined || id === null) {
+        return true;
+      }
+
+      if (vistos.has(id)) {
+        return false;
+      }
+
+      vistos.add(id);
+      return true;
+    });
+
     const resumen = {
-      total: destinatarios.length,
+      total: unicos.length,
       enviadas: 0,
       fallidas: 0,
       pendientes: 0,
@@ -209,7 +233,7 @@ export const crearNotificacionService = (
     const contenido = construirContenido(comunicado);
 
     const resultados = await procesarPorLotes(
-      destinatarios,
+      unicos,
       async (destinatario) => {
         const notificacion =
           await notificacionRepository.crear({
@@ -247,7 +271,7 @@ export const crearNotificacionService = (
       console.error(
         "[NOTIFICACIONES] Error al procesar destinatario:",
         {
-          usuarioId: destinatarios[indice]?.id,
+          usuarioId: unicos[indice]?.id,
           notificacionId: resultado.reason?.notificacionId,
           mensaje: resultado.reason?.message,
         }
@@ -261,8 +285,15 @@ export const crearNotificacionService = (
     return resumen;
   };
 
+  // Solo una corrida de reintento a la vez: dos administradores (o un doble
+  // clic) leerían las mismas filas FALLIDA y reenviarían cada correo dos
+  // veces. Es un guard en memoria: vale para un solo proceso del backend.
+  let reintentoEnCurso = false;
+
   /**
-   * Reintenta las notificaciones FALLIDA.
+   * Reintenta las notificaciones FALLIDA (hasta
+   * TOPE_REINTENTOS_POR_CORRIDA por corrida). Si ya hay una corrida en
+   * curso responde 409.
    *
    * @returns {Promise<{
    *   reintentadas: number,
@@ -271,8 +302,27 @@ export const crearNotificacionService = (
    * }>}
    */
   const reintentarFallidas = async () => {
+    if (reintentoEnCurso) {
+      throw crearError(
+        "Ya hay un reintento de notificaciones en curso. Intente de nuevo cuando termine.",
+        409
+      );
+    }
+
+    reintentoEnCurso = true;
+
+    try {
+      return await procesarReintento();
+    } finally {
+      reintentoEnCurso = false;
+    }
+  };
+
+  const procesarReintento = async () => {
     const notificaciones =
-      await notificacionRepository.listarFallidas();
+      await notificacionRepository.listarFallidas({
+        take: TOPE_REINTENTOS_POR_CORRIDA,
+      });
 
     const resumen = {
       reintentadas: 0,
