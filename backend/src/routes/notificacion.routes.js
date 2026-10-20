@@ -17,4 +17,10 @@ router.get(
   notificacionController.listar
 );
 
+router.post(
+  "/reintentar",
+  authorizeRoles(...PERMISOS.USUARIOS),
+  notificacionController.reintentar
+);
+
 export default router;

@@ -1,5 +1,7 @@
 
-import notificacionService from "../services/notificacion.service.js";
+// Instancia ya armada con la estrategia de correo (el export por defecto
+// de services/notificacion.service.js es la fábrica, no el servicio).
+import { notificacionService } from "../notifications/index.js";
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "ENVIADA", "FALLIDA"];
 
@@ -90,6 +92,21 @@ const notificacionController = {
           page,
           pageSize,
         },
+        error: null,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async reintentar(req, res, next) {
+    try {
+      const { reintentadas, enviadas, fallidas } =
+        await notificacionService.reintentarFallidas();
+
+      return res.status(200).json({
+        success: true,
+        data: { reintentadas, enviadas, fallidas },
         error: null,
       });
     } catch (error) {
