@@ -45,6 +45,14 @@ const notificacionController = {
         "pageSize"
       );
 
+      // El desplazamiento (page - 1) * pageSize no puede pasar del máximo
+      // entero de la base de datos: una página enorme daría 500, no 400.
+      if ((page - 1) * pageSize > 2147483647) {
+        const error = new Error("page es demasiado grande.");
+        error.statusCode = 400;
+        throw error;
+      }
+
       const { estado } = req.query;
 
       if (
