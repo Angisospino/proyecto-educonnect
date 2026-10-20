@@ -27,6 +27,13 @@
 	min-width: 0;
 }
 
+/* Selector de hijo (solo Padre de familia) */
+
+.mis-notas-page__child-selector {
+	width: 100%;
+	max-width: 360px;
+}
+
 .mis-notas-page__title {
 	margin: 0;
 
@@ -201,6 +208,13 @@
 	font-weight: var(--font-weight-bold);
 }
 
+.mis-notas-page__summary-note {
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+	line-height: 1.4;
+}
+
 .mis-notas-page__summary > .badge {
 	margin-left: auto;
 }
@@ -294,6 +308,15 @@
 
 .mis-notas-page__table tbody tr:last-child td {
 	border-bottom: 0;
+}
+
+/* ==========================================
+   PAGINACIÓN
+   ========================================== */
+
+.mis-notas-page__footer {
+	display: flex;
+	justify-content: center;
 }
 
 /* ==========================================

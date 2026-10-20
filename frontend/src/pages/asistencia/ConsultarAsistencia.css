@@ -120,6 +120,13 @@
   font-size: var(--font-size-xl);
 }
 
+.consultar-asistencia__summary-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
 /* ==========================================
    TABLA
    ========================================== */
@@ -151,6 +158,16 @@
 .consultar-asistencia__table td {
   color: var(--text-primary);
   font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   PAGINACIÓN
+   ========================================== */
+
+.consultar-asistencia__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-6);
 }
 
 /* ==========================================
