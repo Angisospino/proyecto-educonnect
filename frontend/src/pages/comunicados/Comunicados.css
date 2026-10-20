@@ -1,0 +1,156 @@
+/* ==========================================
+   COMUNICADOS
+   EduConnect BR
+   ========================================== */
+
+.comunicados-page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-6);
+
+	width: 100%;
+	max-width: 900px;
+	margin-inline: auto;
+	padding: var(--spacing-6);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.comunicados-page__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--spacing-4);
+}
+
+.comunicados-page__header h1 {
+	margin: 0 0 var(--spacing-2);
+	color: var(--text-primary);
+	font-size: var(--font-size-xl);
+	font-weight: var(--font-weight-bold);
+}
+
+.comunicados-page__header p {
+	margin: 0;
+	color: var(--text-secondary);
+	font-size: var(--font-size-base);
+}
+
+.comunicados-page__header-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacing-3);
+}
+
+/* ==========================================
+   TARJETAS
+   ========================================== */
+
+.comunicados-page__card {
+	padding: var(--spacing-8);
+	background: var(--bg-surface);
+	border: var(--border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================
+   LISTA
+   ========================================== */
+
+.comunicados-page__list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-4);
+
+	margin: 0;
+	padding: 0;
+
+	list-style: none;
+}
+
+.comunicados-page__item {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-3);
+}
+
+.comunicados-page__item-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--spacing-3);
+}
+
+.comunicados-page__item-title {
+	margin: 0;
+	min-width: 0;
+
+	color: var(--text-primary);
+	font-size: var(--font-size-lg);
+	font-weight: var(--font-weight-semibold);
+
+	overflow-wrap: anywhere;
+}
+
+.comunicados-page__meta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--spacing-2);
+
+	margin: 0;
+
+	color: var(--text-secondary);
+	font-size: var(--font-size-sm);
+}
+
+/* El contenido se muestra como texto plano conservando los saltos de línea. */
+.comunicados-page__content {
+	margin: 0;
+
+	color: var(--text-primary);
+	font-size: var(--font-size-sm);
+	line-height: var(--line-height-lg);
+
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   PIE
+   ========================================== */
+
+.comunicados-page__footer {
+	display: flex;
+	justify-content: center;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+	.comunicados-page {
+		padding: var(--spacing-4);
+	}
+
+	.comunicados-page__card {
+		padding: var(--spacing-6);
+	}
+}
+
+@media (max-width: 480px) {
+	.comunicados-page__header {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.comunicados-page__card {
+		padding: var(--spacing-4);
+	}
+}
