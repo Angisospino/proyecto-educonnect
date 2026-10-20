@@ -1,5 +1,7 @@
 
 import comunicadoRepository from "../repositories/comunicado.repository.js";
+import usuarioRepository from "../repositories/usuario.repository.js";
+import { notificacionService } from "../notifications/index.js";
 
 export function crearError(mensaje, statusCode) {
   const error = new Error(mensaje);
@@ -119,6 +121,33 @@ function validarPaginacion(valor, campo, predeterminado) {
   return numero;
 }
 
+/**
+ * Notifica por correo un comunicado recién publicado a todos los
+ * usuarios activos, excepto a su autor.
+ *
+ * Es "dispara y olvida": no se espera su resultado y cualquier fallo
+ * (obtener destinatarios o enviar) solo se registra en el log, de modo
+ * que publicar nunca falla ni se demora por el correo.
+ */
+function notificarPublicacion(comunicado, autorId) {
+  Promise.resolve()
+    .then(async () => {
+      const destinatarios =
+        await usuarioRepository.listarDestinatariosActivos();
+
+      return notificacionService.notificarComunicado(
+        comunicado,
+        destinatarios.filter((destinatario) => destinatario.id !== autorId)
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `[COMUNICADOS] No se pudo notificar el comunicado ${comunicado.id}:`,
+        error.message
+      );
+    });
+}
+
 async function buscarComunicadoEditable(id, usuarioId) {
   const comunicado = await comunicadoRepository.buscarPorId(id);
 
@@ -148,11 +177,16 @@ const comunicadoService = {
     const autorId = validarUsuario(usuario);
     const { titulo, contenido } = validarDatosComunicado(datos);
 
-    return comunicadoRepository.crear({
+    const comunicado = await comunicadoRepository.crear({
       autorId,
       titulo,
       contenido,
     });
+
+    // Solo al publicar: editar o eliminar no genera notificaciones.
+    notificarPublicacion(comunicado, autorId);
+
+    return comunicado;
   },
 
   async editarComunicado(id, datos, usuario) {
