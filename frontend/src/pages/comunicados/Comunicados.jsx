@@ -58,20 +58,22 @@ const obtenerMensajeError = (error, porDefecto) => {
 	return porDefecto;
 };
 
-// Se toman los primeros 10 caracteres del ISO (aaaa-mm-dd)
-// para no desplazar la fecha por zona horaria.
+// fechaPublicacion es fecha y hora en UTC: se muestra en la hora local del
+// navegador (dd/mm/aaaa). Cortar el texto ISO mostraría el día siguiente
+// para un comunicado publicado por la noche en Colombia (UTC-5).
 const formatearFecha = (valor) => {
 	if (!valor) return "Sin fecha";
 
-	const fechaTexto = String(valor).slice(0, 10);
+	const fecha = new Date(valor);
 
-	const partes = fechaTexto.split("-");
-
-	if (partes.length !== 3) {
-		return fechaTexto;
+	if (Number.isNaN(fecha.getTime())) {
+		return "Sin fecha";
 	}
 
-	return `${partes[2]}/${partes[1]}/${partes[0]}`;
+	const dia = String(fecha.getDate()).padStart(2, "0");
+	const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+
+	return `${dia}/${mes}/${fecha.getFullYear()}`;
 };
 
 const obtenerNombreAutor = (autor) => {
@@ -234,6 +236,19 @@ export default function Comunicados() {
 	const limpiarMensajes = () => {
 		setMensajeExito("");
 		setMensajeError("");
+	};
+
+	// "Actualizar", "Reintentar" y el cambio de página son acciones del
+	// usuario sobre la lista: el aviso de la acción anterior (por ejemplo
+	// "Comunicado eliminado correctamente.") ya no corresponde.
+	const actualizarManual = () => {
+		limpiarMensajes();
+		recargar();
+	};
+
+	const cambiarPagina = (nuevaPagina) => {
+		limpiarMensajes();
+		setPagina(nuevaPagina);
 	};
 
 	const totalPaginas = Math.max(1, Math.ceil(total / tamanoPagina));
@@ -409,7 +424,7 @@ export default function Comunicados() {
 					<Button
 						type="button"
 						variant="secondary"
-						onClick={recargar}
+						onClick={actualizarManual}
 						disabled={cargando}
 					>
 						Actualizar
@@ -454,7 +469,7 @@ export default function Comunicados() {
 						title="No se pudieron cargar los comunicados"
 						description={error}
 						action={
-							<Button type="button" variant="secondary" onClick={recargar}>
+							<Button type="button" variant="secondary" onClick={actualizarManual}>
 								Reintentar
 							</Button>
 						}
@@ -527,7 +542,7 @@ export default function Comunicados() {
 						<Pagination
 							currentPage={pagina}
 							totalPages={totalPaginas}
-							onPageChange={setPagina}
+							onPageChange={cambiarPagina}
 						/>
 					</div>
 				</>
