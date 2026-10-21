@@ -98,9 +98,19 @@ const DashboardLayout = () => {
      CERRAR AL CAMBIAR DE RUTA
      ======================================== */
 
-	useEffect(() => {
+	/*
+	 * Se ajusta el estado durante el render en lugar de usar un efecto:
+	 * guardamos la ruta anterior y, si cambió (enlaces del menú o del
+	 * header, atrás/adelante del navegador, navegación programática),
+	 * cerramos el menú móvil en el mismo render.
+	 */
+
+	const [pathnameAnterior, setPathnameAnterior] = useState(location.pathname);
+
+	if (location.pathname !== pathnameAnterior) {
+		setPathnameAnterior(location.pathname);
 		setSidebarOpen(false);
-	}, [location.pathname]);
+	}
 
 	/* ========================================
      ESCAPE
