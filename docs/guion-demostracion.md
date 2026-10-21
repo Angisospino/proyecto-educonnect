@@ -38,6 +38,7 @@ Contraseña de **todas** las cuentas: `EduConnect123*`.
 Límites de `--limpiar` que conviene conocer:
 
 - Borra por claves exactas (correos, códigos `DEMO-*`, autor + título de cada comunicado, estudiante + asignatura + periodo + docente de cada nota). Las notas, asistencias y comunicados reales que se registren después no se tocan, y un usuario demo con datos propios creados después se conserva con un aviso.
+- Lo que se registre **durante** la demostración no lo borra `--limpiar`: un comunicado eliminado desde la interfaz queda en la base con estado `ELIMINADO` (borrado lógico) y publicarlo genera una notificación `PENDIENTE` por destinatario. Si el autor es un usuario demo (por ejemplo Ana), la limpieza lo conserva y avisa "usuario(s) demo se conservan porque tienen datos propios creados después". Esas filas se pueden dejar o borrar a mano; no afectan lo que ve ningún usuario.
 - Los cursos `6°B` y `7°A` y las cinco asignaturas se borran **por nombre** si quedaron sin uso. Si en su base ya existía un curso o una asignatura vacía con ese mismo nombre, la carga la reutiliza y la limpieza la borra. Revise la vista previa (`--dry-run`) antes de limpiar.
 - La protección contra producción solo actúa con `NODE_ENV=production`. El script imprime el destino (`host`, `puerto`, `base`) al empezar: léalo antes de confirmar una carga en una base que no sea la suya.
 
@@ -78,7 +79,7 @@ Los demás estudiantes del seed siguen el patrón `nombre.apellido@educonnectbr.
 2. **Administrador → Usuarios** (`/admin/usuarios`) — lista de 30 usuarios con paginación (1 - 10 de 30), búsqueda, filtros por rol y estado. Roberto Díaz aparece como inactivo.
 3. **Administrador → Vínculos** (`/admin/vinculos`) — 7 vínculos entre padres y estudiantes; formulario para vincular (padre → curso → estudiante) y eliminación con confirmación.
 4. **Docente** (`ana.torres@`) — `/notas` (registrar y consultar), `/asistencia` (registrar y consultar), `/comunicados`: publicar un comunicado nuevo y editar o eliminar uno propio (los de otros autores no muestran esos botones).
-5. **Estudiante** (`estudiante@`) — dashboard con **resumen académico** (promedio 3.9 sobre 21 notas; asistencia 75 %, 24 de 32 registros presentes; último comunicado), luego `/notas` y `/asistencia` con paginación de 10 en 10.
+5. **Estudiante** (`estudiante@`) — dashboard con **resumen académico** (promedio 3.9 sobre 18 notas; asistencia 75 %, 24 de 32 registros presentes; último comunicado), luego `/notas` y `/asistencia` con paginación de 10 en 10.
 6. **Padre** (`padre@`) — dashboard con selector de hijo: al cambiar de Laura a Mateo el resumen se actualiza (Mateo: 4.0 con 12 notas, asistencia 81 %, 22 de 27). Luego notas y asistencia del hijo elegido.
 7. **Padre sin hijos** (`padre.sinhijos@`) — muestra el estado vacío en lugar de un error.
 8. **Directivo** (`marta.rojas@`) — consulta de comunicados y vista de gestión propia.
