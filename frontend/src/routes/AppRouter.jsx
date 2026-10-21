@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { BarChart3, Bell, Settings } from "lucide-react";
+
 /* Layouts */
 import AuthLayout from "../layouts/AuthLayout.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
@@ -8,6 +10,9 @@ import DashboardLayout from "../layouts/DashboardLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import RoleRoute from "./RoleRoute.jsx";
 import RolePage from "./RolePage.jsx";
+
+/* Componentes */
+import Proximamente from "../components/ui/Proximamente.jsx";
 
 /* Páginas */
 import Login from "../pages/auth/Login.jsx";
@@ -63,6 +68,55 @@ const AppRoutes = () => {
 					<Route element={<RoleRoute allowedRoles={[ROLES.ADMINISTRADOR]} />}>
 						<Route path={ROUTES.USERS} element={<Usuarios />} />
 						<Route path={ROUTES.FAMILY_LINKS} element={<Vinculos />} />
+					</Route>
+
+					{/* ===============================
+              MÓDULOS PENDIENTES
+              Tienen entrada en el menú pero todavía
+              no se construyen: muestran "Próximamente"
+              en vez de redirigir al dashboard. Los
+              roles son los mismos del menú lateral.
+              =============================== */}
+
+					<Route
+						path={ROUTES.NOTIFICATIONS}
+						element={
+							<Proximamente
+								titulo="Notificaciones"
+								descripcion="Aquí podrás revisar las novedades relacionadas con tu cuenta."
+								icon={Bell}
+							/>
+						}
+					/>
+
+					<Route
+						element={
+							<RoleRoute allowedRoles={[ROLES.ADMINISTRADOR, ROLES.DIRECTIVO]} />
+						}
+					>
+						<Route
+							path={ROUTES.REPORTS}
+							element={
+								<Proximamente
+									titulo="Reportes"
+									descripcion="Aquí podrás consultar reportes académicos y administrativos."
+									icon={BarChart3}
+								/>
+							}
+						/>
+					</Route>
+
+					<Route element={<RoleRoute allowedRoles={[ROLES.ADMINISTRADOR]} />}>
+						<Route
+							path={ROUTES.SETTINGS}
+							element={
+								<Proximamente
+									titulo="Configuración"
+									descripcion="Aquí podrás administrar los parámetros generales de la plataforma."
+									icon={Settings}
+								/>
+							}
+						/>
 					</Route>
 
 					{/* ===============================
