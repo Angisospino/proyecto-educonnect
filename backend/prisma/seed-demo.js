@@ -508,6 +508,11 @@ async function cargar(tx, passwordHash, plan, resumen) {
 		let perfil =
 			(await tx.estudiantePerfil.findUnique({ where: { codigoEstudiantil: datos.codigo } })) ||
 			(await tx.estudiantePerfil.findUnique({ where: { usuarioId: usuario.id } }));
+		if (perfil && perfil.usuarioId !== usuario.id) {
+			throw new Error(
+				`El código ${datos.codigo} o el usuario ${datos.email} ya tienen un perfil de otro estudiante; revisa la base antes de cargar la demo.`,
+			);
+		}
 		if (perfil) {
 			resumen.registrar("perfiles", 0, 1);
 		} else {
@@ -662,27 +667,40 @@ async function limpiar(tx, resumen) {
 	// Identificadores de lo que es "demo".
 	const usuariosDemo = await tx.usuario.findMany({
 		where: { email: { in: EMAILS_DEMO } },
-		select: { id: true, rol: true },
+		select: { id: true },
 	});
 	const idsUsuarios = usuariosDemo.map((u) => u.id);
-	const idsPadres = usuariosDemo.filter((u) => u.rol === "PADRE_FAMILIA").map((u) => u.id);
 
+	// Perfiles: codigo DEMO-* Y perteneciente a un usuario demo.
 	const perfilesDemo = await tx.estudiantePerfil.findMany({
-		where: { codigoEstudiantil: { startsWith: PREFIJO_CODIGO } },
+		where: { codigoEstudiantil: { startsWith: PREFIJO_CODIGO }, usuarioId: { in: idsUsuarios } },
 		select: { id: true },
 	});
 	const idsPerfiles = perfilesDemo.map((p) => p.id);
 
 	const asignaturasNuevas = await tx.asignatura.findMany({
 		where: { nombre: { in: ASIGNATURAS_NUEVAS } },
-		select: { id: true },
+		select: { id: true, nombre: true },
 	});
-	const idsAsignaturas = asignaturasNuevas.map((a) => a.id);
 
-	const comunicadosDemo = await tx.comunicado.findMany({
-		where: { titulo: { in: TITULOS_COMUNICADOS_DEMO } },
-		select: { id: true },
+	// Docentes que firman notas y comunicados (incluye a Carlos y Andres, que no se borran).
+	const emailsAutores = [
+		...new Set([...Object.values(DOCENTE_POR_ASIGNATURA), ...COMUNICADOS_DEMO.map((c) => c.autor)]),
+	];
+	const autores = await tx.usuario.findMany({
+		where: { email: { in: emailsAutores } },
+		select: { id: true, email: true },
 	});
+	const idPorEmail = new Map(autores.map((a) => [a.email, a.id]));
+
+	// Comunicados: se identifican por autor Y titulo (nunca solo por titulo).
+	const filtrosComunicados = COMUNICADOS_DEMO.filter((c) => idPorEmail.has(c.autor)).map((c) => ({
+		autorId: idPorEmail.get(c.autor),
+		titulo: c.titulo,
+	}));
+	const comunicadosDemo = filtrosComunicados.length
+		? await tx.comunicado.findMany({ where: { OR: filtrosComunicados }, select: { id: true } })
+		: [];
 	const idsComunicados = comunicadosDemo.map((c) => c.id);
 
 	const perfilLaura = await tx.estudiantePerfil.findFirst({
@@ -700,19 +718,28 @@ async function limpiar(tx, resumen) {
 	});
 	registrar("notificaciones eliminadas", notificaciones.count);
 
-	// 2. Comunicados demo (por titulo).
-	const comunicados = await tx.comunicado.deleteMany({
-		where: { titulo: { in: TITULOS_COMUNICADOS_DEMO } },
-	});
+	// 2. Comunicados demo (por id, obtenidos por autor + titulo).
+	const comunicados = await tx.comunicado.deleteMany({ where: { id: { in: idsComunicados } } });
 	registrar("comunicados eliminados", comunicados.count);
 
-	// 3. Notas de estudiantes demo y notas de las asignaturas nuevas
-	//    (conserva las notas originales de Matematicas de Laura).
-	const notas = await tx.nota.deleteMany({
-		where: {
-			OR: [{ estudianteId: { in: idsPerfiles } }, { asignaturaId: { in: idsAsignaturas } }],
-		},
-	});
+	// 3. Notas de estudiantes demo y las que el seed agrego a Laura: misma
+	//    clave que usa la carga (estudiante, asignatura, periodo) con el docente
+	//    que el seed asigna a cada asignatura. Conserva las originales de Laura
+	//    y cualquier nota real que un docente registre despues.
+	const filtrosNotas = [{ estudianteId: { in: idsPerfiles } }];
+	if (perfilLaura) {
+		for (const asignatura of asignaturasNuevas) {
+			const docenteId = idPorEmail.get(DOCENTE_POR_ASIGNATURA[asignatura.nombre]);
+			if (!docenteId) continue;
+			filtrosNotas.push({
+				estudianteId: perfilLaura.id,
+				asignaturaId: asignatura.id,
+				docenteId,
+				periodo: { in: PERIODOS_LAURA },
+			});
+		}
+	}
+	const notas = await tx.nota.deleteMany({ where: { OR: filtrosNotas } });
 	registrar("notas eliminadas", notas.count);
 
 	// 4. Asistencias de estudiantes demo y las demo de Laura (Ana, en el rango).
@@ -727,9 +754,11 @@ async function limpiar(tx, resumen) {
 	const asistencias = await tx.asistencia.deleteMany({ where: { OR: filtrosAsistencia } });
 	registrar("asistencias eliminadas", asistencias.count);
 
-	// 5. Vinculos de estudiantes demo y de padres demo (nunca Maria -> Laura).
+	// 5. Vinculos hacia estudiantes demo (nunca Maria -> Laura). Los vinculos
+	//    que un padre demo tenga con otros estudiantes se conservan, y el padre
+	//    queda protegido en el paso 7.
 	const vinculos = await tx.padreEstudiante.deleteMany({
-		where: { OR: [{ estudianteId: { in: idsPerfiles } }, { padreId: { in: idsPadres } }] },
+		where: { estudianteId: { in: idsPerfiles } },
 	});
 	registrar("vinculos eliminados", vinculos.count);
 
