@@ -15,6 +15,7 @@ import { useAuth } from "../../hooks/useAuth.js";
 import asistenciaService from "../../services/asistencia.service.js";
 import catalogoService from "../../services/catalogo.service.js";
 import { ROLES } from "../../utils/constants.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import "./ConsultarAsistencia.css";
 
@@ -55,21 +56,6 @@ const HIJOS_INICIALES = {
 /* ==========================================
    UTILIDADES
    ========================================== */
-
-const obtenerMensajeError = (error) => {
-  const data = error?.response?.data;
-
-  if (typeof data?.message === "string") {
-    return data.message;
-  }
-
-  if (typeof data?.error === "string") {
-    return data.error;
-  }
-
-  return error?.message ||
-    "No fue posible consultar la asistencia.";
-};
 
 const formatearFecha = (valor) => {
   if (!valor) return "Sin fecha";
@@ -198,7 +184,10 @@ export default function ConsultarAsistencia() {
           setHijos({
             cargando: false,
             lista: [],
-            error: obtenerMensajeError(err),
+            error: obtenerMensajeError(
+              err,
+              "No fue posible cargar tus hijos."
+            ),
           });
         }
       }
@@ -308,7 +297,12 @@ export default function ConsultarAsistencia() {
         if (activo) {
           setAsistencias([]);
           setTotal(0);
-          setError(obtenerMensajeError(err));
+          setError(
+            obtenerMensajeError(
+              err,
+              "No fue posible consultar la asistencia."
+            )
+          );
           setCargando(false);
         }
       }

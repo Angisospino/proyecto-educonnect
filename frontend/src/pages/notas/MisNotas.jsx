@@ -6,6 +6,7 @@ import notaService from "../../services/nota.service.js";
 import catalogoService from "../../services/catalogo.service.js";
 
 import { useAuth } from "../../hooks/useAuth.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import { ROLES } from "../../utils/constants.js";
 
@@ -27,22 +28,6 @@ const TAMANO_PAGINA = 10;
 /* ==========================================
    UTILIDADES
    ========================================== */
-
-// El backend responde { message } y, en desarrollo, un objeto en
-// `error`: solo se aceptan textos para no pintar un objeto en pantalla.
-const obtenerMensajeError = (err, porDefecto) => {
-	const data = err?.response?.data;
-
-	if (typeof data?.message === "string") {
-		return data.message;
-	}
-
-	if (typeof data?.error === "string") {
-		return data.error;
-	}
-
-	return porDefecto;
-};
 
 const obtenerEtiquetaHijo = (hijo) => {
 	const nombre = [hijo.usuario?.nombre, hijo.usuario?.apellido]

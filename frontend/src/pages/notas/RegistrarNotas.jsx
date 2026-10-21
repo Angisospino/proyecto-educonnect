@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button.jsx";
 
 import notaService from "../../services/nota.service.js";
 import catalogoService from "../../services/catalogo.service.js";
+import { obtenerMensajeError } from "../../utils/errores.js";
 
 import "./RegistrarNotas.css";
 
@@ -16,18 +17,6 @@ const ESTADO_INICIAL = {
   asignaturaId: "",
   valor: "",
   periodo: "",
-};
-
-const obtenerMensajeError = (
-  error,
-  porDefecto = "No fue posible registrar la nota."
-) => {
-  return (
-    error.response?.data?.message ||
-    error.response?.data?.error ||
-    error.message ||
-    porDefecto
-  );
 };
 
 // El servicio devuelve el sobre del backend
@@ -361,7 +350,10 @@ export default function RegistrarNotas() {
     } catch (error) {
       setMensaje({
         tipo: "error",
-        texto: obtenerMensajeError(error),
+        texto: obtenerMensajeError(
+          error,
+          "No fue posible registrar la nota."
+        ),
       });
     } finally {
       setGuardando(false);
