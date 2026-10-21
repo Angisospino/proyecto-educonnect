@@ -1,0 +1,300 @@
+/* ==========================================
+   PÁGINA
+   ========================================== */
+
+.vinculos-page {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	gap: var(--spacing-5);
+}
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.vinculos-page__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+
+	gap: var(--spacing-4);
+}
+
+.vinculos-page__header > div:first-child {
+	min-width: 0;
+}
+
+.vinculos-page__title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-2xl);
+	font-weight: var(--font-weight-semibold);
+}
+
+.vinculos-page__description {
+	max-width: 720px;
+
+	margin: var(--spacing-2) 0 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+	line-height: 1.6;
+}
+
+/* ==========================================
+   CARD
+   ========================================== */
+
+.vinculos-page__card {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+	min-width: 0;
+
+	gap: var(--spacing-4);
+
+	padding: var(--spacing-5);
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-lg);
+
+	background-color: var(--background-primary);
+
+	box-shadow: var(--shadow-sm);
+}
+
+.vinculos-page__card-header {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-1);
+}
+
+.vinculos-page__card-title {
+	margin: 0;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-title);
+	font-size: var(--font-size-lg);
+	font-weight: var(--font-weight-semibold);
+}
+
+.vinculos-page__card-description {
+	margin: 0;
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+   MENSAJES
+   ========================================== */
+
+.vinculos-page__mensaje {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: var(--spacing-3);
+
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border: 1px solid;
+
+	border-radius: var(--radius-md);
+
+	font-size: var(--font-size-sm);
+}
+
+.vinculos-page__mensaje span {
+	flex: 1;
+
+	min-width: 0;
+}
+
+.vinculos-page__mensaje--exito {
+	border-color: var(--color-success);
+
+	background-color: var(--color-success-light);
+
+	color: var(--color-success);
+}
+
+.vinculos-page__mensaje--error {
+	border-color: var(--color-danger);
+
+	background-color: var(--color-danger-light);
+
+	color: var(--color-danger);
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+
+.vinculos-page__form {
+	display: flex;
+	flex-direction: column;
+
+	gap: var(--spacing-5);
+}
+
+.vinculos-page__grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+
+	gap: var(--spacing-5);
+}
+
+.vinculos-page__actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+
+	padding-top: var(--spacing-4);
+
+	border-top: 1px solid var(--border-color);
+}
+
+/* ==========================================
+   LOADING
+   ========================================== */
+
+.vinculos-page__loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 160px;
+
+	padding: var(--spacing-6);
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+
+.vinculos-page__table-wrapper {
+	width: 100%;
+
+	overflow-x: auto;
+
+	border: 1px solid var(--border-color);
+
+	border-radius: var(--radius-md);
+}
+
+.vinculos-page__table {
+	width: 100%;
+	min-width: 640px;
+
+	border-collapse: collapse;
+
+	color: var(--text-primary);
+
+	font-family: var(--font-family-body);
+
+	font-size: var(--font-size-sm);
+}
+
+.vinculos-page__table thead {
+	background-color: var(--background-secondary);
+}
+
+.vinculos-page__table th {
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	color: var(--text-secondary);
+
+	font-size: var(--font-size-xs);
+	font-weight: var(--font-weight-semibold);
+
+	text-align: left;
+
+	text-transform: uppercase;
+
+	letter-spacing: 0.03em;
+
+	white-space: nowrap;
+}
+
+.vinculos-page__table td {
+	padding: var(--spacing-3) var(--spacing-4);
+
+	border-bottom: 1px solid var(--border-color);
+
+	vertical-align: middle;
+}
+
+.vinculos-page__table tbody tr {
+	transition: background-color var(--transition-fast);
+}
+
+.vinculos-page__table tbody tr:hover {
+	background-color: var(--background-secondary);
+}
+
+.vinculos-page__table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.vinculos-page__table .vinculos-page__col-accion {
+	text-align: right;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 992px) {
+	.vinculos-page__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	.vinculos-page {
+		gap: var(--spacing-4);
+	}
+
+	.vinculos-page__header {
+		flex-direction: column;
+	}
+
+	.vinculos-page__header > button {
+		width: 100%;
+	}
+
+	.vinculos-page__title {
+		font-size: var(--font-size-xl);
+	}
+}
+
+@media (max-width: 576px) {
+	.vinculos-page__card {
+		padding: var(--spacing-4);
+
+		border-radius: var(--radius-md);
+	}
+
+	.vinculos-page__mensaje {
+		flex-wrap: wrap;
+	}
+
+	.vinculos-page__actions > button {
+		width: 100%;
+	}
+}
