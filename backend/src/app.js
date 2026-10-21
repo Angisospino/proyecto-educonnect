@@ -10,6 +10,8 @@ import catalogoRoutes from "./routes/catalogo.routes.js";
 import notaRoutes from "./routes/nota.routes.js";
 import asistenciaRoutes from "./routes/asistencia.routes.js";
 import padreRoutes from "./routes/padre.routes.js";
+import comunicadoRoutes from "./routes/comunicado.routes.js";
+import notificacionRoutes from "./routes/notificacion.routes.js";
 
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
@@ -155,13 +157,13 @@ app.use("/api/catalogos", catalogoRoutes);
 app.use("/api/notas", notaRoutes);
 app.use("/api/asistencia", asistenciaRoutes);
 app.use("/api/padres", padreRoutes);
+app.use("/api/comunicados", comunicadoRoutes);
+app.use("/api/notificaciones", notificacionRoutes);
 
 /*
  * Posteriormente agregaremos:
  *
  * app.use("/api/asistencias", asistenciaRoutes);
- * app.use("/api/comunicados", comunicadoRoutes);
- * app.use("/api/notificaciones", notificacionRoutes);
  */
 
 /* ==========================================
