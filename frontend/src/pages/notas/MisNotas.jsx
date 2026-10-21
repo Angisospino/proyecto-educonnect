@@ -14,8 +14,15 @@ import EmptyState from "../../components/ui/EmptyState.jsx";
 import Badge from "../../components/ui/Badge.jsx";
 import Button from "../../components/ui/Button.jsx";
 import Select from "../../components/ui/Select.jsx";
+import Pagination from "../../components/ui/Pagination.jsx";
 
 import "./MisNotas.css";
+
+/* ==========================================
+   CONFIGURACIÓN
+   ========================================== */
+
+const TAMANO_PAGINA = 10;
 
 /* ==========================================
    UTILIDADES
@@ -86,6 +93,13 @@ const MisNotas = () => {
      ======================================== */
 
 	const [notas, setNotas] = useState([]);
+
+	const [pagina, setPagina] = useState(1);
+
+	// Total de notas visibles para el usuario (no solo las de la página).
+	const [total, setTotal] = useState(0);
+
+	const [tamanoPagina, setTamanoPagina] = useState(TAMANO_PAGINA);
 
 	const [loading, setLoading] = useState(true);
 
@@ -167,24 +181,53 @@ const MisNotas = () => {
 				// sea su hijo).
 				const filtros = esPadre ? { estudianteId: hijoId } : {};
 
-				const response = await notaService.obtenerNotas(filtros);
+				const response = await notaService.obtenerNotas({
+					...filtros,
+					page: pagina,
+					pageSize: TAMANO_PAGINA,
+				});
 
 				const lista = Array.isArray(response)
 					? response
 					: response?.data || [];
 
-				if (activo) {
-					setNotas(lista);
+				// Formato esperado del controlador:
+				// { success: true, data: [...], meta: { total, page, pageSize } }
+				const meta = Array.isArray(response) ? null : response?.meta;
+
+				// Sin meta (respuesta sin paginar) la lista recibida es el
+				// total: la pantalla se comporta como antes, sin paginador.
+				const totalRegistros =
+					typeof meta?.total === "number" ? meta.total : lista.length;
+
+				const tamano = meta
+					? Number(meta.pageSize) || TAMANO_PAGINA
+					: Math.max(lista.length, TAMANO_PAGINA);
+
+				if (!activo) return;
+
+				// Si la página quedó vacía (p. ej. el total bajó), se vuelve
+				// a la última página existente; el efecto se ejecuta de nuevo.
+				// Solo se salta hacia atrás, así que no puede ciclar.
+				const ultimaPagina = Math.max(1, Math.ceil(totalRegistros / tamano));
+
+				if (lista.length === 0 && totalRegistros > 0 && ultimaPagina < pagina) {
+					setPagina(ultimaPagina);
+
+					return;
 				}
+
+				setNotas(lista);
+				setTotal(totalRegistros);
+				setTamanoPagina(tamano);
+				setLoading(false);
 			} catch (err) {
 				if (activo) {
 					setNotas([]);
+					setTotal(0);
 					setError(
 						obtenerMensajeError(err, "No fue posible cargar las notas."),
 					);
-				}
-			} finally {
-				if (activo) {
 					setLoading(false);
 				}
 			}
@@ -195,7 +238,13 @@ const MisNotas = () => {
 		return () => {
 			activo = false;
 		};
-	}, [esPadre, hijoId, actualizacion]);
+	}, [esPadre, hijoId, pagina, actualizacion]);
+
+	// Cambiar de hijo es otra consulta: vuelve a la primera página.
+	const cambiarHijo = (evento) => {
+		setHijoId(evento.target.value);
+		setPagina(1);
+	};
 
 	const recargar = () => {
 		setActualizacion((valor) => valor + 1);
@@ -219,6 +268,12 @@ const MisNotas = () => {
 
 		return suma / notas.length;
 	}, [notas]);
+
+	// Con varias páginas, el promedio solo cubre las notas cargadas
+	// (las de la página actual): se avisa en vez de mostrarlo como general.
+	const totalPaginas = Math.max(1, Math.ceil(total / tamanoPagina));
+
+	const promedioParcial = total > tamanoPagina;
 
 	/* ========================================
      NOMBRE DEL ESTUDIANTE (SESIÓN REAL)
@@ -325,7 +380,7 @@ const MisNotas = () => {
 							label: obtenerEtiquetaHijo(hijo),
 						}))}
 						placeholder={null}
-						onChange={(evento) => setHijoId(evento.target.value)}
+						onChange={cambiarHijo}
 					/>
 				</div>
 			)}
@@ -381,17 +436,27 @@ const MisNotas = () => {
 
 						<div className="mis-notas-page__summary-content">
 							<span className="mis-notas-page__summary-label">
-								Promedio general
+								{promedioParcial ? "Promedio de esta página" : "Promedio general"}
 							</span>
 
 							<strong className="mis-notas-page__summary-value">
 								{promedio !== null ? promedio.toFixed(1) : "—"}
 							</strong>
+
+							{promedioParcial && (
+								<span className="mis-notas-page__summary-note">
+									Calculado con los registros de esta página ({notas.length} de{" "}
+									{total})
+								</span>
+							)}
 						</div>
 
-						<Badge variant={getNotaVariant(promedio)} size="lg">
-							{promedio >= 3.0 ? "Aprobado" : "En riesgo"}
-						</Badge>
+						{/* Con una sola página del listado el estado no sería el real: se oculta. */}
+						{!promedioParcial && (
+							<Badge variant={getNotaVariant(promedio)} size="lg">
+								{promedio >= 3.0 ? "Aprobado" : "En riesgo"}
+							</Badge>
+						)}
 					</div>
 
 					{/* ===============================
@@ -444,6 +509,14 @@ const MisNotas = () => {
 								</tbody>
 							</table>
 						</div>
+					</div>
+
+					<div className="mis-notas-page__footer">
+						<Pagination
+							currentPage={pagina}
+							totalPages={totalPaginas}
+							onPageChange={setPagina}
+						/>
 					</div>
 				</>
 			)}
