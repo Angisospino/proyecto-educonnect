@@ -144,55 +144,91 @@ const Usuarios = () => {
      CARGAR USUARIOS
      ======================================== */
 
-	const cargarUsuarios = async () => {
-		try {
-			setLoading(true);
-			setError("");
+	/*
+	 * Contador que dispara una nueva carga: la inicial
+	 * (valor 0) y cada vez que se llama a recargar()
+	 * (botón "Actualizar" o después de guardar).
+	 */
 
-			const response = await usuarioService.obtenerUsuarios();
+	const [actualizacion, setActualizacion] = useState(0);
 
-			/*
-			 * El servicio retorna response.data.
-			 *
-			 * Si el backend responde:
-			 *
-			 * {
-			 *   success: true,
-			 *   data: [...]
-			 * }
-			 *
-			 * aquí extraemos response.data.
-			 */
-
-			const lista = Array.isArray(response)
-				? response
-				: response?.data?.usuarios || [];
-
-			setUsuarios(lista);
-		} catch (err) {
-			console.error("Error cargando usuarios:", err);
-
-			setError(obtenerMensajeError(err, "No fue posible cargar los usuarios."));
-		} finally {
-			setLoading(false);
-		}
+	const recargar = () => {
+		setActualizacion((valor) => valor + 1);
 	};
 
-	/* ========================================
-     CARGA INICIAL
-     ======================================== */
-
 	useEffect(() => {
+		let activo = true;
+
+		const cargarUsuarios = async () => {
+			try {
+				setLoading(true);
+				setError("");
+
+				const response = await usuarioService.obtenerUsuarios();
+
+				/*
+				 * El servicio retorna response.data.
+				 *
+				 * Si el backend responde:
+				 *
+				 * {
+				 *   success: true,
+				 *   data: [...]
+				 * }
+				 *
+				 * aquí extraemos response.data.
+				 */
+
+				const lista = Array.isArray(response)
+					? response
+					: response?.data?.usuarios || [];
+
+				if (!activo) return;
+
+				setUsuarios(lista);
+			} catch (err) {
+				if (!activo) return;
+
+				console.error("Error cargando usuarios:", err);
+
+				setError(obtenerMensajeError(err, "No fue posible cargar los usuarios."));
+			} finally {
+				if (activo) {
+					setLoading(false);
+				}
+			}
+		};
+
 		cargarUsuarios();
-	}, []);
+
+		return () => {
+			activo = false;
+		};
+	}, [actualizacion]);
 
 	/* ========================================
      VOLVER A PÁGINA 1 AL FILTRAR
      ======================================== */
 
-	useEffect(() => {
+	/*
+	 * Cada cambio de búsqueda o filtro es otra consulta:
+	 * se vuelve a la primera página desde el propio manejador.
+	 */
+
+	const handleSearchChange = (valor) => {
+		setSearch(valor);
 		setCurrentPage(1);
-	}, [search, rolFilter, estadoFilter]);
+	};
+
+	const handleRolFilterChange = (event) => {
+		setRolFilter(event.target.value);
+		setCurrentPage(1);
+	};
+
+	const handleEstadoFilterChange = (event) => {
+		setEstadoFilter(event.target.value);
+		setCurrentPage(1);
+	};
 
 	/* ========================================
      CERRAR MENÚ AL HACER CLICK FUERA
@@ -252,14 +288,14 @@ const Usuarios = () => {
 	/*
 	 * Si por una eliminación la página actual
 	 * queda fuera del rango disponible,
-	 * regresamos a la última página válida.
+	 * regresamos a la última página válida. Se ajusta durante el
+	 * render (React vuelve a renderizar de inmediato) en lugar de
+	 * usar un efecto.
 	 */
 
-	useEffect(() => {
-		if (totalPages > 0 && currentPage > totalPages) {
-			setCurrentPage(totalPages);
-		}
-	}, [currentPage, totalPages]);
+	if (totalPages > 0 && currentPage > totalPages) {
+		setCurrentPage(totalPages);
+	}
 
 	/* ========================================
      INFORMACIÓN DE PAGINACIÓN
@@ -281,6 +317,7 @@ const Usuarios = () => {
 		setSearch("");
 		setRolFilter("");
 		setEstadoFilter("");
+		setCurrentPage(1);
 	};
 
 	const hasFilters = Boolean(search || rolFilter || estadoFilter);
@@ -318,10 +355,10 @@ const Usuarios = () => {
      GUARDADO EXITOSO
      ======================================== */
 
-	const handleUsuarioSaved = async () => {
+	const handleUsuarioSaved = () => {
 		handleCloseForm();
 
-		await cargarUsuarios();
+		recargar();
 	};
 
 	/* ========================================
@@ -497,7 +534,7 @@ const Usuarios = () => {
 				<div className="usuarios-page__search">
 					<SearchBar
 						value={search}
-						onChange={setSearch}
+						onChange={handleSearchChange}
 						placeholder="Buscar por nombre, apellido o correo..."
 					/>
 				</div>
@@ -505,7 +542,7 @@ const Usuarios = () => {
 				<div className="usuarios-page__filter">
 					<Select
 						value={rolFilter}
-						onChange={(event) => setRolFilter(event.target.value)}
+						onChange={handleRolFilterChange}
 						options={roleOptions}
 						placeholder="Todos los roles"
 					/>
@@ -514,7 +551,7 @@ const Usuarios = () => {
 				<div className="usuarios-page__filter">
 					<Select
 						value={estadoFilter}
-						onChange={(event) => setEstadoFilter(event.target.value)}
+						onChange={handleEstadoFilterChange}
 						options={estadoOptions}
 						placeholder="Todos los estados"
 					/>
@@ -522,7 +559,7 @@ const Usuarios = () => {
 
 				<Button
 					variant="outline"
-					onClick={cargarUsuarios}
+					onClick={recargar}
 					icon={<RefreshCw size={17} />}
 					title="Actualizar usuarios"
 				>
