@@ -84,51 +84,75 @@ const Perfil = () => {
      CARGAR PERFIL
      ========================================== */
 
-	const cargarPerfil = async () => {
-		try {
-			setLoading(true);
-			setError("");
+	/*
+	 * Contador que dispara una nueva carga: la inicial
+	 * (valor 0) y cada vez que se llama a recargarPerfil()
+	 * (botón "Intentar nuevamente").
+	 */
 
-			const response = await perfilService.obtenerPerfil();
+	const [intento, setIntento] = useState(0);
 
-			/*
-			 * Permite trabajar tanto con:
-			 *
-			 * { success: true, data: {...} }
-			 *
-			 * como directamente:
-			 *
-			 * { id, nombre, apellido, ... }
-			 */
-
-			const data = response?.data || response;
-
-			setPerfil(data);
-
-			setFormData({
-				nombre: data?.nombre || "",
-
-				apellido: data?.apellido || "",
-
-				email: data?.email || "",
-			});
-		} catch (err) {
-			console.error("Error cargando perfil:", err);
-
-			setError(
-				obtenerMensajeError(
-					err,
-					"No fue posible cargar la información del perfil.",
-				),
-			);
-		} finally {
-			setLoading(false);
-		}
+	const recargarPerfil = () => {
+		setIntento((valor) => valor + 1);
 	};
 
 	useEffect(() => {
+		let activo = true;
+
+		const cargarPerfil = async () => {
+			try {
+				setLoading(true);
+				setError("");
+
+				const response = await perfilService.obtenerPerfil();
+
+				/*
+				 * Permite trabajar tanto con:
+				 *
+				 * { success: true, data: {...} }
+				 *
+				 * como directamente:
+				 *
+				 * { id, nombre, apellido, ... }
+				 */
+
+				const data = response?.data || response;
+
+				if (!activo) return;
+
+				setPerfil(data);
+
+				setFormData({
+					nombre: data?.nombre || "",
+
+					apellido: data?.apellido || "",
+
+					email: data?.email || "",
+				});
+			} catch (err) {
+				if (!activo) return;
+
+				console.error("Error cargando perfil:", err);
+
+				setError(
+					obtenerMensajeError(
+						err,
+						"No fue posible cargar la información del perfil.",
+					),
+				);
+			} finally {
+				if (activo) {
+					setLoading(false);
+				}
+			}
+		};
+
 		cargarPerfil();
-	}, []);
+
+		return () => {
+			activo = false;
+		};
+	}, [intento]);
 
 	/* ==========================================
      INFORMACIÓN VISUAL
@@ -421,7 +445,7 @@ const Perfil = () => {
 
 					<p>{error}</p>
 
-					<Button onClick={cargarPerfil}>Intentar nuevamente</Button>
+					<Button onClick={recargarPerfil}>Intentar nuevamente</Button>
 				</div>
 			</section>
 		);
