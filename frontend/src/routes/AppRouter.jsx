@@ -14,6 +14,7 @@ import Login from "../pages/auth/Login.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Perfil from "../pages/profile/Perfil.jsx";
 import Usuarios from "../pages/admin/usuarios/Usuarios.jsx";
+import Vinculos from "../pages/admin/vinculos/Vinculos.jsx";
 import RegistrarNotas from "../pages/notas/RegistrarNotas.jsx";
 import MisNotas from "../pages/notas/MisNotas.jsx";
 import RegistrarAsistencia from "../pages/asistencia/RegistrarAsistencia.jsx";
@@ -61,6 +62,7 @@ const AppRoutes = () => {
 
 					<Route element={<RoleRoute allowedRoles={[ROLES.ADMINISTRADOR]} />}>
 						<Route path={ROUTES.USERS} element={<Usuarios />} />
+						<Route path={ROUTES.FAMILY_LINKS} element={<Vinculos />} />
 					</Route>
 
 					{/* ===============================

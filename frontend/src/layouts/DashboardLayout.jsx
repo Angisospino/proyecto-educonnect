@@ -17,6 +17,7 @@ const PAGE_TITLES = {
 	[ROUTES.DASHBOARD]: "Inicio",
 	[ROUTES.PROFILE]: "Mi perfil",
 	[ROUTES.USERS]: "Gestión de usuarios",
+	[ROUTES.FAMILY_LINKS]: "Vínculos familiares",
 	[ROUTES.GRADES]: "Notas",
 	[ROUTES.ATTENDANCE]: "Asistencia",
 	[ROUTES.COMMUNICATIONS]: "Comunicados",
