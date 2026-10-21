@@ -18,6 +18,7 @@ import RegistrarNotas from "../pages/notas/RegistrarNotas.jsx";
 import MisNotas from "../pages/notas/MisNotas.jsx";
 import RegistrarAsistencia from "../pages/asistencia/RegistrarAsistencia.jsx";
 import ConsultarAsistencia from "../pages/asistencia/ConsultarAsistencia.jsx";
+import Comunicados from "../pages/comunicados/Comunicados.jsx";
 
 /* Constantes */
 import { ROUTES, ROLES } from "../utils/constants.js";
@@ -93,6 +94,13 @@ const AppRoutes = () => {
 							/>
 						}
 					/>
+
+					{/* ===============================
+              COMUNICADOS
+              Todos los usuarios autenticados
+              =============================== */}
+
+					<Route path={ROUTES.COMMUNICATIONS} element={<Comunicados />} />
 				</Route>
 			</Route>
 
