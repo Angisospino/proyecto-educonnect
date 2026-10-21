@@ -1,8 +1,34 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import authService from "../services/auth.service.js";
 
-export const AuthContext = createContext(null);
+import { AuthContext } from "./auth-context.js";
+
+/* ==========================================
+   RESOLVER SESIÓN
+   ==========================================
+
+   Devuelve el usuario de la sesión actual o null
+   si no hay sesión válida. No toca el estado de
+   React: quien la llama decide qué hacer con el
+   resultado.
+   ========================================== */
+
+const resolverSesion = async () => {
+	if (!authService.estaAutenticado()) {
+		return null;
+	}
+
+	try {
+		return await authService.obtenerUsuarioActual();
+	} catch (error) {
+		console.error("Error verificando sesión:", error);
+
+		authService.limpiarSesion();
+
+		return null;
+	}
+};
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
@@ -13,32 +39,37 @@ export const AuthProvider = ({ children }) => {
      VERIFICAR SESIÓN AL INICIAR
      ========================================== */
 
-	const checkAuth = async () => {
-		if (!authService.estaAutenticado()) {
-			setUser(null);
-			setLoading(false);
+	useEffect(() => {
+		let activo = true;
 
-			return;
-		}
+		const verificarSesionInicial = async () => {
+			const usuario = await resolverSesion();
 
-		try {
-			const usuario = await authService.obtenerUsuarioActual();
+			if (!activo) {
+				return;
+			}
 
 			setUser(usuario);
-		} catch (error) {
-			console.error("Error verificando sesión:", error);
-
-			authService.limpiarSesion();
-
-			setUser(null);
-		} finally {
 			setLoading(false);
-		}
-	};
+		};
 
-	useEffect(() => {
-		checkAuth();
+		verificarSesionInicial();
+
+		return () => {
+			activo = false;
+		};
 	}, []);
+
+	/* ==========================================
+     VERIFICAR SESIÓN (MANUAL)
+     ========================================== */
+
+	const checkAuth = async () => {
+		const usuario = await resolverSesion();
+
+		setUser(usuario);
+		setLoading(false);
+	};
 
 	/* ==========================================
      LOGIN
