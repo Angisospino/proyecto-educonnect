@@ -81,7 +81,7 @@ const Sidebar = ({ isOpen = false, onClose }) => {
 			label: "Notas",
 			icon: GraduationCap,
 			path: ROUTES.GRADES,
-			roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE],
+			roles: [ROLES.DOCENTE, ROLES.ESTUDIANTE, ROLES.PADRE_FAMILIA],
 		},
 
 		{

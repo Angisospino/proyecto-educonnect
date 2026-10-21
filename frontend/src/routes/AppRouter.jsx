@@ -133,6 +133,7 @@ const AppRoutes = () => {
 								pages={{
 									[ROLES.DOCENTE]: <RegistrarNotas />,
 									[ROLES.ESTUDIANTE]: <MisNotas />,
+									[ROLES.PADRE_FAMILIA]: <MisNotas />,
 								}}
 							/>
 						}
