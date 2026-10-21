@@ -339,6 +339,25 @@ export const actualizarUsuario = async (id, data) => {
 		throw error;
 	}
 
+	/*
+	 * Un padre que deja de serlo pierde sus vínculos con los estudiantes.
+	 * Solo aplica si el rol realmente cambia: mantener PADRE_FAMILIA o
+	 * cambiar otros campos (nombre, estado, etc.) no toca los vínculos.
+	 * El repository hace el cambio de rol y la limpieza en una sola
+	 * transacción.
+	 */
+	const eliminarVinculos =
+		usuarioActual.rol === "PADRE_FAMILIA" &&
+		datosActualizar.rol !== undefined &&
+		datosActualizar.rol !== usuarioActual.rol;
+
+	if (eliminarVinculos) {
+		return usuarioRepository.actualizarYLimpiarVinculos(
+			usuarioId,
+			datosActualizar,
+		);
+	}
+
 	return usuarioRepository.update(usuarioId, datosActualizar);
 };
 

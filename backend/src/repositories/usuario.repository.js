@@ -1,4 +1,5 @@
 import prisma from "../config/prisma.js";
+import padreEstudianteRepository from "./padreEstudiante.repository.js";
 
 /**
  * Busca un usuario por su ID.
@@ -114,8 +115,8 @@ export const findAll = async () => {
  * @param {Object} data
  * @returns {Promise<Object>}
  */
-export const update = async (id, data) => {
-	return prisma.usuario.update({
+export const update = async (id, data, db = prisma) => {
+	return db.usuario.update({
 		where: {
 			id: Number(id),
 		},
@@ -130,6 +131,30 @@ export const update = async (id, data) => {
 			createdAt: true,
 			updatedAt: true,
 		},
+	});
+};
+
+/**
+ * Actualiza un usuario que deja de ser PADRE_FAMILIA y elimina sus
+ * vínculos con estudiantes (PadreEstudiante) en una sola transacción.
+ *
+ * Primero se actualiza el usuario y después se borran los vínculos: si la
+ * actualización falla (p. ej. email duplicado) no se elimina nada, y si el
+ * borrado falla se revierte el cambio de rol.
+ *
+ * El usuario devuelto usa el mismo select de update (sin passwordHash).
+ *
+ * @param {number|string} id
+ * @param {Object} data - Campos ya validados por el service.
+ * @returns {Promise<Object>}
+ */
+export const actualizarYLimpiarVinculos = async (id, data) => {
+	return prisma.$transaction(async (tx) => {
+		const usuarioActualizado = await update(id, data, tx);
+
+		await padreEstudianteRepository.eliminarPorPadre(id, tx);
+
+		return usuarioActualizado;
 	});
 };
 
@@ -236,6 +261,7 @@ const usuarioRepository = {
 	create,
 	findAll,
 	update,
+	actualizarYLimpiarVinculos,
 	updateEstado,
 	remove,
 	findByIdWithPassword,
