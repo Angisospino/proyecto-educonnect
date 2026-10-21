@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Eye, EyeOff, Save, UserPlus } from "lucide-react";
 
@@ -86,40 +86,50 @@ const UsuarioForm = ({ isOpen, onClose, usuario = null, onSuccess }) => {
      CARGAR DATOS
      ======================================== */
 
-	useEffect(() => {
-		if (!isOpen) {
-			return;
+	/*
+	 * Se reinicia el formulario durante el render, sin efecto:
+	 * guardamos los valores anteriores de isOpen y usuario y,
+	 * cuando alguno cambia con el modal abierto, cargamos los
+	 * datos del usuario (o el formulario vacío al crear).
+	 */
+
+	const [isOpenAnterior, setIsOpenAnterior] = useState(false);
+
+	const [usuarioAnterior, setUsuarioAnterior] = useState(null);
+
+	if (isOpen !== isOpenAnterior || usuario !== usuarioAnterior) {
+		setIsOpenAnterior(isOpen);
+		setUsuarioAnterior(usuario);
+
+		if (isOpen) {
+			setErrors({});
+			setApiError("");
+			setShowPassword(false);
+			setShowConfirmPassword(false);
+
+			if (usuario) {
+				setFormData({
+					nombre: usuario.nombre || "",
+
+					apellido: usuario.apellido || "",
+
+					email: usuario.email || "",
+
+					rol: usuario.rol || "",
+
+					estado: usuario.estado || ESTADOS_USUARIO.ACTIVO,
+
+					password: "",
+
+					confirmPassword: "",
+				});
+			} else {
+				setFormData({
+					...INITIAL_FORM,
+				});
+			}
 		}
-
-		setErrors({});
-		setApiError("");
-		setShowPassword(false);
-		setShowConfirmPassword(false);
-
-		if (usuario) {
-			setFormData({
-				nombre: usuario.nombre || "",
-
-				apellido: usuario.apellido || "",
-
-				email: usuario.email || "",
-
-				rol: usuario.rol || "",
-
-				estado: usuario.estado || ESTADOS_USUARIO.ACTIVO,
-
-				password: "",
-
-				confirmPassword: "",
-			});
-
-			return;
-		}
-
-		setFormData({
-			...INITIAL_FORM,
-		});
-	}, [usuario, isOpen]);
+	}
 
 	/* ========================================
      ¿SE MODIFICARÁ LA CONTRASEÑA?
