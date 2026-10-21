@@ -2,6 +2,10 @@
 import asistenciaRepository from "../repositories/asistencia.repository.js";
 import estudiantePerfilRepository from "../repositories/estudiantePerfil.repository.js";
 import padreEstudianteRepository from "../repositories/padreEstudiante.repository.js";
+import {
+  hayPaginacion,
+  validarPaginacion,
+} from "../utils/pagination.util.js";
 
 /* ==========================================
    CONSTANTES
@@ -88,6 +92,39 @@ const validarRangoFechas = (filtros = {}) => {
 };
 
 /* ==========================================
+   PAGINACIÓN OPCIONAL
+   ========================================== */
+
+/**
+ * Ejecuta la consulta completa o la paginada según la petición.
+ *
+ * Se invoca siempre DESPUÉS de resolver el alcance por rol, así los
+ * errores de permisos (400/403) tienen prioridad sobre los de paginación
+ * y el total solo cuenta lo que el usuario puede ver.
+ *
+ * @param {Object} filtros - Filtros de la petición (page y pageSize).
+ * @param {Function} consultaCompleta - () => Promise<Array>
+ * @param {Function} consultaPaginada - ({ skip, take }) => Promise<{ asistencias, total }>
+ * @returns {Promise<{ asistencias: Array, paginacion: ({ total: number, page: number, pageSize: number }|null) }>}
+ */
+const resolverConsulta = async (
+  filtros,
+  consultaCompleta,
+  consultaPaginada
+) => {
+  if (!hayPaginacion(filtros)) {
+    const asistencias = await consultaCompleta();
+
+    return { asistencias, paginacion: null };
+  }
+
+  const { page, pageSize, skip, take } = validarPaginacion(filtros);
+  const { asistencias, total } = await consultaPaginada({ skip, take });
+
+  return { asistencias, paginacion: { total, page, pageSize } };
+};
+
+/* ==========================================
    REGISTRAR ASISTENCIA
    ========================================== */
 
@@ -158,9 +195,13 @@ const registrarAsistencia = async (datos = {}, usuario) => {
  * - ADMINISTRADOR / DOCENTE / DIRECTIVO: por estudianteId o por
  *   cursoId + fecha.
  *
+ * La paginación es opcional: solo se aplica si llega page y/o pageSize.
+ * Sin esos parámetros se devuelven todos los registros.
+ *
  * @param {Object} usuario
  * @param {Object} filtros
- * @returns {Promise<Array>}
+ * @returns {Promise<{ asistencias: Array, paginacion: ({ total: number, page: number, pageSize: number }|null) }>}
+ *   paginacion es null cuando la consulta no se paginó.
  */
 const consultarAsistencia = async (
   usuario,
@@ -201,12 +242,26 @@ const consultarAsistencia = async (
 
     if (!perfil) {
       /* Sin perfil de estudiante: mismo resultado que una consulta vacía. */
-      return [];
+      return resolverConsulta(
+        filtros,
+        async () => [],
+        async () => ({ asistencias: [], total: 0 })
+      );
     }
 
-    return asistenciaRepository.buscarPorEstudiante(
-      perfil.id,
-      rangoFechas
+    return resolverConsulta(
+      filtros,
+      () =>
+        asistenciaRepository.buscarPorEstudiante(
+          perfil.id,
+          rangoFechas
+        ),
+      (paginacion) =>
+        asistenciaRepository.buscarPaginadasPorEstudiante(
+          perfil.id,
+          rangoFechas,
+          paginacion
+        )
     );
   }
 
@@ -258,9 +313,19 @@ const consultarAsistencia = async (
       );
     }
 
-    return asistenciaRepository.buscarPorEstudiante(
-      estudianteId,
-      rangoFechas
+    return resolverConsulta(
+      filtros,
+      () =>
+        asistenciaRepository.buscarPorEstudiante(
+          estudianteId,
+          rangoFechas
+        ),
+      (paginacion) =>
+        asistenciaRepository.buscarPaginadasPorEstudiante(
+          estudianteId,
+          rangoFechas,
+          paginacion
+        )
     );
   }
 
@@ -291,9 +356,19 @@ const consultarAsistencia = async (
       "estudianteId"
     );
 
-    return asistenciaRepository.buscarPorEstudiante(
-      estudianteId,
-      rangoFechas
+    return resolverConsulta(
+      filtros,
+      () =>
+        asistenciaRepository.buscarPorEstudiante(
+          estudianteId,
+          rangoFechas
+        ),
+      (paginacion) =>
+        asistenciaRepository.buscarPaginadasPorEstudiante(
+          estudianteId,
+          rangoFechas,
+          paginacion
+        )
     );
   }
 
@@ -309,9 +384,15 @@ const consultarAsistencia = async (
 
     const fecha = validarFecha(filtros.fecha);
 
-    return asistenciaRepository.buscarPorCurso(
-      cursoId,
-      fecha
+    return resolverConsulta(
+      filtros,
+      () => asistenciaRepository.buscarPorCurso(cursoId, fecha),
+      (paginacion) =>
+        asistenciaRepository.buscarPaginadasPorCurso(
+          cursoId,
+          fecha,
+          paginacion
+        )
     );
   }
 

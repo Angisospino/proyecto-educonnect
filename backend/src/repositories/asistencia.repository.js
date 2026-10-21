@@ -14,6 +14,67 @@ const incluirEstudiante = {
 };
 
 /* ==========================================
+   FILTROS COMPARTIDOS
+   ========================================== */
+
+/*
+ * La consulta completa y la paginada usan el mismo filtro (where), así el
+ * total (count) siempre se calcula sobre los mismos registros que se listan.
+ */
+
+const filtrarPorCurso = (cursoId, fecha) => {
+  const inicio = new Date(`${fecha}T00:00:00.000Z`);
+  const fin = new Date(inicio);
+
+  fin.setUTCDate(fin.getUTCDate() + 1);
+
+  return {
+    cursoId: Number(cursoId),
+    fecha: {
+      gte: inicio,
+      lt: fin,
+    },
+  };
+};
+
+const ordenPorCurso = [
+  { fecha: "asc" },
+  { estudianteId: "asc" },
+];
+
+const filtrarPorEstudiante = (estudianteId, rangoFechas = {}) => {
+  const { inicio, fin } = rangoFechas;
+
+  const filtroFecha = {};
+
+  if (inicio) {
+    filtroFecha.gte = new Date(
+      `${inicio}T00:00:00.000Z`
+    );
+  }
+
+  if (fin) {
+    const fechaFin = new Date(
+      `${fin}T00:00:00.000Z`
+    );
+
+    fechaFin.setUTCDate(
+      fechaFin.getUTCDate() + 1
+    );
+
+    filtroFecha.lt = fechaFin;
+  }
+
+  return {
+    estudianteId: Number(estudianteId),
+
+    ...(Object.keys(filtroFecha).length > 0 && {
+      fecha: filtroFecha,
+    }),
+  };
+};
+
+/* ==========================================
    REGISTRAR ASISTENCIA
    ========================================== */
 
@@ -81,25 +142,41 @@ const registrar = async (datos) => {
  * @returns {Promise<Array>}
  */
 const buscarPorCurso = async (cursoId, fecha) => {
-  const inicio = new Date(`${fecha}T00:00:00.000Z`);
-  const fin = new Date(inicio);
-
-  fin.setUTCDate(fin.getUTCDate() + 1);
-
   return prisma.asistencia.findMany({
-    where: {
-      cursoId: Number(cursoId),
-      fecha: {
-        gte: inicio,
-        lt: fin,
-      },
-    },
+    where: filtrarPorCurso(cursoId, fecha),
     include: incluirEstudiante,
-    orderBy: [
-      { fecha: "asc" },
-      { estudianteId: "asc" },
-    ],
+    orderBy: ordenPorCurso,
   });
+};
+
+/**
+ * Igual que buscarPorCurso pero devuelve una sola página y el total de
+ * registros que cumplen el filtro (no el de la página).
+ *
+ * @param {number} cursoId
+ * @param {string} fecha
+ * @param {{ skip: number, take: number }} paginacion
+ * @returns {Promise<{ asistencias: Array, total: number }>}
+ */
+const buscarPaginadasPorCurso = async (
+  cursoId,
+  fecha,
+  { skip, take }
+) => {
+  const where = filtrarPorCurso(cursoId, fecha);
+
+  const [asistencias, total] = await prisma.$transaction([
+    prisma.asistencia.findMany({
+      where,
+      include: incluirEstudiante,
+      orderBy: ordenPorCurso,
+      skip,
+      take,
+    }),
+    prisma.asistencia.count({ where }),
+  ]);
+
+  return { asistencias, total };
 };
 
 
@@ -124,36 +201,8 @@ const buscarPorEstudiante = async (
   estudianteId,
   rangoFechas = {}
 ) => {
-  const { inicio, fin } = rangoFechas;
-
-  const filtroFecha = {};
-
-  if (inicio) {
-    filtroFecha.gte = new Date(
-      `${inicio}T00:00:00.000Z`
-    );
-  }
-
-  if (fin) {
-    const fechaFin = new Date(
-      `${fin}T00:00:00.000Z`
-    );
-
-    fechaFin.setUTCDate(
-      fechaFin.getUTCDate() + 1
-    );
-
-    filtroFecha.lt = fechaFin;
-  }
-
   return prisma.asistencia.findMany({
-    where: {
-      estudianteId: Number(estudianteId),
-
-      ...(Object.keys(filtroFecha).length > 0 && {
-        fecha: filtroFecha,
-      }),
-    },
+    where: filtrarPorEstudiante(estudianteId, rangoFechas),
 
     include: incluirEstudiante,
 
@@ -165,13 +214,55 @@ const buscarPorEstudiante = async (
 
 
 /* ==========================================
+   BUSCAR ASISTENCIA POR ESTUDIANTE (PAGINADA)
+   ========================================== */
+
+/**
+ * Igual que buscarPorEstudiante pero devuelve una sola página y el total
+ * de registros que cumplen el filtro (no el de la página).
+ *
+ * El id se agrega como desempate para que las páginas sean estables.
+ *
+ * @param {number} estudianteId
+ * @param {Object} rangoFechas
+ * @param {{ skip: number, take: number }} paginacion
+ * @returns {Promise<{ asistencias: Array, total: number }>}
+ */
+const buscarPaginadasPorEstudiante = async (
+  estudianteId,
+  rangoFechas = {},
+  { skip, take }
+) => {
+  const where = filtrarPorEstudiante(estudianteId, rangoFechas);
+
+  const [asistencias, total] = await prisma.$transaction([
+    prisma.asistencia.findMany({
+      where,
+      include: incluirEstudiante,
+      orderBy: [
+        { fecha: "desc" },
+        { id: "desc" },
+      ],
+      skip,
+      take,
+    }),
+    prisma.asistencia.count({ where }),
+  ]);
+
+  return { asistencias, total };
+};
+
+
+/* ==========================================
    EXPORTAR REPOSITORIO
    ========================================== */
 
 const asistenciaRepository = {
   registrar,
   buscarPorCurso,
+  buscarPaginadasPorCurso,
   buscarPorEstudiante,
+  buscarPaginadasPorEstudiante,
 };
 
 export default asistenciaRepository;
