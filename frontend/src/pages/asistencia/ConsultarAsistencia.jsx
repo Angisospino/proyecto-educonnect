@@ -8,9 +8,11 @@ import Button from "../../components/ui/Button.jsx";
 import EmptyState from "../../components/ui/EmptyState.jsx";
 import Input from "../../components/ui/Input.jsx";
 import Loader from "../../components/ui/Loader.jsx";
+import Select from "../../components/ui/Select.jsx";
 
 import { useAuth } from "../../hooks/useAuth.js";
 import asistenciaService from "../../services/asistencia.service.js";
+import catalogoService from "../../services/catalogo.service.js";
 import { ROLES } from "../../utils/constants.js";
 
 import "./ConsultarAsistencia.css";
@@ -37,6 +39,14 @@ const ESTADOS = {
 const FILTROS_INICIALES = {
   inicio: "",
   fin: "",
+};
+
+// Estado de la lista de hijos del Padre. Empieza cargando porque
+// la consulta de asistencia espera a tener un hijo seleccionado.
+const HIJOS_INICIALES = {
+  cargando: true,
+  lista: [],
+  error: "",
 };
 
 /* ==========================================
@@ -70,6 +80,19 @@ const formatearFecha = (valor) => {
   }
 
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
+};
+
+const obtenerEtiquetaHijo = (hijo) => {
+  const nombre = [
+    hijo.usuario?.nombre,
+    hijo.usuario?.apellido,
+  ].filter(Boolean).join(" ");
+
+  const base = nombre || `Estudiante #${hijo.id}`;
+
+  return hijo.curso?.nombre
+    ? `${base} (${hijo.curso.nombre})`
+    : base;
 };
 
 const obtenerNombreEstudiante = (registro) => {
@@ -109,16 +132,79 @@ export default function ConsultarAsistencia() {
   const [actualizacion, setActualizacion] =
     useState(0);
 
+  // Solo Padre de familia: hijos vinculados y el hijo elegido
+  // (EstudiantePerfil.id como texto, para el <select>).
+  const [hijos, setHijos] =
+    useState(HIJOS_INICIALES);
+
+  const [hijoId, setHijoId] =
+    useState("");
+
+  const [intentoHijos, setIntentoHijos] =
+    useState(0);
+
+  /* ==========================================
+     HIJOS DEL PADRE
+     ========================================== */
+
+  useEffect(() => {
+    if (!esPadre) return undefined;
+
+    let activo = true;
+
+    const cargarHijos = async () => {
+      try {
+        const respuesta =
+          await catalogoService.obtenerMisHijos();
+
+        const lista = respuesta?.data;
+
+        if (!Array.isArray(lista)) {
+          throw new Error(
+            "El servidor devolvió un formato de hijos no válido."
+          );
+        }
+
+        if (activo) {
+          setHijos({
+            cargando: false,
+            lista,
+            error: "",
+          });
+
+          // Con un solo hijo (lo habitual) se consulta de una vez.
+          setHijoId(
+            lista.length > 0
+              ? String(lista[0].id)
+              : ""
+          );
+        }
+      } catch (err) {
+        if (activo) {
+          setHijos({
+            cargando: false,
+            lista: [],
+            error: obtenerMensajeError(err),
+          });
+        }
+      }
+    };
+
+    cargarHijos();
+
+    return () => {
+      activo = false;
+    };
+  }, [esPadre, intentoHijos]);
+
   /* ==========================================
      CONSULTAR ASISTENCIA
      ========================================== */
 
   useEffect(() => {
-    // TODO [Sprint 3 - 21] [04]: el backend aún no tiene la relación
-    // padre-estudiante y responde 403, así que para el Padre no se
-    // llama a la API. Cuando exista GET /api/padres/mis-hijos, aquí va
-    // un selector de hijos y se consulta con el estudianteId elegido.
-    if (esPadre) return undefined;
+    // El Padre solo puede consultar a un hijo vinculado: sin hijo
+    // elegido no se llama a la API (respondería 400).
+    if (esPadre && !hijoId) return undefined;
 
     let activo = true;
 
@@ -127,9 +213,14 @@ export default function ConsultarAsistencia() {
       setError("");
 
       try {
-        // El backend resuelve el perfil del Estudiante desde el
-        // token: no se envía estudianteId.
+        // Estudiante: el backend resuelve su perfil desde el token y
+        // no se envía estudianteId. Padre: se envía el hijo elegido
+        // (el backend verifica que sea su hijo).
         const parametros = {};
+
+        if (esPadre) {
+          parametros.estudianteId = hijoId;
+        }
 
         if (filtros.inicio) {
           parametros.inicio = filtros.inicio;
@@ -181,6 +272,7 @@ export default function ConsultarAsistencia() {
     };
   }, [
     esPadre,
+    hijoId,
     filtros.inicio,
     filtros.fin,
     actualizacion,
@@ -252,10 +344,20 @@ export default function ConsultarAsistencia() {
     );
 
   /* ==========================================
-     PADRE DE FAMILIA (sin consulta por ahora)
+     PADRE DE FAMILIA: HIJOS NO DISPONIBLES
      ========================================== */
 
-  if (esPadre) {
+  const reintentarHijos = () => {
+    setHijos(HIJOS_INICIALES);
+    setIntentoHijos((valor) => valor + 1);
+  };
+
+  if (
+    esPadre &&
+    (hijos.cargando ||
+      hijos.error ||
+      hijos.lista.length === 0)
+  ) {
     return (
       <main className="consultar-asistencia">
         <header className="consultar-asistencia__header">
@@ -269,11 +371,29 @@ export default function ConsultarAsistencia() {
         </header>
 
         <section className="consultar-asistencia__card">
-          <EmptyState
-            icon={Users}
-            title="Consulta no disponible todavía"
-            description="La consulta de asistencia para padres estará disponible cuando se vinculen los hijos."
-          />
+          {hijos.cargando ? (
+            <Loader message="Cargando tus hijos..." />
+          ) : hijos.error ? (
+            <EmptyState
+              title="No se pudieron cargar tus hijos"
+              description={hijos.error}
+              action={
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={reintentarHijos}
+                >
+                  Reintentar
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={Users}
+              title="Sin hijos vinculados"
+              description="Tu cuenta todavía no tiene estudiantes vinculados. Comunícate con la institución para que los vinculen."
+            />
+          )}
         </section>
       </main>
     );
@@ -289,7 +409,9 @@ export default function ConsultarAsistencia() {
         <div>
           <h1>Consultar asistencia</h1>
           <p>
-            Consulta tu historial de asistencia.
+            {esPadre
+              ? "Consulta el historial de asistencia de tus hijos."
+              : "Consulta tu historial de asistencia."}
           </p>
         </div>
 
@@ -315,12 +437,30 @@ export default function ConsultarAsistencia() {
           </h2>
 
           <p>
-            Puedes consultar todos tus registros
-            o limitar la búsqueda por fechas.
+            {esPadre
+              ? "Elige a tu hijo o hija y consulta todos sus registros, o limita la búsqueda por fechas."
+              : "Puedes consultar todos tus registros o limitar la búsqueda por fechas."}
           </p>
         </div>
 
         <div className="consultar-asistencia__filters">
+          {esPadre && (
+            <Select
+              id="consulta-hijo"
+              name="hijoId"
+              label="Hijo o hija"
+              value={hijoId}
+              options={hijos.lista.map((hijo) => ({
+                value: String(hijo.id),
+                label: obtenerEtiquetaHijo(hijo),
+              }))}
+              placeholder={null}
+              onChange={(evento) =>
+                setHijoId(evento.target.value)
+              }
+            />
+          )}
+
           <Input
             id="consulta-inicio"
             name="inicio"
