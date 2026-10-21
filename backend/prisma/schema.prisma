@@ -42,6 +42,7 @@ model Usuario {
   notas             Nota[]
   asistencias       Asistencia[]
   hijos             PadreEstudiante[]
+  comunicados       Comunicado[]
 
   @@map("usuarios")
 }
@@ -118,4 +119,23 @@ model Asistencia {
 
   @@unique([estudianteId, fecha])
   @@index([cursoId, fecha])
+}
+
+enum EstadoComunicado {
+  PUBLICADO
+  EDITADO
+  ELIMINADO
+}
+
+model Comunicado {
+  id               Int              @id @default(autoincrement())
+  autorId          Int
+  titulo           String           @db.VarChar(150)
+  contenido        String           @db.Text
+  fechaPublicacion DateTime         @default(now())
+  estado           EstadoComunicado @default(PUBLICADO)
+
+  autor Usuario @relation(fields: [autorId], references: [id])
+
+  @@index([estado, fechaPublicacion])
 }
